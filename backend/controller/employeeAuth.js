@@ -4,10 +4,14 @@ const Employee = require('../model/employeeModel');
 const { upload } = require('../utils/multerConfig');
 
 // Create a new employee
-router.post('/employees', upload.single("employeeImage"),async (req, res) => {
+router.post('/employees', upload.single("employeeImage"), async (req, res) => {
     try {
-        console.log(req.file);
-        req.body.employeeImage = req.file.path;
+        // console.log(req.file);
+        const path = req.file?.path;
+        // console.log(path);
+        const newPath = path.replace('uploads\\', "");
+        // console.log(newPath);
+        req.body.employeeImage = newPath;
         const employee = new Employee(req.body);
         const savedEmployee = await employee.save();
         res.status(201).json(savedEmployee);
@@ -40,7 +44,7 @@ router.get('/employees/:employeeId', async (req, res) => {
 });
 
 // Update an employee
-router.put('/employees/:employeeId',upload.single("employeeImage"), async (req, res) => {
+router.put('/employees/:employeeId', upload.single("employeeImage"), async (req, res) => {
     try {
         const updatedEmployee = await Employee.findOneAndUpdate(
             { employeeId: req.params.employeeId },
@@ -59,7 +63,8 @@ router.put('/employees/:employeeId',upload.single("employeeImage"), async (req, 
 // Delete an employee
 router.delete('/employees/:employeeId', async (req, res) => {
     try {
-        const deletedEmployee = await Employee.findOneAndDelete({ employeeId: req.params.employeeId });
+        // const deletedEmployee = await Employee.findOneAndDelete({ employeeId: req.params.employeeId });
+        const deletedEmployee = await Employee.findByIdAndDelete(req.params.employeeId)
         if (!deletedEmployee) {
             return res.status(404).json({ message: 'Employee not found' });
         }

@@ -5,8 +5,12 @@ const Project = require('../model/projectModel');
 // Create a new project
 exports.createProject = async (req, res) => {
     try {
-        console.log(req.file);
-        req.body.projectImage = req.file.path;
+        // console.log(req.file);
+        const path = req.file?.path;
+        // console.log(path);
+        const newPath = path.replace('uploads\\', "");
+        // console.log(newPath);
+        req.body.projectImage = newPath;
         const project = new Project(req.body);
         const savedProject = await project.save();
         res.status(201).json(savedProject);
@@ -44,7 +48,7 @@ exports.updateProject = async (req, res) => {
         console.log(req.file);
         req.body.projectImage = req.file.path;
         const updatedProject = await Project.findByIdAndUpdate(req.params.projectId, req.body, { new: true });
-    
+
         if (!updatedProject) {
             return res.status(404).json({ message: 'Project not found' });
         }
