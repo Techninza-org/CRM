@@ -3,6 +3,7 @@ const router = express.Router();
 const Employee = require('../model/employeeModel');
 const { upload } = require('../utils/multerConfig');
 
+
 // Create a new employee
 router.post('/employees', upload.single("employeeImage"), async (req, res) => {
     try {
@@ -20,6 +21,8 @@ router.post('/employees', upload.single("employeeImage"), async (req, res) => {
     }
 });
 
+
+
 // Get all employees
 router.get('/employees', async (req, res) => {
     try {
@@ -29,6 +32,8 @@ router.get('/employees', async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 });
+
+
 
 // Get a single employee
 router.get('/employees/:employeeId', async (req, res) => {
@@ -42,6 +47,24 @@ router.get('/employees/:employeeId', async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 });
+
+router.get("/search", async (req, res) => {
+    const queries = req.query;
+    if (queries.hasOwnProperty('id') === false) {
+        return res.status(200).json({ message: "id is require to search" })
+    }
+    const q_regex = new RegExp(queries.id, 'i');
+    console.log(q_regex);
+    const emps = await Employee.find({ employeeName: { $regex: q_regex } });
+    // const emps = await Employee.find({ $or: [{ employeeId: { regex: q_regex } }, { employeeName: { regex: q_regex } }] })
+    if (emps) {
+        return res.status(200).json(emps);
+    }
+    console.log(queries);
+    return res.sendStatus(500);
+})
+
+
 
 // Update an employee
 router.put('/employees/:employeeId', upload.single("employeeImage"), async (req, res) => {
@@ -60,10 +83,11 @@ router.put('/employees/:employeeId', upload.single("employeeImage"), async (req,
     }
 });
 
+
+
 // Delete an employee
 router.delete('/employees/:employeeId', async (req, res) => {
     try {
-        // const deletedEmployee = await Employee.findOneAndDelete({ employeeId: req.params.employeeId });
         const deletedEmployee = await Employee.findByIdAndDelete(req.params.employeeId)
         if (!deletedEmployee) {
             return res.status(404).json({ message: 'Employee not found' });

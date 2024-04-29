@@ -19,6 +19,7 @@ exports.createProject = async (req, res) => {
     }
 };
 
+
 // Get all projects
 exports.getAllProjects = async (req, res) => {
     try {
@@ -29,7 +30,8 @@ exports.getAllProjects = async (req, res) => {
     }
 };
 
-// Get a specific project by projectId
+
+// Get a single project by projectId
 exports.getProjectById = async (req, res) => {
     try {
         const project = await Project.findById(req.params.projectId);
@@ -42,11 +44,31 @@ exports.getProjectById = async (req, res) => {
     }
 };
 
+exports.searchProjects = async (req, res) => {
+    const queries = req.query;
+    if (!queries.id) {
+        return res.status(400).json({ message: "id is required to search" });
+    }
+
+    try {
+        const q_regex = new RegExp(queries.id, 'i');
+        // console.log(q_regex);
+        const proj = await Project.find({ projectName: { $regex: q_regex } });
+        return res.status(200).json(proj);
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+
+
+
 // Update a project
 exports.updateProject = async (req, res) => {
     try {
-        console.log(req.file);
-        req.body.projectImage = req.file.path;
+        // console.log(req.file);
+        req.body.projectImage = req.file?.path;
         const updatedProject = await Project.findByIdAndUpdate(req.params.projectId, req.body, { new: true });
 
         if (!updatedProject) {
@@ -57,6 +79,7 @@ exports.updateProject = async (req, res) => {
         res.status(400).json({ message: err.message });
     }
 };
+
 
 // Delete a project
 exports.deleteProject = async (req, res) => {

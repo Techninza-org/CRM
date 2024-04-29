@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 
 
 const Header = () => {
-    const [username, setUser] = useState("");
+    const [username, setUserName] = useState("");
     const [email, setEmail] = useState("");
     const navigation = useNavigate();
 
@@ -16,7 +16,7 @@ const Header = () => {
         }
         const user = JSON.parse(localStorage.getItem("user"));
         if (token) {
-          setUser(user.username);
+          setUserName(user.username);
           setEmail(user.email);
         }
       }, [navigation]);   

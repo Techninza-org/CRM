@@ -8,7 +8,7 @@ const projectSchema = new Schema({
     },
     projectCategory: {
         type: String,
-        // required: true
+        required: true
     },
     projectImage: {
         type: String,

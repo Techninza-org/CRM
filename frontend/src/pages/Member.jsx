@@ -6,7 +6,6 @@ import axios from "axios";
 
 const Member = () => {
   //CREATE EMPLOYEE
-  const [deletableId, setDeletableId] = useState("");
   const [formData, setFormData] = useState({
     employeeName: "",
     employeeCompany: "",
@@ -21,8 +20,6 @@ const Member = () => {
     designation: "",
     description: "",
   });
-
-
 
   const handleChange = (e) => {
     // console.log(e.target.name);
@@ -83,25 +80,7 @@ const Member = () => {
   }, []);
 
   //DELETE EMPLOYEE
-  //   const handleDelete = async () => {
-  //     try {
-  //       const data = new FormData();
-  //       data.append('employeeId', employee);
-
-  //       const config = {
-  //         method: 'delete',
-  //         maxBodyLength: Infinity,
-  //         url: `http://localhost:8000/api/employees/${employee}`,
-
-  //         data: data
-  //       };
-
-  //       const response = await axios.request(config);
-  //       console.log(JSON.stringify(response.data));
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
+  const [deletableId, setDeletableId] = useState("");
   const handleDelete = async () => {
     try {
       const response = await axios.delete(
@@ -113,6 +92,85 @@ const Member = () => {
       console.error("Error:", error);
     }
   };
+
+  // UPDATE EMPLOYEE
+  const [employeeData, setEmployeeData] = useState({
+    employeeName: "",
+    employeeCompany: "",
+    employeeImage: null,
+    employeeId: "",
+    joiningDate: "",
+    username: "",
+    password: "",
+    emailid: "",
+    phone: "",
+    department: "",
+    designation: "",
+    description: "",
+  });
+
+  const updateChange = (e) => {
+    const { name, value, files } = e.target;
+    setEmployeeData((prevState) => ({
+      ...prevState,
+      [name]: files ? files[0] : value,
+    }));
+  };
+
+  const updateSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const updateData = new FormData();
+      for (const key in employeeData) {
+        updateData.append(key, employeeData[key]);
+      }
+
+      const response = await axios.put(
+        `http://localhost:8000/api/employees/${employeeData.employeeId}`,
+        updateData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log(response.data);
+      window.location.reload();
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  // GET SINGLE EMPLOYEE
+  const [searchQuery, setSearchQuery] = useState("");
+  const handleSearch = async (searchQuery) => {
+    if (searchQuery !== "") {
+      try {
+        const response = await axios.get(
+          `http://localhost:8000/api/search?id=${searchQuery}`
+        );
+        setEmployees(response.data);
+      } catch (error) {
+        console.error("Error:", error);
+        setEmployees(null);
+      }
+    } else {
+      const fetchData = async () => {
+        try {
+          const response = await axios.get(
+            "http://localhost:8000/api/employees"
+          );
+          setEmployees(response.data);
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      };
+
+      fetchData();
+    }
+  };
+
+
 
   return (
     <>
@@ -142,6 +200,40 @@ const Member = () => {
                           <i className="icofont-plus-circle me-2 fs-6" />
                           Add Employee
                         </button>
+                        <div className="order-0 col-lg-4 col-md-4 col-sm-12 col-12 mb-3 mb-md-0 ">
+                          <div className="input-group">
+                            <input
+                              type="search"
+                              className="form-control"
+                              aria-label="search"
+                              aria-describedby="addon-wrapping"
+                              value={searchQuery}
+                              // onChange={(e) => setSearchQuery(e.target.value)}
+                              onChange={(e) => {
+                                setSearchQuery(e.target.value);
+                                handleSearch(e.target.value);
+                              }}
+                              placeholder="Enter Employee Name"
+                            />
+                            <button
+                              type="button"
+                              className="input-group-text add-member-top"
+                              id="addon-wrappingone"
+                              data-bs-toggle="modal"
+                              data-bs-target="#addUser"
+                            >
+                              <i className="fa fa-plus" />
+                            </button>
+                            <button
+                              type="button"
+                              className="input-group-text"
+                              id="addon-wrapping"
+                              onClick={handleSearch}
+                            >
+                              <i className="fa fa-search" />
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -149,18 +241,12 @@ const Member = () => {
                 {/* Row End */}
                 <div className="row g-3 row-cols-1 row-cols-sm-1 row-cols-md-1 row-cols-lg-2 row-cols-xl-2 row-cols-xxl-2 row-deck py-1 pb-4">
                   {employees.map((employee) => {
-                      const newDate = new Date(employee?.joiningDate);
-                      const date = newDate.getDate();
-                      const month = newDate.getMonth();
-                      const year = newDate.getFullYear();
+                    const newDate = new Date(employee?.joiningDate);
+                    const date = newDate.getDate();
+                    const month = newDate.getMonth();
+                    const year = newDate.getFullYear();
                     return (
                       <div className="col" key={employee.employeeId}>
-                        {/* <tr key={employee.employeeId}>
-               <td>{employee.employeeName}</td>
-               <td>{employee.employeeCompany}</td>
-               <td>{employee.employeeId}</td>
-             </tr> */}
-
                         <div className="card teacher-card">
                           <div className="card-body d-flex">
                             <div className="profile-av pe-xl-4 pe-md-2 pe-sm-4 pe-4 text-center w220">
@@ -174,79 +260,81 @@ const Member = () => {
                               />
                               <div className="about-info mt-3">
                                 <div className="followers me-2">
-                                  {/* <i class="bi bi-person-fill color-light-orange fs-4"/> */}
+                                  <i class="bi bi-person-fill text-danger fs-6 me-2" />
                                   <span className="">
                                     ID - {employee.employeeId}
                                   </span>
                                 </div>
-                                <div className="star me-2">
-                                  {/* <i className="icofont-star text-warning fs-4" /> */}
-                                  {/* <i class="bi bi-calendar-check-fill color-light-orange fs-4"/> */}
-                                  <span className="">
-                                    {date}/{month}/{year}
-                                  </span>
-                                </div>
+
                                 <div className="own-video">
                                   {/* <i className="icofont-data color-light-orange fs-4" /> */}
-                                  {/* <i class="bi bi-telephone color-light-orange fs-4"/> */}
+                                  <i class="bi bi-telephone-fill text-success fs-6 me-2" />
                                   <span className="">{employee.phone}</span>
                                 </div>
-                                <div className="own-video">
-                                  {/* <i className="bi bi-building color-light-orange fs-4" /> */}
+                                {/* <div className="own-video">
+                                  <i className="bi bi-building color-light-orange fs-4" />
                                   <span className="">
                                     {employee.department}
                                   </span>
-                                </div>
+                                </div> */}
                               </div>
                             </div>
                             <div className="teacher-info border-start ps-xl-4 ps-md-3 ps-sm-4 ps-4 w-100">
-                              <div className="d-flex justify-content-between">
-                                <div>
+                              <div>
+                                <div className="d-flex justify-content-between">
                                   <h6 className="mb-0 mt-2  fw-bold d-block fs-6">
                                     {employee.employeeName}
                                   </h6>
-                                  {/* <span className="light-info-bg py-1 px-2 rounded-1 d-inline-block fw-bold small-11 mb-0 mt-1">
-                                  {employee.department}
-                                </span> */}
+                                  <div
+                                    className="btn-group"
+                                    role="group"
+                                    aria-label="Basic outlined example"
+                                  >
+                                    <button
+                                      type="button"
+                                      className="btn btn-outline-secondary"
+                                      data-bs-toggle="modal"
+                                      data-bs-target="#editemp"
+                                    >
+                                      <i className="icofont-edit text-success" />
+                                    </button>
+                                    <button
+                                      type="button"
+                                      className="btn btn-outline-secondary"
+                                      data-bs-toggle="modal"
+                                      data-bs-target="#deleteproject"
+                                      onClick={() => {
+                                        setDeletableId(employee._id);
+                                      }}
+                                    >
+                                      <i className="icofont-ui-delete text-danger" />
+                                    </button>
+                                  </div>
+                                </div>
+                                <div className="d-flex justify-content-between">
                                   <span className="light-info-bg py-1 px-2 rounded-1 d-inline-block fw-bold small-11 mb-0 mt-1">
+                                    <i class="bi bi-calendar-check-fill text-primary fs-6 me-2" />
+                                    {date}/{month}/{year}
+                                  </span>
+                                  <span className="light-info-bg p-2 rounded-1 d-inline-block fw-bold small-11 mb-0 mt-1">
                                     {employee.designation}
                                   </span>
-                                </div>
-                                <div
-                                  className="btn-group"
-                                  role="group"
-                                  aria-label="Basic outlined example"
-                                >
-                                  <button
-                                    type="button"
-                                    className="btn btn-outline-secondary"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#editproject"
-                                  >
-                                    <i className="icofont-edit text-success" />
-                                  </button>
-                                  <button
-                                    type="button"
-                                    className="btn btn-outline-secondary"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#deleteproject"
-                                    onClick={()=>{
-                                      setDeletableId(employee._id);
-                                    }}
-                                  >
-                                    <i className="icofont-ui-delete text-danger" />
-                                  </button>
                                 </div>
                               </div>
                               <div className="video-setting-icon mt-3 pt-3 border-top">
                                 <p>{employee.description}</p>
                               </div>
-                              <Link className="ms-link" to="/tasks">
-                                <div className="btn btn-dark btn-sm mt-1">
-                                  <i className="icofont-plus-circle me-2 fs-6" />
-                                  Add Task
-                                </div>
-                              </Link>
+                              <div className="d-flex justify-content-center">
+                                <Link
+                                  className="ms-link d-flex justify-content-center"
+                                  to="/tasks"
+                                >
+                                  <div className="btn btn-dark btn-sm mt-1 ">
+                                    <i className="icofont-plus-circle me-2 fs-6" />
+                                    Add Task
+                                  </div>
+                                </Link>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -514,6 +602,291 @@ const Member = () => {
                 </div>
               </div>
             </div>
+            {/* Update Employee*/}
+            <div
+              className="modal fade"
+              id="editemp"
+              tabIndex={-1}
+              aria-hidden="true"
+            >
+              <div className="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+                <div className="modal-content">
+                  <div className="modal-header">
+                    <h5
+                      className="modal-title  fw-bold"
+                      id="createprojectlLabel"
+                    >
+                      {" "}
+                      Edit Employee
+                    </h5>
+                    <button
+                      type="button"
+                      className="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                    />
+                  </div>
+                  <div className="modal-body">
+                    <div className="mb-3">
+                      <label
+                        htmlFor="exampleFormControlInput877"
+                        className="form-label"
+                      >
+                        Employee Name
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="exampleFormControlInput877"
+                        placeholder="Explain what the Project Name"
+                        name="employeeName"
+                        value={employeeData.employeeName}
+                        onChange={updateChange}
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label
+                        htmlFor="exampleFormControlInput977"
+                        className="form-label"
+                      >
+                        Employee Company
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="exampleFormControlInput977"
+                        placeholder="Explain what the Project Name"
+                        name="employeeCompany"
+                        value={employeeData.employeeCompany}
+                        onChange={updateChange}
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label
+                        htmlFor="formFileMultipleoneone"
+                        className="form-label"
+                      >
+                        Employee Profile
+                      </label>
+                      <input
+                        className="form-control"
+                        type="file"
+                        id="formFileMultipleoneone"
+                        name="employeeImage"
+                        onChange={handleImageChange}
+                      />
+                    </div>
+                    <div className="deadline-form">
+                      <form>
+                        <div className="row g-3 mb-3">
+                          <div className="col-sm-6">
+                            <label
+                              htmlFor="exampleFormControlInput1778"
+                              className="form-label"
+                            >
+                              Employee ID
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              id="exampleFormControlInput1778"
+                              placeholder="User Name"
+                              name="employeeId"
+                              value={employeeData.employeeId}
+                              onChange={updateChange}
+                            />
+                          </div>
+                          <div className="col-sm-6">
+                            <label
+                              htmlFor="exampleFormControlInput2778"
+                              className="form-label"
+                            >
+                              Joining Date
+                            </label>
+                            <input
+                              type="date"
+                              className="form-control"
+                              id="exampleFormControlInput2778"
+                              name="joiningDate"
+                              value={employeeData.joiningDate}
+                              onChange={updateChange}
+                            />
+                          </div>
+                        </div>
+                        <div className="row g-3 mb-3">
+                          <div className="col">
+                            <label
+                              htmlFor="exampleFormControlInput177"
+                              className="form-label"
+                            >
+                              User Name
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              id="exampleFormControlInput177"
+                              placeholder="User Name"
+                              name="username"
+                              value={employeeData.username}
+                              onChange={updateChange}
+                            />
+                          </div>
+                          <div className="col">
+                            <label
+                              htmlFor="exampleFormControlInput277"
+                              className="form-label"
+                            >
+                              Password
+                            </label>
+                            <input
+                              type="Password"
+                              className="form-control"
+                              id="exampleFormControlInput277"
+                              placeholder="Password"
+                              name="password"
+                              value={employeeData.password}
+                              onChange={updateChange}
+                            />
+                          </div>
+                        </div>
+                        <div className="row g-3 mb-3">
+                          <div className="col">
+                            <label
+                              htmlFor="exampleFormControlInput477"
+                              className="form-label"
+                            >
+                              Email ID
+                            </label>
+                            <input
+                              type="email"
+                              className="form-control"
+                              id="exampleFormControlInput477"
+                              placeholder="User Name"
+                              name="emailid"
+                              value={employeeData.emailid}
+                              onChange={updateChange}
+                            />
+                          </div>
+                          <div className="col">
+                            <label
+                              htmlFor="exampleFormControlInput777"
+                              className="form-label"
+                            >
+                              Phone
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              id="exampleFormControlInput777"
+                              placeholder="User Name"
+                              name="phone"
+                              value={employeeData.phone}
+                              onChange={updateChange}
+                            />
+                          </div>
+                        </div>
+                        <div className="row g-3 mb-3">
+                          <div className="col">
+                            <label className="form-label">Department</label>
+                            <select
+                              className="form-select"
+                              aria-label="Default select Project Category"
+                              name="department"
+                              value={employeeData.department}
+                              onChange={updateChange}
+                            >
+                              <option value={""}></option>
+                              <option value={"Web Development"}>
+                                Web Development
+                              </option>
+                              <option value={"It Management"}>
+                                It Management
+                              </option>
+                              <option value={"Marketing"}>Marketing</option>
+                              <option value={"Manager"}>Manager</option>
+                            </select>
+                          </div>
+                          <div className="col">
+                            <label className="form-label">Designation</label>
+                            <select
+                              className="form-select"
+                              aria-label="Default select Project Category"
+                              name="designation"
+                              value={employeeData.designation}
+                              onChange={updateChange}
+                            >
+                              <option value={""}></option>
+                              <option value={"UI/UX Design"}>
+                                UI/UX Design
+                              </option>
+                              <option value={"Website Design"}>
+                                Website Design
+                              </option>
+                              <option value={"App Development"}>
+                                App Development
+                              </option>
+                              <option value={"Quality Assurance"}>
+                                Quality Assurance
+                              </option>
+                              <option value={"Development"}>Development</option>
+                              <option value={"Backend Development"}>
+                                Backend Development
+                              </option>
+                              <option value={"Software Testing"}>
+                                Software Testing
+                              </option>
+                              <option value={"Website Design"}>
+                                Website Design
+                              </option>
+                              <option value={"Marketing"}>Marketing</option>
+                              <option value={"SEO"}>SEO</option>
+                              <option value={"Project Manager"}>
+                                Project Manager
+                              </option>
+                              <option value={"Other"}>Other</option>
+                            </select>
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+                    <div className="mb-3">
+                      <label
+                        htmlFor="exampleFormControlTextarea78"
+                        className="form-label"
+                      >
+                        Description (optional)
+                      </label>
+                      <textarea
+                        className="form-control"
+                        id="exampleFormControlTextarea78"
+                        rows={3}
+                        placeholder="Add any extra details about the request"
+                        defaultValue={""}
+                        name="description"
+                        value={employeeData.description}
+                        onChange={updateChange}
+                      />
+                    </div>
+                  </div>
+                  <div className="modal-footer">
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      data-bs-dismiss="modal"
+                    >
+                      Done
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-primary"
+                      onClick={updateSubmit}
+                    >
+                      Create
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
             {/* Create Employee*/}
             <div
               className="modal fade"
@@ -715,6 +1088,7 @@ const Member = () => {
                                 It Management
                               </option>
                               <option value={"Marketing"}>Marketing</option>
+                              <option value={"Manager"}>Manager</option>
                             </select>
                           </div>
                           <div className="col">
@@ -726,6 +1100,7 @@ const Member = () => {
                               value={formData.designation}
                               onChange={handleChange}
                             >
+                              <option value={""}></option>
                               <option value={"UI/UX Design"}>
                                 UI/UX Design
                               </option>
@@ -750,6 +1125,9 @@ const Member = () => {
                               </option>
                               <option value={"Marketing"}>Marketing</option>
                               <option value={"SEO"}>SEO</option>
+                              <option value={"Project Manager"}>
+                                Project Manager
+                              </option>
                               <option value={"Other"}>Other</option>
                             </select>
                           </div>
