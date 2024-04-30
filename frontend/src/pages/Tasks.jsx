@@ -116,6 +116,8 @@ const handleSearch = async (searchQuery) => {
   }
 };
 
+
+
   return (
     <>
       <div id="mytask-layout">
@@ -552,7 +554,7 @@ const handleSearch = async (searchQuery) => {
                         type="text"
                         className="form-control"
                         id="exampleFormControlInput77"
-                        placeholder="Explain what the Project Name"
+                        placeholder="Project Name"
                         name="projectName" 
                         value={formData.projectName} 
                         onChange={handleChange}
@@ -562,12 +564,13 @@ const handleSearch = async (searchQuery) => {
                         <label className="form-label">Task Category</label>
                         <select
                           className="form-select"
+                          placeholder="Add Category"
                           aria-label="Default select Project Category"
                           name="taskCategory" 
                           value={formData.taskCategory} 
                           onChange={handleChange}
                         >
-                          <option selected=""></option>
+                          <option selected="Add Category">Add Category</option>
                         <option value={"UI/UX Design"}>UI/UX Design</option>
                         <option value={"Website Design"}>Website Design</option>
                         <option value={"App Development"}>
@@ -692,7 +695,7 @@ const handleSearch = async (searchQuery) => {
                           className="form-control"
                           id="exampleFormControlTextarea786"
                           rows={3}
-                          placeholder="Add any extra details about the request"
+                          placeholder="Explain The Task What To Do & How To Do"
                           name="description" 
                           value={formData.description} 
                           onChange={handleChange}

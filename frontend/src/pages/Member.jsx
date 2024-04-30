@@ -4,7 +4,7 @@ import Header from "../components/Header";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
-const Member = () => {
+const Member = ({ employeeId }) => {
   //CREATE EMPLOYEE
   const [formData, setFormData] = useState({
     employeeName: "",
@@ -36,7 +36,7 @@ const Member = () => {
     });
   };
 
-  const handleSubmit = async (e) => {
+  const updateSubmit = async (e) => {
     e.preventDefault();
 
     try {
@@ -98,7 +98,6 @@ const Member = () => {
     employeeName: "",
     employeeCompany: "",
     employeeImage: null,
-    employeeId: "",
     joiningDate: "",
     username: "",
     password: "",
@@ -109,35 +108,46 @@ const Member = () => {
     description: "",
   });
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8000/api/employees/${employeeId}`);
+        const { data } = response;
+        setEmployeeData(data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    if (employeeId) {
+      fetchData();
+    }
+  }, [employeeId]);
+
   const updateChange = (e) => {
-    const { name, value, files } = e.target;
-    setEmployeeData((prevState) => ({
-      ...prevState,
-      [name]: files ? files[0] : value,
+    const { name, value } = e.target;
+    setEmployeeData((prevData) => ({
+      ...prevData,
+      [name]: value,
     }));
   };
 
-  const updateSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const updateData = new FormData();
-      for (const key in employeeData) {
-        updateData.append(key, employeeData[key]);
-      }
-
-      const response = await axios.put(
-        `http://localhost:8000/api/employees/${employeeData.employeeId}`,
-        updateData,
+      await axios.put(
+        `http://localhost:8000/api/employees/${employeeId}`,
+        employeeData,
         {
           headers: {
-            "Content-Type": "multipart/form-data",
+            "Content-Type": "application/json",
           },
         }
       );
-      console.log(response.data);
-      window.location.reload();
+      console.log("Employee updated successfully!");
+      // You may redirect or handle success in your application logic
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error updating employee:", error);
     }
   };
 
@@ -169,8 +179,6 @@ const Member = () => {
       fetchData();
     }
   };
-
-
 
   return (
     <>
@@ -295,6 +303,7 @@ const Member = () => {
                                       className="btn btn-outline-secondary"
                                       data-bs-toggle="modal"
                                       data-bs-target="#editemp"
+                                      // onClick={() => setToEdit(employee._id)}
                                     >
                                       <i className="icofont-edit text-success" />
                                     </button>

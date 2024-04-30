@@ -3,6 +3,7 @@ import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { MultiSelect } from "react-multi-select-component";
 
 const Project = () => {
   // CREATE PROJECT
@@ -54,7 +55,6 @@ const Project = () => {
 
   // GET ALL PROJECTS
   const [projects, setProjects] = useState([]);
-
   useEffect(() => {
     const fetchProjects = async () => {
       try {
@@ -70,7 +70,6 @@ const Project = () => {
 
   //DELETE PROJECT
   const [deletableId, setDeletableId] = useState("");
-
   const handleDeleteProject = async () => {
     try {
       const response = await axios.delete(
@@ -84,15 +83,83 @@ const Project = () => {
   };
 
   //UPDATE PROJECT
+  // const [projectFormData, setProjectFormData] = useState({
+  //   projectName: "",
+  //   projectCategory: "",
+  //   projectImage: null,
+  //   projectStartDate: "",
+  //   projectEndDate: "",
+  //   // taskAssignPerson: '',
+  //   description: "",
+  // });
+
+  // const projectHandleChange = (e) => {
+  //   const { name, value, files } = e.target;
+  //   setProjectFormData((prevState) => ({
+  //     ...prevState,
+  //     [name]: files ? files[0] : value,
+  //   }));
+  // };
+  // const [toEdit, setToEdit] = useState("");
+  // const projectHandleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     const formDataToSend = new FormData();
+  //     for (const key in projectFormData) {
+  //       formDataToSend.append(key, projectFormData[key]);
+  //     }
+  //     console.log(projectFormData);
+  //     const response = await axios.put(
+  //       `http://localhost:8000/api/projects/${toEdit}`,
+  //       formDataToSend,
+  //       {
+  //         headers: {
+  //           "Content-Type": "multipart/form-data",
+  //         },
+  //       }
+  //     );
+
+  //     console.log(response.data);
+  //     window.location.reload();
+  //   } catch (error) {
+  //     console.error("Error:", error);
+  //   }
+  // };
+
   const [projectFormData, setProjectFormData] = useState({
     projectName: "",
     projectCategory: "",
     projectImage: null,
     projectStartDate: "",
     projectEndDate: "",
-    // taskAssignPerson: '',
     description: "",
   });
+
+  const [toEdit, setToEdit] = useState(""); // Assuming this stores the ID of the item being edited
+
+  useEffect(() => {
+    // Assuming fetchData() fetches the data of the item to edit based on its ID
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8000/api/projects/${toEdit}`);
+        const { data } = response;
+        setProjectFormData({
+          projectName: data.projectName,
+          projectCategory: data.projectCategory,
+          projectImage: data.projectImage, // Assuming this is a URL or a reference to the image
+          projectStartDate: data.projectStartDate,
+          projectEndDate: data.projectEndDate,
+          description: data.description,
+        });
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    if (toEdit) {
+      fetchData();
+    }
+  }, [toEdit]);
 
   const projectHandleChange = (e) => {
     const { name, value, files } = e.target;
@@ -101,7 +168,7 @@ const Project = () => {
       [name]: files ? files[0] : value,
     }));
   };
-  const [toEdit, setToEdit] = useState("");
+
   const projectHandleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -109,7 +176,6 @@ const Project = () => {
       for (const key in projectFormData) {
         formDataToSend.append(key, projectFormData[key]);
       }
-      console.log(projectFormData);
       const response = await axios.put(
         `http://localhost:8000/api/projects/${toEdit}`,
         formDataToSend,
@@ -126,6 +192,11 @@ const Project = () => {
       console.error("Error:", error);
     }
   };
+
+
+
+
+
 
   // GET SINGLE PROJECT
   const [searchQuery, setSearchQuery] = useState("");
@@ -155,6 +226,29 @@ const Project = () => {
       fetchData();
     }
   };
+
+  const [employees, setEmployees] = useState([]);
+  const [selectedEmployees, setSelectedEmployees] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/api/employees");
+        setEmployees(response.data);
+        // console.log(response.data);
+        // console.log("Employees:", employees);
+
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+8
+    fetchData();
+  }, []);
+
+
+
+
 
   return (
     <>
@@ -269,15 +363,7 @@ const Project = () => {
                                     {getFormattedDate(project.projectEndDate)}{" "}
                                   </td>
                                   <td>
-                                    <img
-                                      className="avatar rounded-circle sm"
-                                      src={
-                                        "http://localhost:8000/" +
-                                        project.projectImage
-                                      }
-                                      alt=""
-                                    />
-
+                                    {project.taskAssignPerson}
                                     {/* <a href="#">Keith</a> */}
                                   </td>
                                   <td>
@@ -348,7 +434,7 @@ const Project = () => {
                         type="text"
                         className="form-control"
                         id="exampleFormControlInput77"
-                        placeholder="Explain what the Project Name"
+                        placeholder="Project Name"
                         name="projectName"
                         value={formData.projectName}
                         onChange={handleChange}
@@ -385,6 +471,8 @@ const Project = () => {
                         <option value={"Other"}>Other</option>
                       </select>
                     </div>
+                    {projectFormData.projectImage && <img src={projectFormData.projectImage} alt="Project" />}
+
                     <div className="mb-3">
                       <label
                         htmlFor="formFileMultipleone"
@@ -445,9 +533,9 @@ const Project = () => {
                             >
                               Task Assign Person
                             </label>
-                            <select
+                            {/* <select
                               className="form-select"
-                              multiple=""
+                              multiple={true}
                               aria-label="Default select Priority"
                               name="taskAssignPerson"
                               value={formData.taskAssignPerson}
@@ -460,7 +548,22 @@ const Project = () => {
                               <option value={4}>Brian Skinner</option>
                               <option value={5}>Dan Short</option>
                               <option value={5}>Jack Glover</option>
-                            </select>
+                            </select> */}
+
+                            <div>
+                              <MultiSelect
+                              
+                              
+                              options={employees.map(employee => ({
+                                label: employee.name,
+                                value: employee.id
+                              }))}
+                                value={selectedEmployees}
+                                onChange={setSelectedEmployees}
+                                labelledBy="Select Employees"
+                              />
+                            </div>
+
                           </div>
                         </div>
                       </form>
@@ -470,13 +573,13 @@ const Project = () => {
                         htmlFor="exampleFormControlTextarea78"
                         className="form-label"
                       >
-                        Description (optional)
+                        Description
                       </label>
                       <textarea
                         className="form-control"
                         id="exampleFormControlTextarea78"
                         rows={3}
-                        placeholder="Add any extra details about the request"
+                        placeholder="Explain The Project What To Do & How To Do"
                         defaultValue={""}
                         name="description"
                         value={formData.description}
