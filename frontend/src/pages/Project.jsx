@@ -6,6 +6,7 @@ import axios from "axios";
 import { MultiSelect } from "react-multi-select-component";
 
 const Project = () => {
+
   // CREATE PROJECT
   const [formData, setFormData] = useState({
     projectName: "",
@@ -13,7 +14,7 @@ const Project = () => {
     projectImages: null,
     projectStartDate: "",
     projectEndDate: "",
-    // taskAssignPerson: "",
+    taskAssignPerson: "",
     description: "",
   });
   const [error, setError] = useState("");
@@ -35,7 +36,11 @@ const Project = () => {
       for (let key in formData) {
         formDataToSend.append(key, formData[key]);
       }
-
+      for (let obj of selectedEmployees) {
+        // console.log(obj);
+        formDataToSend.append("taskAssignPerson", obj.value);
+      }
+      // console.log(formDataToSend);
       const response = await axios.post(
         "http://localhost:8000/api/projects",
         formDataToSend,
@@ -45,13 +50,14 @@ const Project = () => {
           },
         }
       );
-      console.log(response.data);
+      // console.log(response.data);
       window.location.reload();
     } catch (error) {
       console.error("Error:", error);
       setError("An error occurred. Please try again later.");
     }
   };
+
 
   // GET ALL PROJECTS
   const [projects, setProjects] = useState([]);
@@ -68,6 +74,7 @@ const Project = () => {
     fetchProjects();
   }, []);
 
+
   //DELETE PROJECT
   const [deletableId, setDeletableId] = useState("");
   const handleDeleteProject = async () => {
@@ -75,82 +82,71 @@ const Project = () => {
       const response = await axios.delete(
         `http://localhost:8000/api/projects/${deletableId}`
       );
-      console.log(response.data);
+      // console.log(response.data);
       window.location.reload();
     } catch (error) {
       console.error("Error:", error);
     }
   };
 
+
   //UPDATE PROJECT
-  // const [projectFormData, setProjectFormData] = useState({
-  //   projectName: "",
-  //   projectCategory: "",
-  //   projectImage: null,
-  //   projectStartDate: "",
-  //   projectEndDate: "",
-  //   // taskAssignPerson: '',
-  //   description: "",
-  // });
-
-  // const projectHandleChange = (e) => {
-  //   const { name, value, files } = e.target;
-  //   setProjectFormData((prevState) => ({
-  //     ...prevState,
-  //     [name]: files ? files[0] : value,
-  //   }));
-  // };
-  // const [toEdit, setToEdit] = useState("");
-  // const projectHandleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   try {
-  //     const formDataToSend = new FormData();
-  //     for (const key in projectFormData) {
-  //       formDataToSend.append(key, projectFormData[key]);
-  //     }
-  //     console.log(projectFormData);
-  //     const response = await axios.put(
-  //       `http://localhost:8000/api/projects/${toEdit}`,
-  //       formDataToSend,
-  //       {
-  //         headers: {
-  //           "Content-Type": "multipart/form-data",
-  //         },
-  //       }
-  //     );
-
-  //     console.log(response.data);
-  //     window.location.reload();
-  //   } catch (error) {
-  //     console.error("Error:", error);
-  //   }
-  // };
-
   const [projectFormData, setProjectFormData] = useState({
     projectName: "",
     projectCategory: "",
     projectImage: null,
     projectStartDate: "",
     projectEndDate: "",
+    taskAssignPerson: "",
     description: "",
   });
-
-  const [toEdit, setToEdit] = useState(""); // Assuming this stores the ID of the item being edited
-
+  const [toEdit, setToEdit] = useState("");
+  // console.log(projectFormData);
   useEffect(() => {
     // Assuming fetchData() fetches the data of the item to edit based on its ID
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/api/projects/${toEdit}`);
+        const response = await axios.get(
+          `http://localhost:8000/api/projects/${toEdit}`
+        );
         const { data } = response;
+        let formattedDate = "";
+        const fDate = (data) => {
+          const sd = new Date(data);
+          const sy = sd.getFullYear();
+          const sm =
+            sd.getMonth() + 1 < 10
+              ? "0" + (Number(sd.getMonth()) + 1)
+              : sd.getMonth();
+          const sdd = sd.getDate() < 10 ? "0" + sd.getDate() : sd.getDate();
+          formattedDate = `${sy}-${sm}-${sdd}`;
+          return formattedDate;
+        };
+        const fStartDate = fDate(data.projectStartDate);
+        const fEndDate = fDate(data.projectEndDate);
+        // console.log(fStartDate);
         setProjectFormData({
           projectName: data.projectName,
           projectCategory: data.projectCategory,
           projectImage: data.projectImage, // Assuming this is a URL or a reference to the image
-          projectStartDate: data.projectStartDate,
-          projectEndDate: data.projectEndDate,
+          projectStartDate: fStartDate,
+          projectEndDate: fEndDate,
+          taskAssignPerson: data.taskAssignPerson,
           description: data.description,
         });
+
+        // console.log();
+
+        // startDateEdit = formattedDate;
+
+        const selectedEmp = data.taskAssignPerson?.map((o) => {
+          return {
+            label: o.employeeName,
+            value: o._id,
+          };
+        });
+        setSelectedEmployees(selectedEmp);
+        // console.log(selectedEmp);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -160,21 +156,28 @@ const Project = () => {
       fetchData();
     }
   }, [toEdit]);
-
   const projectHandleChange = (e) => {
     const { name, value, files } = e.target;
+    // console.log(value);
     setProjectFormData((prevState) => ({
       ...prevState,
       [name]: files ? files[0] : value,
     }));
   };
-
   const projectHandleSubmit = async (e) => {
     e.preventDefault();
     try {
       const formDataToSend = new FormData();
+      // console.log(selectedEmployees);
+      // console.log(projectFormData);
+      delete projectFormData?.taskAssignPerson;
       for (const key in projectFormData) {
+        // console.log(key);
         formDataToSend.append(key, projectFormData[key]);
+      }
+      for (let obj of selectedEmployees) {
+        // console.log(obj.value);
+        formDataToSend.append("taskAssignPerson", obj.value);
       }
       const response = await axios.put(
         `http://localhost:8000/api/projects/${toEdit}`,
@@ -186,16 +189,12 @@ const Project = () => {
         }
       );
 
-      console.log(response.data);
+      // console.log(response.data);
       window.location.reload();
     } catch (error) {
       console.error("Error:", error);
     }
   };
-
-
-
-
 
 
   // GET SINGLE PROJECT
@@ -226,26 +225,33 @@ const Project = () => {
       fetchData();
     }
   };
-
-  const [employees, setEmployees] = useState([]);
-  const [selectedEmployees, setSelectedEmployees] = useState([]);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get("http://localhost:8000/api/employees");
         setEmployees(response.data);
         // console.log(response.data);
-        // console.log("Employees:", employees);
-
       } catch (error) {
         console.error("Error:", error);
       }
     };
-8
+
     fetchData();
   }, []);
 
+
+  const [employees, setEmployees] = useState([]);
+  const [selectedEmployees, setSelectedEmployees] = useState([]);
+
+  // console.log(selectedEmployees);
+  const assignEmployee = employees.map((emp) => {
+    return {
+      label: emp.employeeName,
+      value: emp._id,
+    };
+  });
+
+  
 
 
 
@@ -363,8 +369,9 @@ const Project = () => {
                                     {getFormattedDate(project.projectEndDate)}{" "}
                                   </td>
                                   <td>
-                                    {project.taskAssignPerson}
-                                    {/* <a href="#">Keith</a> */}
+                                    {project.taskAssignPerson.map(
+                                      (name) => name.employeeName + ", "
+                                    )}
                                   </td>
                                   <td>
                                     <button
@@ -471,7 +478,6 @@ const Project = () => {
                         <option value={"Other"}>Other</option>
                       </select>
                     </div>
-                    {projectFormData.projectImage && <img src={projectFormData.projectImage} alt="Project" />}
 
                     <div className="mb-3">
                       <label
@@ -533,37 +539,14 @@ const Project = () => {
                             >
                               Task Assign Person
                             </label>
-                            {/* <select
-                              className="form-select"
-                              multiple={true}
-                              aria-label="Default select Priority"
-                              name="taskAssignPerson"
-                              value={formData.taskAssignPerson}
-                              onChange={handleChange}
-                            >
-                              <option selected="">Lucinda Massey</option>
-                              <option value={1}>Ryan Nolan</option>
-                              <option value={2}>Oliver Black</option>
-                              <option value={3}>Adam Walker</option>
-                              <option value={4}>Brian Skinner</option>
-                              <option value={5}>Dan Short</option>
-                              <option value={5}>Jack Glover</option>
-                            </select> */}
-
                             <div>
                               <MultiSelect
-                              
-                              
-                              options={employees.map(employee => ({
-                                label: employee.name,
-                                value: employee.id
-                              }))}
+                                options={assignEmployee}
                                 value={selectedEmployees}
                                 onChange={setSelectedEmployees}
                                 labelledBy="Select Employees"
                               />
                             </div>
-
                           </div>
                         </div>
                       </form>
@@ -679,6 +662,7 @@ const Project = () => {
                       </select>
                     </div>
                     <div className="mb-3">
+                      {/* {projectFormData.projectImage && <img src={projectFormData.projectImage} alt="Project" />} */}
                       <label
                         htmlFor="formFileMultiple456"
                         className="form-label"
@@ -750,27 +734,14 @@ const Project = () => {
                             >
                               Task Assign Person
                             </label>
-                            <select
-                              className="form-select"
-                              multiple=""
-                              aria-label="Default select Priority"
-                            >
-                              <option selected="">Lucinda Massey</option>
-                              <option selected="" value={1}>
-                                Ryan Nolan
-                              </option>
-                              <option selected="" value={2}>
-                                Oliver Black
-                              </option>
-                              <option selected="" value={3}>
-                                Adam Walker
-                              </option>
-                              <option selected="" value={4}>
-                                Brian Skinner
-                              </option>
-                              <option value={5}>Dan Short</option>
-                              <option value={5}>Jack Glover</option>
-                            </select>
+                            <div>
+                              <MultiSelect
+                                options={assignEmployee}
+                                value={selectedEmployees}
+                                onChange={setSelectedEmployees}
+                                labelledBy="Select Employees"
+                              />
+                            </div>
                           </div>
                         </div>
                       </form>

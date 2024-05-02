@@ -4,7 +4,8 @@ import Header from "../components/Header";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
-const Member = ({ employeeId }) => {
+const Member = () => {
+
   //CREATE EMPLOYEE
   const [formData, setFormData] = useState({
     employeeName: "",
@@ -94,10 +95,11 @@ const Member = ({ employeeId }) => {
   };
 
   // UPDATE EMPLOYEE
-  const [employeeData, setEmployeeData] = useState({
+  const [employeeFormData, setEmployeeData] = useState({
     employeeName: "",
     employeeCompany: "",
     employeeImage: null,
+    employeeId: "",
     joiningDate: "",
     username: "",
     password: "",
@@ -107,49 +109,99 @@ const Member = ({ employeeId }) => {
     designation: "",
     description: "",
   });
-
+  const [toEdit, setToEdit] = useState("");
+  // console.log(projectFormData);
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/api/employees/${employeeId}`);
+        const response = await axios.get(
+          `http://localhost:8000/api/employees/${toEdit}`
+        );
         const { data } = response;
-        setEmployeeData(data);
+        let formattedDate = "";
+        const fDate = (data) => {
+          const sd = new Date(data);
+          const sy = sd.getFullYear();
+          const sm =
+            sd.getMonth() + 1 < 10
+              ? "0" + (Number(sd.getMonth()) + 1)
+              : sd.getMonth();
+          const sdd = sd.getDate() < 10 ? "0" + sd.getDate() : sd.getDate();
+          formattedDate = `${sy}-${sm}-${sdd}`;
+          return formattedDate;
+        };
+        const fStartDate = fDate(data.projectStartDate);
+        const fEndDate = fDate(data.projectEndDate);
+        // console.log(fStartDate);
+        setEmployeeData({
+          projectName: data.projectName,
+          projectCategory: data.projectCategory,
+          projectImage: data.projectImage, // Assuming this is a URL or a reference to the image
+          joiningDate: fStartDate,
+          description: data.description,
+        });
+
+        // console.log();
+
+        // startDateEdit = formattedDate;
+
+        const selectedEmp = data.taskAssignPerson?.map((o) => {
+          return {
+            label: o.employeeName,
+            value: o._id,
+          };
+        });
+        setSelectedEmployees(selectedEmp);
+        // console.log(selectedEmp);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
 
-    if (employeeId) {
+    if (toEdit) {
       fetchData();
     }
-  }, [employeeId]);
-
-  const updateChange = (e) => {
-    const { name, value } = e.target;
-    setEmployeeData((prevData) => ({
-      ...prevData,
-      [name]: value,
+  }, [toEdit]);
+  const projectHandleChange = (e) => {
+    const { name, value, files } = e.target;
+    // console.log(value);
+    setEmployeeData((prevState) => ({
+      ...prevState,
+      [name]: files ? files[0] : value,
     }));
   };
-
-  const handleSubmit = async (e) => {
+  const projectHandleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(
-        `http://localhost:8000/api/employees/${employeeId}`,
-        employeeData,
+      const formDataToSend = new FormData();
+      // console.log(selectedEmployees);
+      // console.log(projectFormData);
+      delete employeeFormData?.taskAssignPerson;
+      for (const key in employeeFormData) {
+        // console.log(key);
+        formDataToSend.append(key, employeeFormData[key]);
+      }
+      for (let obj of selectedEmployees) {
+        // console.log(obj.value);
+        formDataToSend.append("taskAssignPerson", obj.value);
+      }
+      const response = await axios.put(
+        `http://localhost:8000/api/employees/${toEdit}`,
+        formDataToSend,
         {
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "multipart/form-data",
           },
         }
       );
-      console.log("Employee updated successfully!");
-      // You may redirect or handle success in your application logic
+
+      // console.log(response.data);
+      window.location.reload();
     } catch (error) {
-      console.error("Error updating employee:", error);
+      console.error("Error:", error);
     }
   };
+
 
   // GET SINGLE EMPLOYEE
   const [searchQuery, setSearchQuery] = useState("");
@@ -179,6 +231,7 @@ const Member = ({ employeeId }) => {
       fetchData();
     }
   };
+
 
   return (
     <>

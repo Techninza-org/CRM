@@ -1,6 +1,7 @@
 
 import './App.css'
 import Signup from './pages/Signup'
+import EmployeeSinup from './pages/EmployeeSinup'
 import Signin from './pages/Signin'
 
 
@@ -19,6 +20,7 @@ function App() {
     <BrowserRouter >
       <Routes >
         <Route path='/signup' element={<Signup />}></Route>
+        <Route path='/employeesignup' element={<EmployeeSinup />}></Route>
         <Route path='/' element={<Signin />}></Route>
         
         <Route path='/project-dashboard' element={<ProjectDashboard />}></Route>

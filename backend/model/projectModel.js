@@ -12,7 +12,7 @@ const projectSchema = new Schema({
     },
     projectImage: {
         type: String,
-        required: true
+        // required: true
     },
     projectStartDate: {
         type: Date,

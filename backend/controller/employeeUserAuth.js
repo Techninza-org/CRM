@@ -1,4 +1,4 @@
-const User = require('../model/userModel');
+const User = require('../model/employeeUserModel');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const dotenv = require('dotenv');
@@ -6,10 +6,10 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 exports.signupUser = async (req, res) => {
-  const { username, email, password} = req.body;
+  const {employeeName,employeeCompany,employeeImage, username, email, password, phone, designation, description} = req.body;
 
   try {
-    if (!username || !email || !password ) {
+    if (!employeeName || !employeeCompany || !employeeImage || !username || !email || !password || !phone || !designation || !description) {
       throw new Error('Missing required fields');
     }
 
@@ -19,8 +19,7 @@ exports.signupUser = async (req, res) => {
       throw new Error('Invalid email format');
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ username, email, password: hashedPassword });
+    const newUser = new User({ employeeName,employeeCompany,employeeImage, username, email, password, phone, designation, description});
     await newUser.save();
     res.json({ message: 'User registered successfully', user: newUser });
   } catch (error) {

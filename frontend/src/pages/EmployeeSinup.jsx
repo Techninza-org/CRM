@@ -3,50 +3,50 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 
 const Signup = () => {
-  const [form, setForm] = useState({
-    username: "",
-    email: "",
-    password: "",
-  });
+//   const [form, setForm] = useState({
+//     username: "",
+//     email: "",
+//     password: "",
+//   });
 
-  const [error, setError] = useState("");
+//   const [error, setError] = useState("");
 
-  const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
-  };
+//   const handleChange = (e) => {
+//     setForm({
+//       ...form,
+//       [e.target.name]: e.target.value,
+//     });
+//   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
 
-    if (!form.username || !form.email || !form.password) {
-      setError("Please fill out all fields");
-      return;
-    }
+//     if (!form.username || !form.email || !form.password) {
+//       setError("Please fill out all fields");
+//       return;
+//     }
 
-    try {
-      const response = await axios.post(
-        "http://localhost:8000/api/signup",
-        form
-      );
-      console.log(response.data);
-      alert("Signup successful!");
-      window.location.href = "/";
-    } catch (error) {
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
-        setError(error.response.data.message);
-      } else {
-        setError("An error occurred. Please try again later.");
-      }
-      console.error(error);
-    }
-  };
+//     try {
+//       const response = await axios.post(
+//         "http://localhost:8000/api/signup",
+//         form
+//       );
+//       console.log(response.data);
+//       alert("Signup successful!");
+//       window.location.href = "/";
+//     } catch (error) {
+//       if (
+//         error.response &&
+//         error.response.data &&
+//         error.response.data.message
+//       ) {
+//         setError(error.response.data.message);
+//       } else {
+//         setError("An error occurred. Please try again later.");
+//       }
+//       console.error(error);
+//     }
+//   };
 
   return (
     <>
@@ -87,7 +87,7 @@ const Signup = () => {
                   >
                     {/* Form */}
                     <form
-                      onSubmit={handleSubmit}
+                    //   onSubmit={handleSubmit}
                       className="row g-1 p-3 p-md-4"
                     >
                       <div className="col-12 text-center mb-1 mb-lg-5">
@@ -95,15 +95,15 @@ const Signup = () => {
                         <span>Create your account</span>
                       </div>
                       <div className="col-12 text-center mb-4">
-                        <Link
+                        <a
                           className="btn btn-lg btn-outline-secondary btn-block"
-                          to="/employeesignup"
+                          href="#"
                         >
                           <span className="d-flex justify-content-center align-items-center gap-2">
                           <i class="bi bi-person-plus-fill"></i>
-                            Sign up as a Employee
+                            Sign up as a Admin
                           </span>
-                        </Link>
+                        </a>
                         <span className="dividers text-muted mt-4">OR</span>
                       </div>
                       <div className="col-12">
@@ -112,8 +112,8 @@ const Signup = () => {
                           <input
                             type="text"
                             name="username"
-                            value={form.username}
-                            onChange={handleChange}
+                            // value={form.username}
+                            // onChange={handleChange}
                             className="form-control form-control-lg"
                             placeholder="John"
                           />
@@ -125,8 +125,8 @@ const Signup = () => {
                           <input
                             type="email"
                             name="email"
-                            value={form.email}
-                            onChange={handleChange}
+                            // value={form.email}
+                            // onChange={handleChange}
                             className="form-control form-control-lg"
                             placeholder="name@example.com"
                           />
@@ -138,8 +138,8 @@ const Signup = () => {
                           <input
                             type="password"
                             name="password"
-                            value={form.password}
-                            onChange={handleChange}
+                            // value={form.password}
+                            // onChange={handleChange}
                             className="form-control form-control-lg"
                             placeholder="8+ characters required"
                           />
@@ -154,7 +154,7 @@ const Signup = () => {
                           SIGN UP
                         </button>
                       </div>
-                      {error && <p>{error}</p>}
+                      {/* {error && <p>{error}</p>} */}
                     </form>
                     <div className="col-12 text-center mt-4">
                       <span className="text-muted">

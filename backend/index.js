@@ -5,7 +5,8 @@ const mongoose = require('mongoose');
 const multer = require('./utils/multerConfig')
 const employeeController = require('./controller/employeeAuth');
 const projectRoutes = require('./routes/projectRoutes');
-const userRoutes = require('./routes/userRoutes');
+const adminUserRoutes = require('./routes/adminUserRoutes');
+const employeeUserRoutes = require('./routes/employeeUserRoutes');
 const taskRoutes = require('./routes/taskRoutes');
 const cors = require('cors');
 
@@ -33,8 +34,9 @@ connection.once('open', () => {
 //Route setup
 app.use('/api', employeeController);
 app.use('/api', projectRoutes);
-app.use('/api', userRoutes);
 app.use('/api', taskRoutes);
+app.use('/api', adminUserRoutes);
+app.use('/api', employeeUserRoutes);
 
 
 

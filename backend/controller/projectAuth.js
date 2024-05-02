@@ -9,9 +9,14 @@ exports.createProject = async (req, res) => {
         const path = req.file?.path;
         // console.log(path);
         const newPath = path.replace('uploads\\', "");
-        // console.log(newPath);
+        // console.log(req.body);
+        const taskAssigner = req.body.taskAssignPerson;
+        // console.log(taskAssigner)
+        const filteredTaskAssigner = taskAssigner.filter((task) => task !== "");
+        // console.log(filteredTaskAssigner);
         req.body.projectImage = newPath;
-        const project = new Project(req.body);
+        const project = new Project({ ...req.body, taskAssignPerson: filteredTaskAssigner });
+        // console.log(project);
         const savedProject = await project.save();
         res.status(201).json(savedProject);
     } catch (err) {
@@ -23,7 +28,7 @@ exports.createProject = async (req, res) => {
 // Get all projects
 exports.getAllProjects = async (req, res) => {
     try {
-        const projects = await Project.find();
+        const projects = await Project.find().populate("taskAssignPerson");
         res.json(projects);
     } catch (err) {
         res.status(500).json({ message: err.message });
@@ -34,7 +39,7 @@ exports.getAllProjects = async (req, res) => {
 // Get a single project by projectId
 exports.getProjectById = async (req, res) => {
     try {
-        const project = await Project.findById(req.params.projectId);
+        const project = await Project.findById(req.params.projectId).populate('taskAssignPerson');
         if (!project) {
             return res.status(404).json({ message: 'Project not found' });
         }
@@ -67,7 +72,7 @@ exports.searchProjects = async (req, res) => {
 // Update a project
 exports.updateProject = async (req, res) => {
     try {
-        // console.log(req.file);
+        // console.log(req.body);
         req.body.projectImage = req.file?.path;
         const updatedProject = await Project.findByIdAndUpdate(req.params.projectId, req.body, { new: true });
 

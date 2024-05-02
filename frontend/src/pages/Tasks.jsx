@@ -1,122 +1,132 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
-import axios from 'axios';
+import axios from "axios";
 
 const Tasks = () => {
-
-
-//CREATE TASK
-const [formData, setFormData] = useState({
-  projectName: '',
-  taskCategory: '',
-  taskImages: null,
-  taskStartDate: '',
-  taskEndDate: '',
-  // taskAssignPerson: "",
-  taskPriority:'',
-  description: ''
-});
-
-const handleChange = (e) => {
-  const { name, value, files } = e.target;
-  setFormData(prevState => ({
-    ...prevState,
-    [name]: files ? files[0] : value
-  }));
-};
-
-const handleFileChange = (e) => {
-  setFormData({
-    ...formData,
-    taskImages: e.target.files[0],
+  //CREATE TASK
+  const [formData, setFormData] = useState({
+    projectName: "",
+    taskCategory: "",
+    taskImages: null,
+    taskStartDate: "",
+    taskEndDate: "",
+    taskAssignPerson: "",
+    taskPriority: "",
+    description: "",
   });
-};
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    const formDataToSend = new FormData();
-    for (let key in formData) {
-      formDataToSend.append(key, formData[key]);
-    }
+  const handleChange = (e) => {
+    const { name, value, files } = e.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: files ? files[0] : value,
+    }));
+  };
 
-    const response = await axios.post('http://localhost:8000/api/tasks', formDataToSend, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
+  const handleFileChange = (e) => {
+    setFormData({
+      ...formData,
+      taskImages: e.target.files[0],
     });
-    console.log(response.data);
-    window.location.reload();
-  } catch (error) {
-    console.error('Error:', error);
-  }
-};
+  };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const formDataToSend = new FormData();
+      for (let key in formData) {
+        formDataToSend.append(key, formData[key]);
+      }
 
-//GET TASK
-const [tasks, setTasks] = useState([]);
+      const response = await axios.post(
+        "http://localhost:8000/api/tasks",
+        formDataToSend,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log(response.data);
+      window.location.reload();
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  //GET TASK
+  const [tasks, setTasks] = useState([]);
 
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/api/tasks');
-        setTasks(response.data);
-      } catch (error) {
-        console.error('Error:', error);
-      }
-    };
-
-    fetchTasks();
-  }, []);
-
-
-//DELETE TASK
-const [deletableId, setDeletableId] = useState("");
-
-const handleDeleteProject = async () => {
-  try {
-    const response = await axios.delete(
-      `http://localhost:8000/api/tasks/${deletableId}`
-    );
-    console.log(response.data);
-    window.location.reload();
-  } catch (error) {
-    console.error("Error:", error);
-  }
-};
-
-
-// GET SINGLE PROJECT
-const [searchQuery, setSearchQuery] = useState("");
-const handleSearch = async (searchQuery) => {
-  if (searchQuery !== "") {
-    try {
-      const response = await axios.get(
-        `http://localhost:8000/api/pros/search?id=${searchQuery}`
-      );
-      setTasks(response.data);
-    } catch (error) {
-      console.error("Error:", error);
-      setTasks(null);
-    }
-  } else {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:8000/api/tasks"
-        );
+        const response = await axios.get("http://localhost:8000/api/tasks");
         setTasks(response.data);
       } catch (error) {
         console.error("Error:", error);
       }
     };
 
+    fetchTasks();
+  }, []);
+
+  //DELETE TASK
+  const [deletableId, setDeletableId] = useState("");
+
+  const handleDeleteProject = async () => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:8000/api/tasks/${deletableId}`
+      );
+      console.log(response.data);
+      window.location.reload();
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  // GET SINGLE PROJECT
+  const [searchQuery, setSearchQuery] = useState("");
+  const handleSearch = async (searchQuery) => {
+    if (searchQuery !== "") {
+      try {
+        const response = await axios.get(
+          `http://localhost:8000/api/pros/search?id=${searchQuery}`
+        );
+        setTasks(response.data);
+      } catch (error) {
+        console.error("Error:", error);
+        setTasks(null);
+      }
+    } else {
+      const fetchData = async () => {
+        try {
+          const response = await axios.get("http://localhost:8000/api/tasks");
+          setTasks(response.data);
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      };
+
+      fetchData();
+    }
+  };
+
+  const [employees, setEmployees] = useState([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/api/employees");
+        setEmployees(response.data);
+        // console.log(response.data);
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+
     fetchData();
-  }
-};
-
-
+  }, []);
 
   return (
     <>
@@ -193,87 +203,98 @@ const handleSearch = async (searchQuery) => {
                   };
 
                   return (
-                <div className="row clearfix  g-3" key={task._id}>
-                  <div className="col-lg-12 col-md-12 flex-column">
-                    <div className="row taskboard g-3 py-xxl-4">
-                      <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-12 mt-xxl-4 mt-xl-4 mt-lg-4 mt-md-4 mt-sm-4 mt-4">
-                        <div className="">
-
-                          <div className="dd" data-plugin="nestable">
-                            <ol className="dd-list">
-                              <li className="dd-item" data-id={1}>
-                                <div className="dd-handle">
-                        <h6 className="fw-bold py-3 mb-0">{task.projectName}</h6>
-                                  <div className="task-info d-flex align-items-center justify-content-between">
-                                    <h6 className="light-success-bg py-1 px-2 rounded-1 d-inline-block fw-bold small-14 mb-0">
-                                    {task.taskCategory}
-                                    </h6>
-                                    <div className="task-priority d-flex flex-column align-items-center justify-content-center">
-                                      <div className="avatar-list avatar-list-stacked m-0">
-                                        <img
-                                          className="avatar rounded-circle small-avt"
-                                          src={
-                                            "http://localhost:8000/" +
-                                            task.taskImages
-                                          }
-                                          alt=""
-                                        />
+                    <div className="row clearfix  g-3" key={task._id}>
+                      <div className="col-lg-12 col-md-12 flex-column">
+                        <div className="row taskboard g-3 py-xxl-4">
+                          <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-12 mt-xxl-4 mt-xl-4 mt-lg-4 mt-md-4 mt-sm-4 mt-4">
+                            <div className="">
+                              <div className="dd" data-plugin="nestable">
+                                <ol className="dd-list">
+                                  <li className="dd-item" data-id={1}>
+                                    <div className="dd-handle">
+                                      <h6 className="fw-bold py-3 mb-0">
+                                        {task.projectName}
+                                      </h6>
+                                      <div className="task-info d-flex align-items-center justify-content-between">
+                                        <h6 className="light-success-bg py-1 px-2 rounded-1 d-inline-block fw-bold small-14 mb-0">
+                                          {task.taskCategory}
+                                        </h6>
+                                        <div className="task-priority d-flex flex-column align-items-center justify-content-center">
+                                          <div className="avatar-list avatar-list-stacked m-0">
+                                            {/* <img
+                                              className="avatar rounded-circle small-avt"
+                                              src={
+                                                "http://localhost:8000/" +
+                                                task.taskImages
+                                              }
+                                              alt=""
+                                            /> */}
+                                            {task.taskAssignPerson}
+                                          </div>
+                                          <span className="badge bg-danger text-end mt-2">
+                                            {task.taskPriority}
+                                          </span>
+                                        </div>
                                       </div>
-                                      <span className="badge bg-danger text-end mt-2">
-                                      {task.taskPriority}
-                                      </span>
+                                      <p className="py-2 mb-0">
+                                        {task.description}
+                                      </p>
+                                      <div className="tikit-info row g-3 align-items-center">
+                                        <div className="col-sm">
+                                          <ul className="d-flex list-unstyled align-items-center flex-wrap">
+                                            <li className="me-2">
+                                              <div className="d-flex align-items-center">
+                                                <i className="icofont-flag" />
+                                                <span className="ms-1">
+                                                  {getFormattedDate(
+                                                    task.taskStartDate
+                                                  )}
+                                                </span>
+                                              </div>
+                                            </li>
+                                            <li className="me-2">
+                                              <div className="d-flex align-items-center">
+                                                <i className="icofont-ui-text-chat" />
+                                                <span className="ms-1">
+                                                  {getFormattedDate(
+                                                    task.taskEndDate
+                                                  )}
+                                                </span>
+                                              </div>
+                                            </li>
+                                            <li>
+                                              <div className="d-flex align-items-center">
+                                                <i className="icofont-paper-clip" />
+                                                <span className="ms-1">5</span>
+                                              </div>
+                                            </li>
+                                          </ul>
+                                        </div>
+                                        <div className="d-flex justify-content-center align-items-center">
+                                          <button
+                                            type="button"
+                                            className="btn light-danger-bg text-end small text-truncate light-danger-bg py-1 px-2 rounded-1 d-inline-block fw-bold small"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#dremovetask"
+                                            onClick={() => {
+                                              setDeletableId(task._id);
+                                            }}
+                                          >
+                                            Delete
+                                          </button>
+                                        </div>
+                                      </div>
                                     </div>
-                                  </div>
-                                  <p className="py-2 mb-0">
-                                  {task.description}
-                                  </p>
-                                  <div className="tikit-info row g-3 align-items-center">
-                                    <div className="col-sm">
-                                      <ul className="d-flex list-unstyled align-items-center flex-wrap">
-                                        <li className="me-2">
-                                          <div className="d-flex align-items-center">
-                                            <i className="icofont-flag" />
-                                            <span className="ms-1">{getFormattedDate(task.taskStartDate)}</span>
-                                          </div>
-                                        </li>
-                                        <li className="me-2">
-                                          <div className="d-flex align-items-center">
-                                            <i className="icofont-ui-text-chat" />
-                                            <span className="ms-1">{getFormattedDate(task.taskEndDate)}</span>
-                                          </div>
-                                        </li>
-                                        <li>
-                                          <div className="d-flex align-items-center">
-                                            <i className="icofont-paper-clip" />
-                                            <span className="ms-1">5</span>
-                                          </div>
-                                        </li>
-                                      </ul>
-                                    </div>
-                                    <div className="d-flex justify-content-center align-items-center">
-                                      <button
-                                        type="button"
-                                        className="btn light-danger-bg text-end small text-truncate light-danger-bg py-1 px-2 rounded-1 d-inline-block fw-bold small"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#dremovetask"
-                                        onClick={() => {
-                                          setDeletableId(task._id);
-                                        }}
-                                      >
-                                        Delete
-                                      </button>
-                                    </div>
-                                  </div>
-                                </div>
-                              </li>
-                            </ol>
+                                  </li>
+                                </ol>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-                )})}
+                  );
+                })}
               </div>
             </div>
             <>
@@ -551,14 +572,14 @@ const handleSearch = async (searchQuery) => {
                       <div className="mb-3">
                         <label className="form-label">Project Name</label>
                         <input
-                        type="text"
-                        className="form-control"
-                        id="exampleFormControlInput77"
-                        placeholder="Project Name"
-                        name="projectName" 
-                        value={formData.projectName} 
-                        onChange={handleChange}
-                      />
+                          type="text"
+                          className="form-control"
+                          id="exampleFormControlInput77"
+                          placeholder="Project Name"
+                          name="projectName"
+                          value={formData.projectName}
+                          onChange={handleChange}
+                        />
                       </div>
                       <div className="mb-3">
                         <label className="form-label">Task Category</label>
@@ -566,30 +587,34 @@ const handleSearch = async (searchQuery) => {
                           className="form-select"
                           placeholder="Add Category"
                           aria-label="Default select Project Category"
-                          name="taskCategory" 
-                          value={formData.taskCategory} 
+                          name="taskCategory"
+                          value={formData.taskCategory}
                           onChange={handleChange}
                         >
                           <option selected="Add Category">Add Category</option>
-                        <option value={"UI/UX Design"}>UI/UX Design</option>
-                        <option value={"Website Design"}>Website Design</option>
-                        <option value={"App Development"}>
-                          App Development
-                        </option>
-                        <option value={"Quality Assurance"}>
-                          Quality Assurance
-                        </option>
-                        <option value={"Development"}>Development</option>
-                        <option value={"Backend Development"}>
-                          Backend Development
-                        </option>
-                        <option value={"Software Testing"}>
-                          Software Testing
-                        </option>
-                        <option value={"Website Design"}>Website Design</option>
-                        <option value={"Marketing"}>Marketing</option>
-                        <option value={"SEO"}>SEO</option>
-                        <option value={"Other"}>Other</option>
+                          <option value={"UI/UX Design"}>UI/UX Design</option>
+                          <option value={"Website Design"}>
+                            Website Design
+                          </option>
+                          <option value={"App Development"}>
+                            App Development
+                          </option>
+                          <option value={"Quality Assurance"}>
+                            Quality Assurance
+                          </option>
+                          <option value={"Development"}>Development</option>
+                          <option value={"Backend Development"}>
+                            Backend Development
+                          </option>
+                          <option value={"Software Testing"}>
+                            Software Testing
+                          </option>
+                          <option value={"Website Design"}>
+                            Website Design
+                          </option>
+                          <option value={"Marketing"}>Marketing</option>
+                          <option value={"SEO"}>SEO</option>
+                          <option value={"Other"}>Other</option>
                           <option value={10}>Other</option>
                         </select>
                       </div>
@@ -606,7 +631,7 @@ const handleSearch = async (searchQuery) => {
                           id="formFileMultipleone"
                           multiple=""
                           name="taskImages"
-                        onChange={handleFileChange}
+                          onChange={handleFileChange}
                         />
                       </div>
                       <div className="deadline-form mb-3">
@@ -623,9 +648,9 @@ const handleSearch = async (searchQuery) => {
                                 type="date"
                                 className="form-control"
                                 id="datepickerded"
-                                name="taskStartDate" 
-                                value={formData.taskStartDate} 
-                                onChange={handleChange} 
+                                name="taskStartDate"
+                                value={formData.taskStartDate}
+                                onChange={handleChange}
                               />
                             </div>
                             <div className="col">
@@ -639,8 +664,8 @@ const handleSearch = async (searchQuery) => {
                                 type="date"
                                 className="form-control"
                                 id="datepickerdedone"
-                                name="taskEndDate" 
-                                value={formData.taskEndDate} 
+                                name="taskEndDate"
+                                value={formData.taskEndDate}
                                 onChange={handleChange}
                               />
                             </div>
@@ -656,14 +681,14 @@ const handleSearch = async (searchQuery) => {
                             className="form-select"
                             multiple=""
                             aria-label="Default select Priority"
+                            value={formData.taskAssignPerson}
+                            onChange={handleChange}
                           >
-                            <option selected="">Lucinda Massey</option>
-                            <option value={1}>Ryan Nolan</option>
-                            <option value={2}>Oliver Black</option>
-                            <option value={3}>Adam Walker</option>
-                            <option value={4}>Brian Skinner</option>
-                            <option value={5}>Dan Short</option>
-                            <option value={5}>Jack Glover</option>
+                            {employees.map((emp) => (
+                              <option key={emp._id} value={emp.employeeName}>
+                                {emp.employeeName}
+                              </option>
+                            ))}
                           </select>
                         </div>
                       </div>
@@ -673,11 +698,13 @@ const handleSearch = async (searchQuery) => {
                           <select
                             className="form-select"
                             aria-label="Default select Priority"
-                            name="taskPriority" 
-                          value={formData.taskPriority} 
-                          onChange={handleChange}
+                            name="taskPriority"
+                            value={formData.taskPriority}
+                            onChange={handleChange}
                           >
-                            <option placeholder="set priority">Set Priority</option>
+                            <option placeholder="set priority">
+                              Set Priority
+                            </option>
                             <option value={"Heighest"}>Heighest</option>
                             <option value={"Medium"}>Medium</option>
                             <option value={"Lowest"}>Lowest</option>
@@ -696,10 +723,10 @@ const handleSearch = async (searchQuery) => {
                           id="exampleFormControlTextarea786"
                           rows={3}
                           placeholder="Explain The Task What To Do & How To Do"
-                          name="description" 
-                          value={formData.description} 
+                          name="description"
+                          value={formData.description}
                           onChange={handleChange}
-                       />
+                        />
                       </div>
                     </div>
                     <div className="modal-footer">
@@ -710,7 +737,11 @@ const handleSearch = async (searchQuery) => {
                       >
                         Done
                       </button>
-                      <button type="button" className="btn btn-primary" onClick={handleSubmit}>
+                      <button
+                        type="button"
+                        className="btn btn-primary"
+                        onClick={handleSubmit}
+                      >
                         Create
                       </button>
                     </div>

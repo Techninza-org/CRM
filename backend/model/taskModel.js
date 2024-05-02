@@ -13,7 +13,7 @@ const taskSchema = new mongoose.Schema({
     },
     taskImages: [{
         type: String, 
-        required: true
+        // required: true
     }],
     taskStartDate: {
         type: Date,
@@ -23,10 +23,10 @@ const taskSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
-    // taskAssign: {
-    //     type: Schema.Types.ObjectId,
-    //     ref: 'Employee'
-    // },
+    taskAssign: {
+        type: Schema.Types.ObjectId,
+        ref: 'Employee'
+    },
     taskPriority: {
         type: String,
         required: true
