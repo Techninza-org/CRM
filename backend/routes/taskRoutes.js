@@ -11,4 +11,6 @@ router.get('/pros/search', taskController.searchTask);
 router.put('/tasks/:id', task_upload.single("taskImages") ,taskController.updateTaskById);
 router.delete('/tasks/:id', taskController.deleteTaskById);
 
+router.get('/author', taskController.getTask)
+
 module.exports = router;

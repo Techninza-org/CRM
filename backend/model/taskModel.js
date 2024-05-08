@@ -23,7 +23,7 @@ const taskSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
-    taskAssign: {
+    taskAssignPerson: {
         type: Schema.Types.ObjectId,
         ref: 'Employee'
     },
@@ -31,6 +31,12 @@ const taskSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    taskStatus: {
+        type: String,
+        default: "notStarted",
+        required: true
+    },
+    // notstarted , started, complete
     description: {
         type: String,
     }

@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 
 const Member = () => {
-
   //CREATE EMPLOYEE
   const [formData, setFormData] = useState({
     employeeName: "",
@@ -37,7 +36,7 @@ const Member = () => {
     });
   };
 
-  const updateSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
@@ -95,7 +94,7 @@ const Member = () => {
   };
 
   // UPDATE EMPLOYEE
-  const [employeeFormData, setEmployeeData] = useState({
+  const [employeeData, setEmployeeData] = useState({
     employeeName: "",
     employeeCompany: "",
     employeeImage: null,
@@ -130,39 +129,31 @@ const Member = () => {
           formattedDate = `${sy}-${sm}-${sdd}`;
           return formattedDate;
         };
-        const fStartDate = fDate(data.projectStartDate);
-        const fEndDate = fDate(data.projectEndDate);
+        const fStartDate = fDate(data.joiningDate);
         // console.log(fStartDate);
         setEmployeeData({
-          projectName: data.projectName,
-          projectCategory: data.projectCategory,
-          projectImage: data.projectImage, // Assuming this is a URL or a reference to the image
+          employeeName: data.employeeName,
+          employeeCompany: data.employeeCompany,
+          employeeImage: data.employeeImage,
+          employeeId: data.employeeId,
           joiningDate: fStartDate,
+          username: data.username,
+          password: data.password,
+          emailid: data.emailid,
+          phone: data.phone,
+          department: data.department,
+          designation: data.designation,
           description: data.description,
         });
-
-        // console.log();
-
-        // startDateEdit = formattedDate;
-
-        const selectedEmp = data.taskAssignPerson?.map((o) => {
-          return {
-            label: o.employeeName,
-            value: o._id,
-          };
-        });
-        setSelectedEmployees(selectedEmp);
-        // console.log(selectedEmp);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
-
     if (toEdit) {
       fetchData();
     }
   }, [toEdit]);
-  const projectHandleChange = (e) => {
+  const updateChange = (e) => {
     const { name, value, files } = e.target;
     // console.log(value);
     setEmployeeData((prevState) => ({
@@ -170,20 +161,14 @@ const Member = () => {
       [name]: files ? files[0] : value,
     }));
   };
-  const projectHandleSubmit = async (e) => {
+  const updateSubmit = async (e) => {
     e.preventDefault();
     try {
       const formDataToSend = new FormData();
-      // console.log(selectedEmployees);
-      // console.log(projectFormData);
-      delete employeeFormData?.taskAssignPerson;
-      for (const key in employeeFormData) {
+      delete employeeData?.taskAssignPerson;
+      for (const key in employeeData) {
         // console.log(key);
-        formDataToSend.append(key, employeeFormData[key]);
-      }
-      for (let obj of selectedEmployees) {
-        // console.log(obj.value);
-        formDataToSend.append("taskAssignPerson", obj.value);
+        formDataToSend.append(key, employeeData[key]);
       }
       const response = await axios.put(
         `http://localhost:8000/api/employees/${toEdit}`,
@@ -201,7 +186,6 @@ const Member = () => {
       console.error("Error:", error);
     }
   };
-
 
   // GET SINGLE EMPLOYEE
   const [searchQuery, setSearchQuery] = useState("");
@@ -233,6 +217,7 @@ const Member = () => {
   };
 
 
+  
   return (
     <>
       <div id="mytask-layout">
@@ -321,10 +306,14 @@ const Member = () => {
                               />
                               <div className="about-info mt-3">
                                 <div className="followers me-2">
-                                  <i class="bi bi-person-fill text-danger fs-6 me-2" />
+                                  <i class="bi bi-person-vcard-fill text-danger fs-6 me-2" />
                                   <span className="">
                                     ID - {employee.employeeId}
                                   </span>
+                                </div>
+                                <div className="followers me-2">
+                                  <i class="bi bi-person-fill text-primary fs-6 me-2" />
+                                  <span className="">{employee.username}</span>
                                 </div>
 
                                 <div className="own-video">
@@ -332,12 +321,6 @@ const Member = () => {
                                   <i class="bi bi-telephone-fill text-success fs-6 me-2" />
                                   <span className="">{employee.phone}</span>
                                 </div>
-                                {/* <div className="own-video">
-                                  <i className="bi bi-building color-light-orange fs-4" />
-                                  <span className="">
-                                    {employee.department}
-                                  </span>
-                                </div> */}
                               </div>
                             </div>
                             <div className="teacher-info border-start ps-xl-4 ps-md-3 ps-sm-4 ps-4 w-100">
@@ -356,7 +339,7 @@ const Member = () => {
                                       className="btn btn-outline-secondary"
                                       data-bs-toggle="modal"
                                       data-bs-target="#editemp"
-                                      // onClick={() => setToEdit(employee._id)}
+                                      onClick={() => setToEdit(employee._id)}
                                     >
                                       <i className="icofont-edit text-success" />
                                     </button>
@@ -383,7 +366,11 @@ const Member = () => {
                                   </span>
                                 </div>
                               </div>
-                              <div className="video-setting-icon mt-3 pt-3 border-top">
+                              <div className="video-setting-icon mt-2 pt-2 border-top">
+                                <p className="light-info-bg p-1 rounded-1 d-inline-block fw-bold small-11 mb-1">
+                                  <i class="bi bi-envelope-at-fill text-primary fs-6 me-2" />
+                                  {employee.emailid}
+                                </p>
                                 <p>{employee.description}</p>
                               </div>
                               <div className="d-flex justify-content-center">

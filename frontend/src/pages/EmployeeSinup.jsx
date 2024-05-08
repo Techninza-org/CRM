@@ -3,50 +3,47 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 
 const Signup = () => {
-//   const [form, setForm] = useState({
-//     username: "",
-//     email: "",
-//     password: "",
-//   });
+  const [formData, setFormData] = useState({
+    employeeName: "",
+    emailid: "",
+    password: "",
+  });
 
-//   const [error, setError] = useState("");
+  const handleChange = (e) => {
+    // console.log(e.target.name);
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
 
-//   const handleChange = (e) => {
-//     setForm({
-//       ...form,
-//       [e.target.name]: e.target.value,
-//     });
-//   };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-
-//     if (!form.username || !form.email || !form.password) {
-//       setError("Please fill out all fields");
-//       return;
-//     }
-
-//     try {
-//       const response = await axios.post(
-//         "http://localhost:8000/api/signup",
-//         form
-//       );
-//       console.log(response.data);
-//       alert("Signup successful!");
-//       window.location.href = "/";
-//     } catch (error) {
-//       if (
-//         error.response &&
-//         error.response.data &&
-//         error.response.data.message
-//       ) {
-//         setError(error.response.data.message);
-//       } else {
-//         setError("An error occurred. Please try again later.");
-//       }
-//       console.error(error);
-//     }
-//   };
+    try {
+      const formDataToSend = new FormData();
+      for (let key in formData) {
+        formDataToSend.append(key, formData[key]);
+      }
+      console.log(formData);
+      const response = await axios.post(
+        "http://localhost:8000/api/employees",
+        formDataToSend,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log(response.data);
+      alert("Signup successful!");
+      window.location.href = "/employeesignin";
+      // Handle successful response
+    } catch (error) {
+      console.error("Error:", error);
+      // Handle error
+    }
+  };
 
   return (
     <>
@@ -87,35 +84,204 @@ const Signup = () => {
                   >
                     {/* Form */}
                     <form
-                    //   onSubmit={handleSubmit}
+                      //   onSubmit={handleSubmit}
                       className="row g-1 p-3 p-md-4"
                     >
                       <div className="col-12 text-center mb-1 mb-lg-5">
-                        <h1>Sign up</h1>
-                        <span>Create your account</span>
+                        <h1>Employee Sign up</h1>
+                        <span>Create your account as a Employee</span>
                       </div>
-                      <div className="col-12 text-center mb-4">
-                        <a
-                          className="btn btn-lg btn-outline-secondary btn-block"
-                          href="#"
+                      <div className="col-12 text-center">
+                        <Link
+                          className="btn btn-lg btn-outline-secondary btn-block "
+                          style={{ marginTop: "-40px" }}
+                          to="/signup"
                         >
                           <span className="d-flex justify-content-center align-items-center gap-2">
-                          <i class="bi bi-person-plus-fill"></i>
+                            <i class="bi bi-person-plus-fill"></i>
                             Sign up as a Admin
                           </span>
-                        </a>
-                        <span className="dividers text-muted mt-4">OR</span>
+                        </Link>
+                        <span className="dividers text-muted mt-2">OR</span>
                       </div>
+
+                      {/* <div className="row g-2">
+                          <div className="col">
+                            <label
+                              htmlFor="exampleFormControlInput177"
+                              className="form-label"
+                            >
+                              Full Name
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              id="exampleFormControlInput177"
+                              placeholder="Full Name"
+                              name="username"
+                              // value={formData.username}
+                              // onChange={handleChange}
+                            />
+                          </div>
+                          <div className="col">
+                            <label
+                              htmlFor="exampleFormControlInput277"
+                              className="form-label"
+                            >
+                              Company Name
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              id="exampleFormControlInput277"
+                              placeholder="Company Name"
+                              name=""
+                              // value={formData.password}
+                              // onChange={handleChange}
+                            />
+                          </div>
+                        </div>
+                      <div className="row g-2">
+                          <div className="col">
+                            <label
+                              htmlFor="exampleFormControlInput177"
+                              className="form-label"
+                            >
+                              Image
+                            </label>
+                            <input
+                              type="file"
+                              className="form-control"
+                              id="exampleFormControlInput177"
+                              placeholder="Add Image"
+                              name=""
+                              // value={formData.username}
+                              // onChange={handleChange}
+                            />
+                          </div>
+                          <div className="col">
+                            <label
+                              htmlFor="exampleFormControlInput277"
+                              className="form-label"
+                            >
+                              User Name
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              id="exampleFormControlInput277"
+                              placeholder="User Name"
+                              name="password"
+                              // value={formData.password}
+                              // onChange={handleChange}
+                            />
+                          </div>
+                        </div>
+                      <div className="row g-2">
+                          <div className="col">
+                            <label
+                              htmlFor="exampleFormControlInput177"
+                              className="form-label"
+                            >
+                              Email Id
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              id="exampleFormControlInput177"
+                              placeholder="Email Id"
+                              name=""
+                              // value={formData.username}
+                              // onChange={handleChange}
+                            />
+                          </div>
+                          <div className="col">
+                            <label
+                              htmlFor="exampleFormControlInput277"
+                              className="form-label"
+                            >
+                              Password
+                            </label>
+                            <input
+                              type="Password"
+                              className="form-control"
+                              id="exampleFormControlInput277"
+                              placeholder="Password"
+                              name="password"
+                              // value={formData.password}
+                              // onChange={handleChange}
+                            />
+                          </div>
+                        </div>
+                      <div className="row g-2">
+                          <div className="col">
+                            <label
+                              htmlFor="exampleFormControlInput177"
+                              className="form-label"
+                            >
+                              Phone No.
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              id="exampleFormControlInput177"
+                              placeholder="Email Id"
+                              name=""
+                              // value={formData.username}
+                              // onChange={handleChange}
+                            />
+                          </div>
+                          <div className="col">
+                            <label className="form-label">Designation</label>
+                            <select
+                              className="form-select"
+                              aria-label="Default select Project Category"
+                              name=""
+                              // value={formData.designation}
+                              // onChange={handleChange}
+                            >
+                              <option value={""}></option>
+                              <option value={"UI/UX Design"}>
+                                UI/UX Design
+                              </option>
+                              <option value={"Website Design"}>
+                                Website Design
+                              </option>
+                              <option value={"App Development"}>
+                                App Development
+                              </option>
+                              <option value={"Quality Assurance"}>
+                                Quality Assurance
+                              </option>
+                              <option value={"Development"}>Development</option>
+                              <option value={"Backend Development"}>
+                                Backend Development
+                              </option>
+                              <option value={"Software Testing"}>
+                                Software Testing
+                              </option>
+                              <option value={"Website Design"}>
+                                Website Design
+                              </option>
+                              <option value={"Marketing"}>Marketing</option>
+                              <option value={"SEO"}>SEO</option>
+                              <option value={"Project Manager"}>
+                                Project Manager
+                              </option>
+                              <option value={"Other"}>Other</option>
+                            </select>
+                          </div>
+                        </div> */}
                       <div className="col-12">
                         <div className="mb-2">
                           <label className="form-label">Full name</label>
                           <input
                             type="text"
-                            name="username"
-                            // value={form.username}
-                            // onChange={handleChange}
-                            className="form-control form-control-lg"
+                            className="form-control form-control-lg" style={{color:"black"}}
                             placeholder="John"
+                            name="employeeName"
+                            value={formData.employeeName}
+                            onChange={handleChange}
                           />
                         </div>
                       </div>
@@ -124,11 +290,11 @@ const Signup = () => {
                           <label className="form-label">Email address</label>
                           <input
                             type="email"
-                            name="email"
-                            // value={form.email}
-                            // onChange={handleChange}
                             className="form-control form-control-lg"
                             placeholder="name@example.com"
+                            name="emailid"
+                            value={formData.emailid}
+                            onChange={handleChange}
                           />
                         </div>
                       </div>
@@ -137,11 +303,11 @@ const Signup = () => {
                           <label className="form-label">Password</label>
                           <input
                             type="password"
-                            name="password"
-                            // value={form.password}
-                            // onChange={handleChange}
                             className="form-control form-control-lg"
                             placeholder="8+ characters required"
+                            name="password"
+                            value={formData.password}
+                            onChange={handleChange}
                           />
                         </div>
                       </div>
@@ -150,6 +316,7 @@ const Signup = () => {
                           type="submit"
                           className="btn btn-lg btn-block btn-light lift text-uppercase"
                           alt="SIGNUP"
+                          onClick={handleSubmit}
                         >
                           SIGN UP
                         </button>
@@ -159,7 +326,7 @@ const Signup = () => {
                     <div className="col-12 text-center mt-4">
                       <span className="text-muted">
                         Already have an account?{" "}
-                        <Link to="/" title="Sign in" className="text-secondary">
+                        <Link to="/employeesignin" title="Sign in" className="text-secondary">
                           Sign in here
                         </Link>
                       </span>

@@ -91,12 +91,12 @@ const Signup = () => {
                       className="row g-1 p-3 p-md-4"
                     >
                       <div className="col-12 text-center mb-1 mb-lg-5">
-                        <h1>Sign up</h1>
-                        <span>Create your account</span>
+                        <h1>Admin Sign up</h1>
+                        <span>Create your account as a Admin</span>
                       </div>
-                      <div className="col-12 text-center mb-4">
+                      <div className="col-12 text-center ">
                         <Link
-                          className="btn btn-lg btn-outline-secondary btn-block"
+                          className="btn btn-lg btn-outline-secondary btn-block"style={{marginTop: "-40px"}}
                           to="/employeesignup"
                         >
                           <span className="d-flex justify-content-center align-items-center gap-2">

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
+import { MultiSelect } from "react-multi-select-component";
 import axios from "axios";
 
 const Tasks = () => {
@@ -38,7 +39,10 @@ const Tasks = () => {
       for (let key in formData) {
         formDataToSend.append(key, formData[key]);
       }
-
+      for (let obj of selectedEmployees) {
+        // console.log(obj);
+        formDataToSend.append("taskAssignPerson", obj.value);
+      }
       const response = await axios.post(
         "http://localhost:8000/api/tasks",
         formDataToSend,
@@ -73,7 +77,6 @@ const Tasks = () => {
 
   //DELETE TASK
   const [deletableId, setDeletableId] = useState("");
-
   const handleDeleteProject = async () => {
     try {
       const response = await axios.delete(
@@ -86,7 +89,7 @@ const Tasks = () => {
     }
   };
 
-  // GET SINGLE PROJECT
+  // GET SINGLE TASK
   const [searchQuery, setSearchQuery] = useState("");
   const handleSearch = async (searchQuery) => {
     if (searchQuery !== "") {
@@ -126,6 +129,30 @@ const Tasks = () => {
     };
 
     fetchData();
+  }, []);
+
+  const [selectedEmployees, setSelectedEmployees] = useState([]);
+  // console.log(selectedEmployees);
+  const assignEmployee = employees.map((emp) => {
+    return {
+      label: emp.employeeName,
+      value: emp._id,
+    };
+  });
+
+  // GET ALL PROJECTS
+  const [projects, setProjects] = useState([]);
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/api/projects");
+        setProjects(response.data);
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      }
+    };
+
+    fetchProjects();
   }, []);
 
   return (
@@ -212,31 +239,40 @@ const Tasks = () => {
                                 <ol className="dd-list">
                                   <li className="dd-item" data-id={1}>
                                     <div className="dd-handle">
+                                      <div className="d-flex justify-content-between">
                                       <h6 className="fw-bold py-3 mb-0">
                                         {task.projectName}
                                       </h6>
+                                      <div>
+                                      <div className="avatar-list avatar-list-stacked m-0 d-flex justify-content-center">
+                                            <img
+                                              className="avatar rounded-circle small-avt"
+                                              src={
+                                                "http://localhost:8000/" +
+                                                task.taskAssignPerson
+                                                  .employeeImage
+                                              }
+                                              alt=""
+                                            />
+                                          </div>
+                                          <p>
+                                            {task.taskAssignPerson.employeeName}
+                                          </p>
+                                          </div>
+                                      </div>
+                                      
                                       <div className="task-info d-flex align-items-center justify-content-between">
                                         <h6 className="light-success-bg py-1 px-2 rounded-1 d-inline-block fw-bold small-14 mb-0">
                                           {task.taskCategory}
                                         </h6>
                                         <div className="task-priority d-flex flex-column align-items-center justify-content-center">
-                                          <div className="avatar-list avatar-list-stacked m-0">
-                                            {/* <img
-                                              className="avatar rounded-circle small-avt"
-                                              src={
-                                                "http://localhost:8000/" +
-                                                task.taskImages
-                                              }
-                                              alt=""
-                                            /> */}
-                                            {task.taskAssignPerson}
-                                          </div>
+                                          
                                           <span className="badge bg-danger text-end mt-2">
                                             {task.taskPriority}
                                           </span>
                                         </div>
                                       </div>
-                                      <p className="py-2 mb-0">
+                                      <p className="py-2 mb-0 ">
                                         {task.description}
                                       </p>
                                       <div className="tikit-info row g-3 align-items-center">
@@ -244,7 +280,7 @@ const Tasks = () => {
                                           <ul className="d-flex list-unstyled align-items-center flex-wrap">
                                             <li className="me-2">
                                               <div className="d-flex align-items-center">
-                                                <i className="icofont-flag" />
+                                                Start Date :
                                                 <span className="ms-1">
                                                   {getFormattedDate(
                                                     task.taskStartDate
@@ -254,7 +290,7 @@ const Tasks = () => {
                                             </li>
                                             <li className="me-2">
                                               <div className="d-flex align-items-center">
-                                                <i className="icofont-ui-text-chat" />
+                                                End Date :
                                                 <span className="ms-1">
                                                   {getFormattedDate(
                                                     task.taskEndDate
@@ -262,15 +298,20 @@ const Tasks = () => {
                                                 </span>
                                               </div>
                                             </li>
-                                            <li>
-                                              <div className="d-flex align-items-center">
-                                                <i className="icofont-paper-clip" />
-                                                <span className="ms-1">5</span>
-                                              </div>
-                                            </li>
                                           </ul>
                                         </div>
                                         <div className="d-flex justify-content-center align-items-center">
+                                          {/* <button
+                                            type="button"
+                                            className="btn light-danger-bg text-end small text-truncate light-danger-bg py-1 px-2 rounded-1 d-inline-block fw-bold small"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#createtask"
+                                            onClick={() => {
+                                              setDeletableId(task._id);
+                                            }}
+                                          >
+                                            Edit
+                                          </button> */}
                                           <button
                                             type="button"
                                             className="btn light-danger-bg text-end small text-truncate light-danger-bg py-1 px-2 rounded-1 d-inline-block fw-bold small"
@@ -571,7 +612,7 @@ const Tasks = () => {
                     <div className="modal-body">
                       <div className="mb-3">
                         <label className="form-label">Project Name</label>
-                        <input
+                        {/* <input
                           type="text"
                           className="form-control"
                           id="exampleFormControlInput77"
@@ -579,7 +620,25 @@ const Tasks = () => {
                           name="projectName"
                           value={formData.projectName}
                           onChange={handleChange}
-                        />
+                        /> */}
+                        <select
+                          className="form-select"
+                          placeholder="Add Category"
+                          aria-label="Default select Project Category"
+                          name="projectName"
+                          value={formData.projectName}
+                          onChange={handleChange}
+                        >
+                          <option>Chosse Project</option>
+                          {projects.map((project) => (
+                            <option
+                              key={project.id}
+                              value={project.projectName}
+                            >
+                              {project.projectName}
+                            </option>
+                          ))}
+                        </select>
                       </div>
                       <div className="mb-3">
                         <label className="form-label">Task Category</label>
@@ -677,19 +736,14 @@ const Tasks = () => {
                           <label className="form-label">
                             Task Assign Person
                           </label>
-                          <select
-                            className="form-select"
-                            multiple=""
-                            aria-label="Default select Priority"
-                            value={formData.taskAssignPerson}
-                            onChange={handleChange}
-                          >
-                            {employees.map((emp) => (
-                              <option key={emp._id} value={emp.employeeName}>
-                                {emp.employeeName}
-                              </option>
-                            ))}
-                          </select>
+                          <div>
+                            <MultiSelect
+                              options={assignEmployee}
+                              value={selectedEmployees}
+                              onChange={setSelectedEmployees}
+                              labelledBy="Select Employees"
+                            />
+                          </div>
                         </div>
                       </div>
                       <div className="row g-3 mb-3">

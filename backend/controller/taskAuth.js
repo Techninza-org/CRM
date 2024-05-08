@@ -1,4 +1,6 @@
+const express = require('express');
 const Task = require('../model/taskModel');
+const jwt = require('jsonwebtoken')
 
 
 // Create a new task
@@ -9,8 +11,11 @@ exports.createTask = async (req, res) => {
     // console.log(path);
     const newPath = path.replace('uploads\\', "");
     // console.log(newPath);
+    const taskAssigner = req.body.taskAssignPerson;
+    const filteredTaskAssigner = taskAssigner.filter((task) => task !== "");
     req.body.taskImages = newPath;
-    const task = new Task(req.body);
+    const task = new Task({...req.body, taskAssignPerson:filteredTaskAssigner});
+    // console.log(task);
     const savedTask = await task.save();
     res.status(201).json(savedTask);
   } catch (error) {
@@ -22,7 +27,7 @@ exports.createTask = async (req, res) => {
 // Get all tasks
 exports.getAllTasks = async (req, res) => {
   try {
-    const tasks = await Task.find();
+    const tasks = await Task.find().populate('taskAssignPerson');
     res.json(tasks);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -33,7 +38,7 @@ exports.getAllTasks = async (req, res) => {
 // Get a single task
 exports.getTaskById = async (req, res) => {
   try {
-    const task = await Task.findById(req.params.id);
+    const task = await Task.findById(req.params.id).populate('taskAssignPerson');
     if (!task) {
       return res.status(404).json({ message: 'Task not found' });
     }
@@ -90,3 +95,22 @@ exports.deleteTaskById = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+
+//Get task by Task Assigne Person (token)
+exports.getTask = async (req, res) => {
+  const author = req.headers.authorization
+  const decodeToken = jwt.decode(author)
+  // console.log(decodeToken);
+  try {
+    const task = await Task.find({
+      taskAssignPerson: {
+        $in: [decodeToken]
+      }
+    }).populate("taskAssignPerson");
+    res.json(task)
+    return task;
+  } catch (err) {
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}

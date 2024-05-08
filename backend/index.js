@@ -5,16 +5,16 @@ const mongoose = require('mongoose');
 const multer = require('./utils/multerConfig')
 const employeeController = require('./controller/employeeAuth');
 const projectRoutes = require('./routes/projectRoutes');
-const adminUserRoutes = require('./routes/adminUserRoutes');
-const employeeUserRoutes = require('./routes/employeeUserRoutes');
+const adminUserRoutes = require('./userRoute/adminUserRoutes');
 const taskRoutes = require('./routes/taskRoutes');
+const statusController = require('./controller/statusAuth')
 const cors = require('cors');
 
 
+dotenv.config();
 
 //Middleware setup
 app.use(cors());
-dotenv.config();
 app.use(express.json());
 app.use(express.static("./uploads"));
 
@@ -34,9 +34,9 @@ connection.once('open', () => {
 //Route setup
 app.use('/api', employeeController);
 app.use('/api', projectRoutes);
+app.use('/api', statusController);
 app.use('/api', taskRoutes);
 app.use('/api', adminUserRoutes);
-app.use('/api', employeeUserRoutes);
 
 
 
@@ -45,4 +45,3 @@ const port = process.env.PORT || 8000;
 app.listen(port, () => {
   console.log(`Server is running on port: ${port}`);
 });
-

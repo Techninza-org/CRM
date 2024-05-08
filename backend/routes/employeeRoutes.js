@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { upload} = require('../utils/multerConfig')
+const { upload } = require('../utils/multerConfig')
 const employeeController = require('../controller/employeeAuth');
 
 console.log(upload);

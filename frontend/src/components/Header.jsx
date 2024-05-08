@@ -19,6 +19,9 @@ const Header = () => {
           setUserName(user.username);
           setEmail(user.email);
         }
+        else{
+            navigation("/");
+        }
       }, [navigation]);   
 
     return (

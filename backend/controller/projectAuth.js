@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Project = require('../model/projectModel');
+const jwt = require('jsonwebtoken')
 
 // Create a new project
 exports.createProject = async (req, res) => {
@@ -29,6 +30,7 @@ exports.createProject = async (req, res) => {
 exports.getAllProjects = async (req, res) => {
     try {
         const projects = await Project.find().populate("taskAssignPerson");
+        // console.log(projects);
         res.json(projects);
     } catch (err) {
         res.status(500).json({ message: err.message });
@@ -67,8 +69,6 @@ exports.searchProjects = async (req, res) => {
 };
 
 
-
-
 // Update a project
 exports.updateProject = async (req, res) => {
     try {
@@ -98,3 +98,23 @@ exports.deleteProject = async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 };
+
+
+
+//Get project by Task Assigne Person (token)
+exports.getProject = async (req, res) => {
+
+    const auth = req.headers.authorization
+    const decodedToken = jwt.decode(auth)
+    try {
+        const project = await Project.find({
+            taskAssignPerson: {
+                $in: [decodedToken]
+            }
+        }).populate("taskAssignPerson");
+        res.json(project)
+        return project;
+    } catch (err) {
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}

@@ -2,15 +2,18 @@ const express = require('express');
 const router = express.Router();
 const Employee = require('../model/employeeModel');
 const { upload } = require('../utils/multerConfig');
-
+const jwt = require('jsonwebtoken');
 
 // Create a new employee
 router.post('/employees', upload.single("employeeImage"), async (req, res) => {
     try {
         // console.log(req.file);
         const path = req.file?.path;
-        // console.log(path);
-        const newPath = path.replace('uploads\\', "");
+        // console.log(path); 
+        let newPath = path?.replace('uploads\\', "");
+        if (newPath === undefined || newPath === null) {
+            newPath = "default.jpeg"
+        }
         // console.log(newPath);
         req.body.employeeImage = newPath;
         const employee = new Employee(req.body);
@@ -20,6 +23,52 @@ router.post('/employees', upload.single("employeeImage"), async (req, res) => {
         res.status(400).json({ message: err.message });
     }
 });
+
+router.post("/employeelogin", async (req, res) => {
+    const body = req.body;
+    if (!body) {
+        return res.status({
+            status: 400,
+            message: "email, password is required."
+        })
+    }
+    const { email, password } = body;
+
+    if (!email || !password) {
+        return res.status({
+            status: 400,
+            message: "email, password is required."
+        })
+    }
+
+    try {
+        const empDetails = await Employee.findOne({
+            emailid: email,
+            password: password
+        }).lean()
+
+        if (!empDetails) {
+            return res.send({
+                status: 400,
+                message: "User not found or invalid credentials"
+            })
+        }
+
+        // console.log(empDetails._id.toString())
+        const token = jwt.sign(empDetails._id.toString(), process.env.JWT_SECRET);
+
+        return res.status(200).send({
+            status: 200,
+            message: "Login success",
+            user: empDetails,
+            token: token
+        })
+    } catch (err) {
+        console.log(err);
+        return res.sendStatus(500);
+    }
+
+})
 
 
 
@@ -38,7 +87,7 @@ router.get('/employees', async (req, res) => {
 // Get a single employee
 router.get('/employees/:employeeId', async (req, res) => {
     try {
-        const employee = await Employee.findOne({ employeeId: req.params.employeeId });
+        const employee = await Employee.findOne({ _id: req.params.employeeId });
         if (!employee) {
             return res.status(404).json({ message: 'Employee not found' });
         }
@@ -69,11 +118,7 @@ router.get("/search", async (req, res) => {
 // Update an employee
 router.put('/employees/:employeeId', upload.single("employeeImage"), async (req, res) => {
     try {
-        const updatedEmployee = await Employee.findOneAndUpdate(
-            { employeeId: req.params.employeeId },
-            req.body,
-            { new: true }
-        );
+        const updatedEmployee = await Employee.findByIdAndUpdate(req.params.employeeId, req.body, { new: true });
         if (!updatedEmployee) {
             return res.status(404).json({ message: 'Employee not found' });
         }

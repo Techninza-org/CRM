@@ -8,7 +8,7 @@ const employeeSchema = new Schema({
     },
     employeeCompany: {
         type: String,
-        required: true
+        // required: true
     },
     employeeImage: {
         type: String,
@@ -16,17 +16,17 @@ const employeeSchema = new Schema({
     },
     employeeId: {
         type: String,
-        required: true,
-        unique: true
+        // required: true,
+        // unique: true
     },
     joiningDate: {
         type: Date,
-        default: Date.now
+        // default: Date.now
     },
     username: {
         type: String,
-        required: true,
-        unique: true
+        // required: true,
+        // unique: true
     },
     password: {
         type: String,
@@ -39,15 +39,15 @@ const employeeSchema = new Schema({
     },
     phone: {
         type: String,
-        required: true
+        // required: true
     },
     department: {
         type: String,
-        required: true
+        // required: true
     },
     designation: {
         type: String,
-        required: true
+        // required: true
     },
     description: {
         type: String

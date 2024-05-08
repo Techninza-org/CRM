@@ -6,7 +6,6 @@ import axios from "axios";
 import { MultiSelect } from "react-multi-select-component";
 
 const Project = () => {
-
   // CREATE PROJECT
   const [formData, setFormData] = useState({
     projectName: "",
@@ -58,7 +57,6 @@ const Project = () => {
     }
   };
 
-
   // GET ALL PROJECTS
   const [projects, setProjects] = useState([]);
   useEffect(() => {
@@ -74,7 +72,6 @@ const Project = () => {
     fetchProjects();
   }, []);
 
-
   //DELETE PROJECT
   const [deletableId, setDeletableId] = useState("");
   const handleDeleteProject = async () => {
@@ -88,7 +85,6 @@ const Project = () => {
       console.error("Error:", error);
     }
   };
-
 
   //UPDATE PROJECT
   const [projectFormData, setProjectFormData] = useState({
@@ -196,7 +192,6 @@ const Project = () => {
     }
   };
 
-
   // GET SINGLE PROJECT
   const [searchQuery, setSearchQuery] = useState("");
   const handleSearch = async (searchQuery) => {
@@ -239,7 +234,6 @@ const Project = () => {
     fetchData();
   }, []);
 
-
   const [employees, setEmployees] = useState([]);
   const [selectedEmployees, setSelectedEmployees] = useState([]);
 
@@ -251,10 +245,30 @@ const Project = () => {
     };
   });
 
-  
+  // Status
+  const [selectProject, setSelectProject] = useState([]);
+  const [project_id, setProject_id] = useState("");
 
+  const [projectStatuses, setProjectStatuses] = useState([]);
 
+  useEffect(() => {
+    const fetchProjectStatuses = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:8000/api/project-status"
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch project statuses");
+        }
+        const data = await response.json();
+        setProjectStatuses(data);
+      } catch (error) {
+        console.error(error.message);
+      }
+    };
 
+    fetchProjectStatuses();
+  }, []);
 
   return (
     <>
@@ -337,12 +351,14 @@ const Project = () => {
                           <thead>
                             <tr>
                               <th>Project Name</th>
-                              <th>Project Category</th>
+                              {/* <th>Project Category</th> */}
                               <th>Start Date</th>
                               <th>End Date</th>
                               <th>Members</th>
+                              <th>Progress</th>
                               <th>Edit</th>
                               <th>Delete</th>
+                              <th>Status</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -360,8 +376,14 @@ const Project = () => {
                                 <tr key={project.id}>
                                   <td>
                                     <Link to="">{project.projectName}</Link>
+                                    <p className="text-muted text-sm">
+                                      
+                                    </p>
+                                    <figcaption class="blockquote-footer">
+                                    {project.projectCategory}{" "}
+                                    </figcaption>
                                   </td>
-                                  <td>{project.projectCategory}</td>
+                                  {/* <td>{project.projectCategory}</td> */}
                                   <td>
                                     {getFormattedDate(project.projectStartDate)}
                                   </td>
@@ -372,6 +394,9 @@ const Project = () => {
                                     {project.taskAssignPerson.map(
                                       (name) => name.employeeName + ", "
                                     )}
+                                  </td>
+                                  <td>
+                                    <div className="d-flex justify-content-center" >40%</div>
                                   </td>
                                   <td>
                                     <button
@@ -390,6 +415,17 @@ const Project = () => {
                                       data-bs-target="#deleteproject"
                                       onClick={() => {
                                         setDeletableId(project._id);
+                                      }}
+                                    ></button>
+                                  </td>
+                                  <td>
+                                    <button
+                                      className="d-flex justify-content-center bi bi-stopwatch btn outline-secondary text-primary"
+                                      data-bs-toggle="modal"
+                                      data-bs-target="#addUser"
+                                      onClick={() => {
+                                        setProject_id(project._id);
+                                        setSelectProject(project);
                                       }}
                                     ></button>
                                   </td>
@@ -847,6 +883,100 @@ const Project = () => {
                     >
                       Delete
                     </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {/* Status Modal */}
+            <div
+              className="modal fade"
+              id="addUser"
+              tabIndex={-1}
+              aria-labelledby="addUserLabel"
+              aria-hidden="true"
+            >
+              <div className="modal-dialog modal-dialog-centered modal-lg">
+                <div className="modal-content">
+                  <div className="modal-header">
+                    <h5 className="modal-title  fw-bold" id="addUserLabel">
+                      {selectProject.projectName}
+                    </h5>
+                    <button
+                      type="button"
+                      className="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                    />
+                  </div>
+                  <div className="modal-body">
+                    {/* <div className="inviteby_email">
+                      <div className="input-group mb-3">
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder=""
+                          id=""
+                          aria-describedby="exampleInputEmail1"
+                        />
+                        <button
+                          className="btn btn-dark"
+                          type="button"
+                          id="button-addon2"
+                        >
+                          Search
+                        </button>
+                      </div>
+                    </div> */}
+                    <div className="members_list">
+                      <ul className="list-unstyled list-group list-group-custom list-group-flush mb-0">
+                        <li className="list-group-item py-3 text-center text-md-start">
+                          {projectStatuses.map((status) => {
+                            const getFormattedDate = (date) => {
+                              const newDate = new Date(date);
+                              const day = newDate.getDate();
+                              const month = newDate.getMonth() + 1;
+                              const year = newDate.getFullYear();
+                              let hours = newDate.getHours();
+                              const minutes = newDate.getMinutes();
+
+                              const meridiem = hours >= 12 ? "PM" : "AM";
+                              hours = hours % 12 || 12;
+
+                              return `${day}/${month}/${year} ${hours}:${minutes} ${meridiem}`;
+                            };
+console.log(status);
+                            return (
+                              <div
+                                key={status._id}
+                                className="d-flex align-items-center flex-column flex-sm-column flex-md-column flex-lg-row"
+                              >
+                                <div className="no-thumbnail mb-2 mb-md-0">
+                                  {/* <img
+                                    className="avatar md rounded-circle"
+                                    src="assets/images/xs/avatar8.jpg"
+                                    alt=""
+                                  /> */}
+                                  {status.user_id?.employeeName}
+                                </div>
+                                <div className="flex-fill ms-3 text-truncate">
+                                  <p className="mb-0  fw-bold">
+                                    {status.currentStatus}
+                                  </p>
+                                  <span className="text-muted">
+                                    {getFormattedDate(status.createdAt)}
+                                  </span>
+                                </div>
+                                <div className="members-action">
+                                  <div className="btn-group">
+                                    <div className="btn-group"></div>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
               </div>

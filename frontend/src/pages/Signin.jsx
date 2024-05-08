@@ -76,16 +76,16 @@ const Signin = () => {
                   {/* Form */}
                   <form onSubmit={handleSubmit} className="row g-1 p-3 p-md-4">
                     <div className="col-12 text-center mb-1 mb-lg-5">
-                      <h1>Sign in</h1>
-                      <span>Free access to our dashboard.</span>
+                      <h1>Admin Sign in</h1>
+                      <span>Admin Panel</span>
                     </div>
                     <div className="col-12 text-center mb-4">
-                      <a className="btn btn-lg btn-outline-secondary btn-block" href="#">
+                      <Link className="btn btn-lg btn-outline-secondary btn-block" to="/employeesignin">
                         <span className="d-flex justify-content-center align-items-center gap-2">
                         <i class="bi bi-person-plus-fill"></i>
                           Sign in as a Employee
                         </span>
-                      </a>
+                      </Link>
                       <span className="dividers text-muted mt-4">OR</span>
                     </div>
                     <div className="col-12">

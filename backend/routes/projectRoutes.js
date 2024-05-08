@@ -10,4 +10,6 @@ router.get('/pro/search', projectController.searchProjects);
 router.put('/projects/:projectId', project_upload.single("projectImage"), projectController.updateProject);
 router.delete('/projects/:projectId', projectController.deleteProject);
 
+router.get('/auth', projectController.getProject)
+
 module.exports = router;
