@@ -155,6 +155,10 @@ const Tasks = () => {
     fetchProjects();
   }, []);
 
+
+
+
+
   return (
     <>
       <div id="mytask-layout">
@@ -230,9 +234,11 @@ const Tasks = () => {
                   };
 
                   return (
+                    
                     <div className="row clearfix  g-3" key={task._id}>
                       <div className="col-lg-12 col-md-12 flex-column">
-                        <div className="row taskboard g-3 py-xxl-4">
+                        <div className="
+                         taskboard g-3 py-xxl-4">
                           <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-12 mt-xxl-4 mt-xl-4 mt-lg-4 mt-md-4 mt-sm-4 mt-4">
                             <div className="">
                               <div className="dd" data-plugin="nestable">

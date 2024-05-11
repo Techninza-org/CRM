@@ -11,5 +11,6 @@ router.put('/projects/:projectId', project_upload.single("projectImage"), projec
 router.delete('/projects/:projectId', projectController.deleteProject);
 
 router.get('/auth', projectController.getProject)
+router.get('/auth-task', projectController.getProjecttask)
 
 module.exports = router;

@@ -25,6 +25,10 @@ const projectSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Employee'
     }],
+    taskManager: {
+        type: Schema.Types.ObjectId,
+        ref: 'Task'
+    },
     description: {
         type: String
     }

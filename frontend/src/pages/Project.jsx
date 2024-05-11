@@ -63,6 +63,8 @@ const Project = () => {
     const fetchProjects = async () => {
       try {
         const response = await axios.get("http://localhost:8000/api/projects");
+
+        // console.log(response.data, 'projects');
         setProjects(response.data);
       } catch (error) {
         console.error("Error fetching projects:", error);
@@ -270,6 +272,41 @@ const Project = () => {
     fetchProjectStatuses();
   }, []);
 
+  //GET TASK
+  const [tasks, setTasks] = useState([]);
+
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/api/tasks");
+        setTasks(response.data);
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+
+    fetchTasks();
+  }, []);
+  
+// console.log(tasks);
+
+//calculate task
+const calculateProgress = () => {
+  let totalCompleted = 0;
+for(let i = 0; i< tasks.length; i++){
+  const task = tasks[i];
+  if(task.status === "completed"){
+    totalCompleted ++;
+  }
+}
+  const totalTasks = tasks.length;
+  return totalTasks === 0 ? 0 : Math.round((totalCompleted / totalTasks) * 100);
+};
+
+
+
+
+
   return (
     <>
       <div id="mytask-layout">
@@ -375,7 +412,7 @@ const Project = () => {
                               return (
                                 <tr key={project.id}>
                                   <td>
-                                    <Link to="">{project.projectName}</Link>
+                                    <Link to="/tasks">{project.projectName}</Link>
                                     <p className="text-muted text-sm">
                                       
                                     </p>
@@ -396,7 +433,7 @@ const Project = () => {
                                     )}
                                   </td>
                                   <td>
-                                    <div className="d-flex justify-content-center" >40%</div>
+                                    <div className="d-flex justify-content-center" >{calculateProgress()}%</div>
                                   </td>
                                   <td>
                                     <button
@@ -944,19 +981,20 @@ const Project = () => {
 
                               return `${day}/${month}/${year} ${hours}:${minutes} ${meridiem}`;
                             };
-console.log(status);
+// console.log(status);
                             return (
                               <div
                                 key={status._id}
                                 className="d-flex align-items-center flex-column flex-sm-column flex-md-column flex-lg-row"
                               >
                                 <div className="no-thumbnail mb-2 mb-md-0">
-                                  {/* <img
+                                  <img
                                     className="avatar md rounded-circle"
-                                    src="assets/images/xs/avatar8.jpg"
+                                    src={"http://localhost:8000/"+status.user_id.employeeImage}
                                     alt=""
-                                  /> */}
-                                  {status.user_id?.employeeName}
+                                  />
+                                  <p className="text-muted text-uppercase"style={{width: "6rem"}}>{status.user_id.employeeName}</p>
+                                  
                                 </div>
                                 <div className="flex-fill ms-3 text-truncate">
                                   <p className="mb-0  fw-bold">

@@ -4,89 +4,89 @@ import Header from "../employeeCompt/EmployeeHeader";
 import axios from "axios";
 
 const Tasks = () => {
-//   //CREATE TASK
-//   const [formData, setFormData] = useState({
-//     projectName: "",
-//     taskCategory: "",
-//     taskImages: null,
-//     taskStartDate: "",
-//     taskEndDate: "",
-//     taskAssignPerson: "",
-//     taskPriority: "",
-//     description: "",
-//   });
+  //   //CREATE TASK
+  //   const [formData, setFormData] = useState({
+  //     projectName: "",
+  //     taskCategory: "",
+  //     taskImages: null,
+  //     taskStartDate: "",
+  //     taskEndDate: "",
+  //     taskAssignPerson: "",
+  //     taskPriority: "",
+  //     description: "",
+  //   });
 
-//   const handleChange = (e) => {
-//     const { name, value, files } = e.target;
-//     setFormData((prevState) => ({
-//       ...prevState,
-//       [name]: files ? files[0] : value,
-//     }));
-//   };
+  //   const handleChange = (e) => {
+  //     const { name, value, files } = e.target;
+  //     setFormData((prevState) => ({
+  //       ...prevState,
+  //       [name]: files ? files[0] : value,
+  //     }));
+  //   };
 
-//   const handleFileChange = (e) => {
-//     setFormData({
-//       ...formData,
-//       taskImages: e.target.files[0],
-//     });
-//   };
+  //   const handleFileChange = (e) => {
+  //     setFormData({
+  //       ...formData,
+  //       taskImages: e.target.files[0],
+  //     });
+  //   };
 
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     try {
-//       const formDataToSend = new FormData();
-//       for (let key in formData) {
-//         formDataToSend.append(key, formData[key]);
-//       }
-//        for (let obj of selectedEmployees) {
-//         // console.log(obj);
-//         formDataToSend.append("taskAssignPerson", obj.value);
-//       }
-//       const response = await axios.post(
-//         "http://localhost:8000/api/tasks",
-//         formDataToSend,
-//         {
-//           headers: {
-//             "Content-Type": "multipart/form-data",
-//           },
-//         }
-//       );
-//       console.log(response.data);
-//       window.location.reload();
-//     } catch (error) {
-//       console.error("Error:", error);
-//     }
-//   };
+  //   const handleSubmit = async (e) => {
+  //     e.preventDefault();
+  //     try {
+  //       const formDataToSend = new FormData();
+  //       for (let key in formData) {
+  //         formDataToSend.append(key, formData[key]);
+  //       }
+  //        for (let obj of selectedEmployees) {
+  //         // console.log(obj);
+  //         formDataToSend.append("taskAssignPerson", obj.value);
+  //       }
+  //       const response = await axios.post(
+  //         "http://localhost:8000/api/tasks",
+  //         formDataToSend,
+  //         {
+  //           headers: {
+  //             "Content-Type": "multipart/form-data",
+  //           },
+  //         }
+  //       );
+  //       console.log(response.data);
+  //       window.location.reload();
+  //     } catch (error) {
+  //       console.error("Error:", error);
+  //     }
+  //   };
 
-//   //GET TASK
-//   const [tasks, setTasks] = useState([]);
+  //   //GET TASK
+  //   const [tasks, setTasks] = useState([]);
 
-//   useEffect(() => {
-//     const fetchTasks = async () => {
-//       try {
-//         const response = await axios.get("http://localhost:8000/api/tasks");
-//         setTasks(response.data);
-//       } catch (error) {
-//         console.error("Error:", error);
-//       }
-//     };
+  //   useEffect(() => {
+  //     const fetchTasks = async () => {
+  //       try {
+  //         const response = await axios.get("http://localhost:8000/api/tasks");
+  //         setTasks(response.data);
+  //       } catch (error) {
+  //         console.error("Error:", error);
+  //       }
+  //     };
 
-//     fetchTasks();
-//   }, []);
+  //     fetchTasks();
+  //   }, []);
 
-//   //DELETE TASK
-//   const [deletableId, setDeletableId] = useState("");
-//   const handleDeleteProject = async () => {
-//     try {
-//       const response = await axios.delete(
-//         `http://localhost:8000/api/tasks/${deletableId}`
-//       );
-//       console.log(response.data);
-//       window.location.reload();
-//     } catch (error) {
-//       console.error("Error:", error);
-//     }
-//   };
+  //   //DELETE TASK
+  //   const [deletableId, setDeletableId] = useState("");
+  //   const handleDeleteProject = async () => {
+  //     try {
+  //       const response = await axios.delete(
+  //         `http://localhost:8000/api/tasks/${deletableId}`
+  //       );
+  //       console.log(response.data);
+  //       window.location.reload();
+  //     } catch (error) {
+  //       console.error("Error:", error);
+  //     }
+  //   };
 
   // GET SINGLE PROJECT
   const [searchQuery, setSearchQuery] = useState("");
@@ -131,36 +131,43 @@ const Tasks = () => {
   }, []);
 
   const [selectedEmployees, setSelectedEmployees] = useState([]);
-// console.log(selectedEmployees);
-const assignEmployee = employees.map((emp) => {
-  return {
-    label: emp.employeeName,
-    value: emp._id,
-  };
-});
+  // console.log(selectedEmployees);
+  const assignEmployee = employees.map((emp) => {
+    return {
+      label: emp.employeeName,
+      value: emp._id,
+    };
+  });
 
-
-//GET A TASK BY TOKEN
-const [tasks, setTasks] = useState([]);
+  //GET A TASK BY TOKEN
+  const [tasks, setTasks] = useState([]);
 
   useEffect(() => {
-    const Token = localStorage.getItem("emp_token")
+    const Token = localStorage.getItem("emp_token");
     async function fetchTasks() {
       try {
-        const response = await axios.get('http://localhost:8000/api/author', {
+        const response = await axios.get("http://localhost:8000/api/author", {
           headers: {
-            Authorization: Token
-          }
+            Authorization: Token,
+          },
         });
         setTasks(response.data);
       } catch (error) {
-        console.error('Error fetching tasks:', error);
+        console.error("Error fetching tasks:", error);
       }
     }
 
     fetchTasks();
   }, []);
 
+  const [isDone, setIsDone] = useState(false);
+
+  const doneClick = () => {
+    setIsDone(true);
+  };
+  const clearClick = () => {
+    setIsDone(false);
+  };
 
 
   return (
@@ -247,23 +254,31 @@ const [tasks, setTasks] = useState([]);
                                 <ol className="dd-list">
                                   <li className="dd-item" data-id={1}>
                                     <div className="dd-handle">
-                                      <h6 className="fw-bold py-3 mb-0">
-                                        {task.projectName}
-                                      </h6>
+                                      <div className="d-flex justify-content-between">
+                                        <h5 className="fw-bold">
+                                          {task.projectName}
+                                        </h5>
+                                        {isDone && (
+                                          <i className="bi bi-check-circle-fill text-success h5" />
+                                        )}
+                                      </div>
                                       <div className="task-info d-flex align-items-center justify-content-between">
                                         <h6 className="light-success-bg py-1 px-2 rounded-1 d-inline-block fw-bold small-14 mb-0">
                                           {task.taskCategory}
                                         </h6>
                                         <div className="task-priority d-flex flex-column align-items-center justify-content-center">
                                           <div className="avatar-list avatar-list-stacked m-0">
-                                          <img
+                                            <img
                                               className="avatar rounded-circle small-avt"
-                                              src={ "http://localhost:8000/" + task.taskAssignPerson.employeeImage}
+                                              src={
+                                                "http://localhost:8000/" +
+                                                task.taskAssignPerson
+                                                  .employeeImage
+                                              }
                                               alt=""
                                             />
                                           </div>
                                           <div>
-
                                             {task.taskAssignPerson.employeeName}
                                           </div>
                                           <span className="badge bg-danger text-end mt-2">
@@ -299,7 +314,7 @@ const [tasks, setTasks] = useState([]);
                                             </li>
                                           </ul>
                                         </div>
-                                        <div className="d-flex justify-content-center align-items-center">
+                                        <div className="d-flex justify-content-around align-items-center">
                                           {/* <button
                                             type="button"
                                             className="btn light-danger-bg text-end small text-truncate light-danger-bg py-1 px-2 rounded-1 d-inline-block fw-bold small"
@@ -314,15 +329,17 @@ const [tasks, setTasks] = useState([]);
                                           </button> */}
                                           <button
                                             type="button"
-                                            className="btn light-danger-bg text-end small text-truncate light-danger-bg py-1 px-2 rounded-1 d-inline-block fw-bold small"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#dremovetask"
-                                            onClick={() => {
-                                              setDeletableId(task._id);
-                                            }}
-
+                                            className="btn bg-info text-end small text-truncate py-1 px-2 rounded-1 d-inline-block fw-bold small"
+                                            onClick={doneClick}
                                           >
-                                            Delete
+                                            Done
+                                          </button>
+                                          <button
+                                            type="button"
+                                            className="btn light-danger-bg text-end small text-truncate py-1 px-2 rounded-1 d-inline-block fw-bold small"
+                                            onClick={clearClick}
+                                          >
+                                            Clear
                                           </button>
                                         </div>
                                       </div>

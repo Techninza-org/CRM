@@ -7,6 +7,7 @@ import axios from "axios";
 const Project = () => {
   // GET SINGLE PROJECT
   const [searchQuery, setSearchQuery] = useState("");
+  const [employees, setEmployees] = useState([]);
   const handleSearch = async (searchQuery) => {
     if (searchQuery !== "") {
       try {
@@ -55,9 +56,10 @@ const Project = () => {
 
   useEffect(() => {
     const Token = localStorage.getItem("emp_token");
-    const UserDetails = localStorage.getItem("emp_user")
+    const UserDetails = JSON.parse(localStorage.getItem("emp_user"));
+    setLoginUserId(UserDetails._id);
     // console.log(UserDetails);
-    setLoginUserId(UserDetails._id)
+
     async function fetchData() {
       try {
         const response = await axios.get("http://localhost:8000/api/auth", {
@@ -82,23 +84,29 @@ const Project = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // console.log(user_id);
+
     try {
       const response = await fetch("http://localhost:8000/api/project-status", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ currentStatus, user_id:loginUserId, project_id:selectProject._id }),
+        body: JSON.stringify({
+          currentStatus,
+          user_id: loginUserId,
+          project_id: selectProject._id,
+        }),
       });
       // console.log(loginUserId);
-
+      // debugger;
       if (!response.ok) {
         throw new Error("Failed to add project status");
       }
       setCurrentStatus("");
-      setUser_id("");
+      setUser_id(UserDetails);
       setProject_id("");
-
+      // debugger;
       window.location.reload();
     } catch (error) {
       console.error(error.message);
@@ -111,7 +119,7 @@ const Project = () => {
     const fetchProjectStatuses = async () => {
       try {
         const response = await fetch(
-          "http://localhost:8000/api/project-status"
+          `http://localhost:8000/api/project-status/${projectId}`
         );
         // console.log(response)
         if (!response.ok) {
@@ -248,7 +256,9 @@ const Project = () => {
                               return (
                                 <tr key={project.id}>
                                   <td>
-                                    <Link to="">{project.projectName}</Link>
+                                    <Link to="/employee-tasks">
+                                      {project.projectName}
+                                    </Link>
                                   </td>
                                   <td>{project.projectCategory}</td>
                                   <td>
@@ -329,17 +339,22 @@ const Project = () => {
                       <form onSubmit={handleSubmit}>
                         <div className="row g-3 mb-3">
                           <div className="col">
-                            <label className="form-label">Employee Name</label>
+                            <label className="form-label"
+                            hidden>Employee Name</label>
                             <select
                               className="form-select"
                               aria-label="Default select Project Category"
                               id="user_id"
                               value={user_id}
                               onChange={(e) => setUser_id(e.target.value)}
+                              hidden
                             >
                               {selectProject.taskAssignPerson?.map((item) => {
-
-                                return <option key={item}>{item.employeeName}</option>;
+                                return (
+                                  <option key={item}>
+                                    {item.employeeName}
+                                  </option>
+                                );
                               })}
                             </select>
                           </div>
@@ -385,12 +400,12 @@ const Project = () => {
                                 className="d-flex align-items-center flex-column flex-sm-column flex-md-column flex-lg-row"
                               >
                                 <div className="no-thumbnail mb-2 mb-md-0">
-                                  {/* <img
+                                <img
                                     className="avatar md rounded-circle"
-                                    src="assets/images/xs/avatar8.jpg"
+                                    src={"http://localhost:8000/"+status.user_id.employeeImage}
                                     alt=""
-                                  /> */}
-                                  {status.taskAssignPerson}
+                                  />
+                                  <p className="text-muted text-uppercase"style={{width: "6rem"}}>{status.user_id.employeeName}</p>
                                 </div>
                                 <div className="flex-fill ms-3 text-truncate">
                                   <p className="mb-0  fw-bold">

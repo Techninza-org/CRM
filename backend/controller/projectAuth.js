@@ -12,8 +12,11 @@ exports.createProject = async (req, res) => {
         const newPath = path.replace('uploads\\', "");
         // console.log(req.body);
         const taskAssigner = req.body.taskAssignPerson;
+        const taskManage = req.body.taskManager
         // console.log(taskAssigner)
-        const filteredTaskAssigner = taskAssigner.filter((task) => task !== "");
+        const filteredTaskAssigner = taskAssigner?.filter((task) => task !== "");
+        // const filteredTaskManager = taskManage?.filter((task) => task !== "");
+        // console.log(filteredTaskManager);
         // console.log(filteredTaskAssigner);
         req.body.projectImage = newPath;
         const project = new Project({ ...req.body, taskAssignPerson: filteredTaskAssigner });
@@ -30,7 +33,7 @@ exports.createProject = async (req, res) => {
 exports.getAllProjects = async (req, res) => {
     try {
         const projects = await Project.find().populate("taskAssignPerson");
-        // console.log(projects);
+        console.log(projects);
         res.json(projects);
     } catch (err) {
         res.status(500).json({ message: err.message });
@@ -114,6 +117,23 @@ exports.getProject = async (req, res) => {
         }).populate("taskAssignPerson");
         res.json(project)
         return project;
+    } catch (err) {
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}
+//Get project by Task (token)
+exports.getProjecttask = async (req, res) => {
+
+    const auth = req.headers.authorization
+    const decodedToken = jwt.decode(auth)
+    try {
+        const task = await Project.find({
+            taskManager: {
+                $in: [decodedToken]
+            }
+        }).populate("taskManager");
+        res.json(task)
+        return task;
     } catch (err) {
         return res.status(500).json({ message: "Internal server error" });
     }
