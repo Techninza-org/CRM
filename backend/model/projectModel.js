@@ -31,7 +31,7 @@ const projectSchema = new Schema({
     },
     description: {
         type: String
-    }
+    },
 });
 
 const Project = mongoose.model('Project', projectSchema);

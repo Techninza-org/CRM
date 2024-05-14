@@ -14,7 +14,7 @@ exports.createTask = async (req, res) => {
     const taskAssigner = req.body.taskAssignPerson;
     const filteredTaskAssigner = taskAssigner.filter((task) => task !== "");
     req.body.taskImages = newPath;
-    const task = new Task({...req.body, taskAssignPerson:filteredTaskAssigner});
+    const task = new Task({ ...req.body, taskAssignPerson: filteredTaskAssigner });
     // console.log(task);
     const savedTask = await task.save();
     res.status(201).json(savedTask);
@@ -22,7 +22,6 @@ exports.createTask = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
 
 // Get all tasks
 exports.getAllTasks = async (req, res) => {
@@ -33,7 +32,6 @@ exports.getAllTasks = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
 
 // Get a single task
 exports.getTaskById = async (req, res) => {
@@ -51,21 +49,19 @@ exports.getTaskById = async (req, res) => {
 exports.searchTask = async (req, res) => {
   const queries = req.query;
   if (!queries.id) {
-      return res.status(400).json({ message: "id is required to search" });
+    return res.status(400).json({ message: "id is required to search" });
   }
 
   try {
-      const q_regex = new RegExp(queries.id, 'i');
-      // console.log(q_regex);
-      const proj = await Task.find({ projectName: { $regex: q_regex } });
-      return res.status(200).json(proj);
+    const q_regex = new RegExp(queries.id, 'i');
+    // console.log(q_regex);
+    const proj = await Task.find({ projectName: { $regex: q_regex } });
+    return res.status(200).json(proj);
   } catch (err) {
-      console.error(err);
-      return res.status(500).json({ message: "Internal server error" });
+    console.error(err);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
-
-
 
 // Update a task
 exports.updateTaskById = async (req, res) => {
@@ -82,7 +78,6 @@ exports.updateTaskById = async (req, res) => {
   }
 };
 
-
 // Delete a task
 exports.deleteTaskById = async (req, res) => {
   try {
@@ -95,7 +90,6 @@ exports.deleteTaskById = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
 
 //Get task by Task Assigne Person (token)
 exports.getTask = async (req, res) => {
@@ -114,3 +108,22 @@ exports.getTask = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 }
+
+// Update task status to "done"
+exports.updateTaskStatus = async (req, res) => {
+  const body = req.body;
+  const { isCompleted } = body;
+  try {
+    const updatedTask = await Task.findByIdAndUpdate(
+      req.params.id,
+      { isCompleted },
+      { new: true }
+    );
+    if (!updatedTask) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
+    res.json(updatedTask);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};

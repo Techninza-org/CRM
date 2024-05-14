@@ -53,7 +53,6 @@ const Project = () => {
   const [selectProject, setSelectProject] = useState([]);
   const [loginUserId, setLoginUserId] = useState([]);
   // console.log(selectProject);
-
   useEffect(() => {
     const Token = localStorage.getItem("emp_token");
     const UserDetails = JSON.parse(localStorage.getItem("emp_user"));
@@ -81,7 +80,6 @@ const Project = () => {
   const [currentStatus, setCurrentStatus] = useState("");
   const [user_id, setUser_id] = useState("");
   const [project_id, setProject_id] = useState("");
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     // console.log(user_id);
@@ -112,31 +110,30 @@ const Project = () => {
       console.error(error.message);
     }
   };
-
   const [projectStatuses, setProjectStatuses] = useState([]);
-
+  const [projectId, setProjectId] = useState("");
   useEffect(() => {
     const fetchProjectStatuses = async () => {
       try {
         const response = await fetch(
           `http://localhost:8000/api/project-status/${projectId}`
         );
-        // console.log(response)
         if (!response.ok) {
           throw new Error("Failed to fetch project statuses");
         }
         const data = await response.json();
+        // console.log(data);
         setProjectStatuses(data);
       } catch (error) {
         console.error(error.message);
       }
     };
+    if (projectId) {
+      fetchProjectStatuses();
+    }
+  }, [projectId]);
 
-    fetchProjectStatuses();
-  }, []);
-
-  // delete
-  const [projectId, setProjectId] = useState("");
+  // Delete Status
 
   const handleDelete = async () => {
     try {
@@ -177,7 +174,7 @@ const Project = () => {
                     <div className="card-header py-3 px-0 d-sm-flex align-items-center  justify-content-between border-bottom">
                       <h3 className="fw-bold py-3 mb-0">Projects</h3>
                       <div className="d-flex me-2">
-                        <button
+                        {/* <button
                           type="button"
                           className="btn btn-dark me-1 w-sm-100"
                           data-bs-toggle="modal"
@@ -185,7 +182,7 @@ const Project = () => {
                         >
                           <i className="icofont-plus-circle me-2 fs-6" />
                           Create Project
-                        </button>
+                        </button> */}
                         <div className="order-0 ">
                           <div className="input-group">
                             <input
@@ -234,11 +231,12 @@ const Project = () => {
                         >
                           <thead>
                             <tr>
-                              <th>Project Name</th>
-                              <th>Project Category</th>
+                            <th>Project Name</th>
+                              {/* <th>Project Category</th> */}
                               <th>Start Date</th>
                               <th>End Date</th>
                               <th>Members</th>
+                              <th>Progress</th>
                               <th>Add Status</th>
                             </tr>
                           </thead>
@@ -259,8 +257,12 @@ const Project = () => {
                                     <Link to="/employee-tasks">
                                       {project.projectName}
                                     </Link>
+                                    <p/>
+                                    <figcaption class="blockquote-footer">
+                                    {project.projectCategory}
+                                    </figcaption>
                                   </td>
-                                  <td>{project.projectCategory}</td>
+                                  {/* <td>{project.projectCategory}</td> */}
                                   <td>
                                     {getFormattedDate(project.projectStartDate)}
                                   </td>
@@ -273,11 +275,15 @@ const Project = () => {
                                     )}
                                   </td>
                                   <td>
+                                    <div className="d-flex justify-content-center" >0%</div>
+                                  </td>
+                                  <td>
                                     <button
                                       className="d-flex justify-content-center bi bi-stopwatch btn outline-secondary text-primary"
                                       data-bs-toggle="modal"
                                       data-bs-target="#addUser"
                                       onClick={() => {
+                                        // console.log("abc: " + project._id);
                                         setProjectId(project._id);
                                         setSelectProject(project);
                                       }}
@@ -339,8 +345,9 @@ const Project = () => {
                       <form onSubmit={handleSubmit}>
                         <div className="row g-3 mb-3">
                           <div className="col">
-                            <label className="form-label"
-                            hidden>Employee Name</label>
+                            <label className="form-label" hidden>
+                              Employee Name
+                            </label>
                             <select
                               className="form-select"
                               aria-label="Default select Project Category"
@@ -363,7 +370,7 @@ const Project = () => {
                           <label htmlFor="currentStatus">Status:</label>
                           <textarea
                             rows=""
-                            cols="100"
+                            cols="95"
                             type="text"
                             id="currentStatus"
                             value={currentStatus}
@@ -400,12 +407,20 @@ const Project = () => {
                                 className="d-flex align-items-center flex-column flex-sm-column flex-md-column flex-lg-row"
                               >
                                 <div className="no-thumbnail mb-2 mb-md-0">
-                                <img
+                                  <img
                                     className="avatar md rounded-circle"
-                                    src={"http://localhost:8000/"+status.user_id.employeeImage}
+                                    src={
+                                      "http://localhost:8000/" +
+                                      status.user_id.employeeImage
+                                    }
                                     alt=""
                                   />
-                                  <p className="text-muted text-uppercase"style={{width: "6rem"}}>{status.user_id.employeeName}</p>
+                                  <p
+                                    className="text-muted text-uppercase"
+                                    style={{ width: "6rem" }}
+                                  >
+                                    {status.user_id.employeeName}
+                                  </p>
                                 </div>
                                 <div className="flex-fill ms-3 text-truncate">
                                   <p className="mb-0  fw-bold">
@@ -416,7 +431,7 @@ const Project = () => {
                                   </span>
                                 </div>
                                 <div className="members-action">
-                                  <div className="btn-group">
+                                  {/* <div className="btn-group">
                                     <div className="btn-group">
                                       <button
                                         type=""
@@ -428,7 +443,7 @@ const Project = () => {
                                         }}
                                       ></button>
                                     </div>
-                                  </div>
+                                  </div> */}
                                 </div>
                               </div>
                             );

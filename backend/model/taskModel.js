@@ -12,7 +12,7 @@ const taskSchema = new Schema({
         required: true
     },
     taskImages: [{
-        type: String, 
+        type: String,
         // required: true
     }],
     taskStartDate: {
@@ -31,12 +31,11 @@ const taskSchema = new Schema({
         type: String,
         required: true
     },
-    taskStatus: {
-        type: String,
-        default: "notStarted",
+    isCompleted: {
+        type: Boolean,
+        default: false,
         required: true
     },
-    // notstarted , started, complete
     description: {
         type: String,
     }

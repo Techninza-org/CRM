@@ -70,8 +70,6 @@ router.post("/employeelogin", async (req, res) => {
 
 })
 
-
-
 // Get all employees
 router.get('/employees', async (req, res) => {
     try {
@@ -81,8 +79,6 @@ router.get('/employees', async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 });
-
-
 
 // Get a single employee
 router.get('/employees/:employeeId', async (req, res) => {
@@ -113,8 +109,6 @@ router.get("/search", async (req, res) => {
     return res.sendStatus(500);
 })
 
-
-
 // Update an employee
 router.put('/employees/:employeeId', upload.single("employeeImage"), async (req, res) => {
     try {
@@ -127,8 +121,6 @@ router.put('/employees/:employeeId', upload.single("employeeImage"), async (req,
         res.status(400).json({ message: err.message });
     }
 });
-
-
 
 // Delete an employee
 router.delete('/employees/:employeeId', async (req, res) => {

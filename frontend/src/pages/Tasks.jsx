@@ -39,6 +39,7 @@ const Tasks = () => {
       for (let key in formData) {
         formDataToSend.append(key, formData[key]);
       }
+      // console.log(selectedEmployees);
       for (let obj of selectedEmployees) {
         // console.log(obj);
         formDataToSend.append("taskAssignPerson", obj.value);
@@ -61,7 +62,6 @@ const Tasks = () => {
 
   //GET TASK
   const [tasks, setTasks] = useState([]);
-
   useEffect(() => {
     const fetchTasks = async () => {
       try {
@@ -82,7 +82,7 @@ const Tasks = () => {
       const response = await axios.delete(
         `http://localhost:8000/api/tasks/${deletableId}`
       );
-      console.log(response.data);
+      // console.log(response.data);
       window.location.reload();
     } catch (error) {
       console.error("Error:", error);
@@ -237,8 +237,7 @@ const Tasks = () => {
                     
                     <div className="row clearfix  g-3" key={task._id}>
                       <div className="col-lg-12 col-md-12 flex-column">
-                        <div className="
-                         taskboard g-3 py-xxl-4">
+                        <div className="taskboard g-3 py-xxl-4">
                           <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-12 mt-xxl-4 mt-xl-4 mt-lg-4 mt-md-4 mt-sm-4 mt-4">
                             <div className="">
                               <div className="dd" data-plugin="nestable">
@@ -249,7 +248,15 @@ const Tasks = () => {
                                       <h6 className="fw-bold py-3 mb-0">
                                         {task.projectName}
                                       </h6>
-                                      <div>
+                                      
+                                      </div>
+                                      
+                                      <div className="task-info d-flex align-items-center justify-content-between">
+                                        <h6 className="light-success-bg py-1 px-2 rounded-1 d-inline-block fw-bold small-14 mb-0">
+                                          {task.taskCategory}
+                                        </h6>
+                                        <div className="task-priority d-flex flex-column align-items-center justify-content-center">
+                                        <div>
                                       <div className="avatar-list avatar-list-stacked m-0 d-flex justify-content-center">
                                             <img
                                               className="avatar rounded-circle small-avt"
@@ -265,14 +272,6 @@ const Tasks = () => {
                                             {task.taskAssignPerson.employeeName}
                                           </p>
                                           </div>
-                                      </div>
-                                      
-                                      <div className="task-info d-flex align-items-center justify-content-between">
-                                        <h6 className="light-success-bg py-1 px-2 rounded-1 d-inline-block fw-bold small-14 mb-0">
-                                          {task.taskCategory}
-                                        </h6>
-                                        <div className="task-priority d-flex flex-column align-items-center justify-content-center">
-                                          
                                           <span className="badge bg-danger text-end mt-2">
                                             {task.taskPriority}
                                           </span>
@@ -591,6 +590,7 @@ const Tasks = () => {
                   </div>
                 </div>
               </div>
+
               {/* Create task*/}
               <div
                 className="modal fade"
@@ -658,29 +658,24 @@ const Tasks = () => {
                         >
                           <option selected="Add Category">Add Category</option>
                           <option value={"UI/UX Design"}>UI/UX Design</option>
-                          <option value={"Website Design"}>
-                            Website Design
-                          </option>
-                          <option value={"App Development"}>
-                            App Development
-                          </option>
-                          <option value={"Quality Assurance"}>
-                            Quality Assurance
-                          </option>
-                          <option value={"Development"}>Development</option>
-                          <option value={"Backend Development"}>
-                            Backend Development
-                          </option>
-                          <option value={"Software Testing"}>
-                            Software Testing
-                          </option>
-                          <option value={"Website Design"}>
-                            Website Design
-                          </option>
-                          <option value={"Marketing"}>Marketing</option>
-                          <option value={"SEO"}>SEO</option>
-                          <option value={"Other"}>Other</option>
-                          <option value={10}>Other</option>
+                        <option value={"Website Developement"}>Website Developement</option>
+                        <option value={"App Development"}>
+                          App Development
+                        </option>
+                        {/* <option value={"Quality Assurance"}>
+                          Quality Assurance
+                        </option>
+                        <option value={"Development"}>Development</option>
+                        <option value={"Backend Development"}>
+                          Backend Development
+                        </option>
+                        <option value={"Software Testing"}>
+                          Software Testing
+                        </option>
+                        <option value={"Website Design"}>Website Design</option> */}
+                        <option value={"Digital Marketing"}>Digital Marketing</option>
+                        {/* <option value={"SEO"}>SEO</option> */}
+                        {/* <option value={"Other"}>Other</option> */}
                         </select>
                       </div>
                       <div className="mb-3">
@@ -808,6 +803,7 @@ const Tasks = () => {
                   </div>
                 </div>
               </div>
+
               {/* Modal  Delete Task*/}
               <div
                 className="modal fade"
@@ -857,6 +853,7 @@ const Tasks = () => {
                   </div>
                 </div>
               </div>
+
             </>
           </>
         </div>

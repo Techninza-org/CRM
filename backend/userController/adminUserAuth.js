@@ -38,7 +38,7 @@ exports.loginUser = async (req, res,next) => {
     if (user) {
       const match = await bcrypt.compare(password, user.password);
       if (match) {
-        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '30d' });
+        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '100d' });
         res.json({ token, user, userIp });
       } else {
         res.status(401).json('Incorrect email or password');

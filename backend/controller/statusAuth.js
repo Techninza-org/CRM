@@ -28,19 +28,19 @@ router.get('/project-status', async (req, res) => {
     }
 });
 
-// Get a single project status
-router.get('/project-status/:id', async (req, res) => {
+// Get project status by project ID
+router.get('/project-status/:project_id', async (req, res) => {
     try {
-        const projectStatus = await ProjectStatus.findById(req.params.id).populate("user_id");
+        const projectStatus = await ProjectStatus.find({ project_id: req.params.project_id }).populate("user_id");
+        console.log(projectStatus);
         if (!projectStatus) {
-            return res.status(404).json({ message: 'Project status not found' });
+            return res.status(404).json({ message: "Project status not found" });
         }
         res.json(projectStatus);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
-
 
 // Delete project
 router.delete('/project-status/:id', async (req, res) => {

@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const Project = require('../model/projectModel');
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+const Task = require('../model/taskModel');
 
 // Create a new project
 exports.createProject = async (req, res) => {
@@ -28,18 +29,33 @@ exports.createProject = async (req, res) => {
     }
 };
 
-
 // Get all projects
 exports.getAllProjects = async (req, res) => {
     try {
         const projects = await Project.find().populate("taskAssignPerson");
-        console.log(projects);
-        res.json(projects);
+        const updatedProjects = new Array(projects.length);
+        for (let i = 0; i < projects.length; i++) {
+            const project = projects[i];
+            const tasks = await Task.find({ projectName: project.projectName });
+            // console.log(tasks);
+            const totalTasks = tasks.length;
+            let completedTaskNum = 0;
+            for (let i = 0; i < totalTasks; i++) {
+                if (tasks[i].isCompleted === true) {
+                    completedTaskNum++;
+                }
+            }
+            const percent = (completedTaskNum / totalTasks * 100 || 0).toFixed(2);
+            updatedProjects[i] = {
+                ...project._doc,
+                progress: percent
+            }
+        }
+        res.json(updatedProjects);
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 };
-
 
 // Get a single project by projectId
 exports.getProjectById = async (req, res) => {
@@ -71,7 +87,6 @@ exports.searchProjects = async (req, res) => {
     }
 };
 
-
 // Update a project
 exports.updateProject = async (req, res) => {
     try {
@@ -88,7 +103,6 @@ exports.updateProject = async (req, res) => {
     }
 };
 
-
 // Delete a project
 exports.deleteProject = async (req, res) => {
     try {
@@ -101,8 +115,6 @@ exports.deleteProject = async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 };
-
-
 
 //Get project by Task Assigne Person (token)
 exports.getProject = async (req, res) => {

@@ -6,6 +6,8 @@ import axios from "axios";
 import { MultiSelect } from "react-multi-select-component";
 
 const Project = () => {
+
+
   // CREATE PROJECT
   const [formData, setFormData] = useState({
     projectName: "",
@@ -57,6 +59,7 @@ const Project = () => {
     }
   };
 
+
   // GET ALL PROJECTS
   const [projects, setProjects] = useState([]);
   useEffect(() => {
@@ -74,6 +77,7 @@ const Project = () => {
     fetchProjects();
   }, []);
 
+
   //DELETE PROJECT
   const [deletableId, setDeletableId] = useState("");
   const handleDeleteProject = async () => {
@@ -87,6 +91,7 @@ const Project = () => {
       console.error("Error:", error);
     }
   };
+
 
   //UPDATE PROJECT
   const [projectFormData, setProjectFormData] = useState({
@@ -194,6 +199,7 @@ const Project = () => {
     }
   };
 
+
   // GET SINGLE PROJECT
   const [searchQuery, setSearchQuery] = useState("");
   const handleSearch = async (searchQuery) => {
@@ -235,10 +241,8 @@ const Project = () => {
 
     fetchData();
   }, []);
-
   const [employees, setEmployees] = useState([]);
   const [selectedEmployees, setSelectedEmployees] = useState([]);
-
   // console.log(selectedEmployees);
   const assignEmployee = employees.map((emp) => {
     return {
@@ -247,34 +251,36 @@ const Project = () => {
     };
   });
 
+
   // Status
   const [selectProject, setSelectProject] = useState([]);
-  const [project_id, setProject_id] = useState("");
-
   const [projectStatuses, setProjectStatuses] = useState([]);
-
+  const [projectId, setProjectId] = useState("");
   useEffect(() => {
     const fetchProjectStatuses = async () => {
       try {
         const response = await fetch(
-          "http://localhost:8000/api/project-status"
+          `http://localhost:8000/api/project-status/${projectId}`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch project statuses");
         }
         const data = await response.json();
+        // console.log(data);
         setProjectStatuses(data);
       } catch (error) {
         console.error(error.message);
       }
     };
+    if (projectId) {
+      fetchProjectStatuses();
+    }
+  }, [projectId]);
 
-    fetchProjectStatuses();
-  }, []);
+
 
   //GET TASK
   const [tasks, setTasks] = useState([]);
-
   useEffect(() => {
     const fetchTasks = async () => {
       try {
@@ -287,21 +293,8 @@ const Project = () => {
 
     fetchTasks();
   }, []);
-  
 // console.log(tasks);
 
-//calculate task
-const calculateProgress = () => {
-  let totalCompleted = 0;
-for(let i = 0; i< tasks.length; i++){
-  const task = tasks[i];
-  if(task.status === "completed"){
-    totalCompleted ++;
-  }
-}
-  const totalTasks = tasks.length;
-  return totalTasks === 0 ? 0 : Math.round((totalCompleted / totalTasks) * 100);
-};
 
 
 
@@ -371,6 +364,7 @@ for(let i = 0; i< tasks.length; i++){
                     </div>
                   </div>
                 </div>{" "}
+
                 {/* Row end  */}
                 <div className="row g-3 mb-3 row-deck">
                   <div className="col-md-12">
@@ -413,11 +407,9 @@ for(let i = 0; i< tasks.length; i++){
                                 <tr key={project.id}>
                                   <td>
                                     <Link to="/tasks">{project.projectName}</Link>
-                                    <p className="text-muted text-sm">
-                                      
-                                    </p>
+                                    <p/>
                                     <figcaption class="blockquote-footer">
-                                    {project.projectCategory}{" "}
+                                    {project.projectCategory}
                                     </figcaption>
                                   </td>
                                   {/* <td>{project.projectCategory}</td> */}
@@ -433,7 +425,7 @@ for(let i = 0; i< tasks.length; i++){
                                     )}
                                   </td>
                                   <td>
-                                    <div className="d-flex justify-content-center" >{calculateProgress()}%</div>
+                                    <div className="d-flex justify-content-center" >{project.progress}%</div>
                                   </td>
                                   <td>
                                     <button
@@ -461,7 +453,7 @@ for(let i = 0; i< tasks.length; i++){
                                       data-bs-toggle="modal"
                                       data-bs-target="#addUser"
                                       onClick={() => {
-                                        setProject_id(project._id);
+                                        setProjectId(project._id);
                                         setSelectProject(project);
                                       }}
                                     ></button>
@@ -529,13 +521,13 @@ for(let i = 0; i< tasks.length; i++){
                         value={formData.projectCategory}
                         onChange={handleChange}
                       >
-                        <option selected=""></option>
+                        <option selected="">Add Category</option>
                         <option value={"UI/UX Design"}>UI/UX Design</option>
-                        <option value={"Website Design"}>Website Design</option>
+                        <option value={"Website Developement"}>Website Developement</option>
                         <option value={"App Development"}>
                           App Development
                         </option>
-                        <option value={"Quality Assurance"}>
+                        {/* <option value={"Quality Assurance"}>
                           Quality Assurance
                         </option>
                         <option value={"Development"}>Development</option>
@@ -545,10 +537,10 @@ for(let i = 0; i< tasks.length; i++){
                         <option value={"Software Testing"}>
                           Software Testing
                         </option>
-                        <option value={"Website Design"}>Website Design</option>
-                        <option value={"Marketing"}>Marketing</option>
-                        <option value={"SEO"}>SEO</option>
-                        <option value={"Other"}>Other</option>
+                        <option value={"Website Design"}>Website Design</option> */}
+                        <option value={"Digital Marketing"}>Digital Marketing</option>
+                        {/* <option value={"SEO"}>SEO</option> */}
+                        {/* <option value={"Other"}>Other</option> */}
                       </select>
                     </div>
 
@@ -714,11 +706,11 @@ for(let i = 0; i< tasks.length; i++){
                       >
                         <option selected=""></option>
                         <option value={"UI/UX Design"}>UI/UX Design</option>
-                        <option value={"Website Design"}>Website Design</option>
+                        <option value={"Website Developement"}>Website Developement</option>
                         <option value={"App Development"}>
                           App Development
                         </option>
-                        <option value={"Quality Assurance"}>
+                        {/* <option value={"Quality Assurance"}>
                           Quality Assurance
                         </option>
                         <option value={"Development"}>Development</option>
@@ -728,10 +720,10 @@ for(let i = 0; i< tasks.length; i++){
                         <option value={"Software Testing"}>
                           Software Testing
                         </option>
-                        <option value={"Website Design"}>Website Design</option>
-                        <option value={"Marketing"}>Marketing</option>
-                        <option value={"SEO"}>SEO</option>
-                        <option value={"Other"}>Other</option>
+                        <option value={"Website Design"}>Website Design</option> */}
+                        <option value={"Digital Marketing"}>Digital Marketing</option>
+                        {/* <option value={"SEO"}>SEO</option> */}
+                        {/* <option value={"Other"}>Other</option> */}
                       </select>
                     </div>
                     <div className="mb-3">
@@ -875,6 +867,7 @@ for(let i = 0; i< tasks.length; i++){
                 </div>
               </div>
             </div>
+
             {/* Modal  Delete Folder/ File*/}
             <div
               className="modal fade"
@@ -924,6 +917,7 @@ for(let i = 0; i< tasks.length; i++){
                 </div>
               </div>
             </div>
+
             {/* Status Modal */}
             <div
               className="modal fade"
@@ -1019,6 +1013,7 @@ for(let i = 0; i< tasks.length; i++){
                 </div>
               </div>
             </div>
+
           </>
         </div>
       </div>
