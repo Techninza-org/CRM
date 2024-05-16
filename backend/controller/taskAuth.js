@@ -4,24 +4,54 @@ const jwt = require('jsonwebtoken')
 
 
 // Create a new task
+// exports.createTask = async (req, res) => {
+//   try {
+//     // console.log(req.file);
+//     const path = req.file?.path;
+//     // console.log(path);
+//     const newPath = path.replace('uploads\\', "");
+//     // console.log(newPath);
+//     const taskAssigner = req.body.taskAssignPerson;
+//     const filteredTaskAssigner = taskAssigner.filter((task) => task !== "");
+//     req.body.taskImages = newPath;
+//     const task = new Task({ ...req.body, taskAssignPerson: filteredTaskAssigner });
+//     // console.log(task);
+//     const savedTask = await task.save();
+//     res.status(201).json(savedTask);
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// };
 exports.createTask = async (req, res) => {
   try {
-    // console.log(req.file);
-    const path = req.file?.path;
-    // console.log(path);
-    const newPath = path.replace('uploads\\', "");
-    // console.log(newPath);
+    // Extracting paths of uploaded files
+    const paths = req.files.map(file => file.path);
+    
+    // Removing 'uploads\' from paths
+    const newPaths = paths.map(path => path.replace('uploads\\', ""));
+    // console.log(newPaths);
+    
+    // Filtering task assigners to remove empty strings
     const taskAssigner = req.body.taskAssignPerson;
-    const filteredTaskAssigner = taskAssigner.filter((task) => task !== "");
-    req.body.taskImages = newPath;
-    const task = new Task({ ...req.body, taskAssignPerson: filteredTaskAssigner });
-    // console.log(task);
+    const filteredTaskAssigner = taskAssigner.filter(task => task !== "");
+    
+    // Adding paths of uploaded images to req.body
+    req.body.taskImages = newPaths;
+    
+    // Creating a new Task instance
+    const task = new Task({ ...req.body, taskAssignPerson: filteredTaskAssigner});
+    
+    // Saving the task to the database
     const savedTask = await task.save();
+    
+    // Sending the saved task as response
     res.status(201).json(savedTask);
   } catch (error) {
+    // Handling errors
     res.status(500).json({ error: error.message });
   }
 };
+
 
 // Get all tasks
 exports.getAllTasks = async (req, res) => {
@@ -32,6 +62,7 @@ exports.getAllTasks = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 // Get a single task
 exports.getTaskById = async (req, res) => {
@@ -45,7 +76,6 @@ exports.getTaskById = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
 exports.searchTask = async (req, res) => {
   const queries = req.query;
   if (!queries.id) {
@@ -62,6 +92,7 @@ exports.searchTask = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 // Update a task
 exports.updateTaskById = async (req, res) => {

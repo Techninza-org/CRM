@@ -13,7 +13,7 @@ exports.createProject = async (req, res) => {
         const newPath = path.replace('uploads\\', "");
         // console.log(req.body);
         const taskAssigner = req.body.taskAssignPerson;
-        const taskManage = req.body.taskManager
+        // const taskManage = req.body.taskManager
         // console.log(taskAssigner)
         const filteredTaskAssigner = taskAssigner?.filter((task) => task !== "");
         // const filteredTaskManager = taskManage?.filter((task) => task !== "");

@@ -6,6 +6,10 @@ const projectSchema = new Schema({
         type: String,
         required: true
     },
+    projectDate:{
+        type: Date,
+        default:Date.now
+    },
     projectCategory: {
         type: String,
         required: true

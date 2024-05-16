@@ -396,21 +396,46 @@ const Project = () => {
                             {projects.map((project) => {
                               const getFormattedDate = (date) => {
                                 const newDate = new Date(date);
-                                const day = newDate.getDate();
-                                const month = newDate.getMonth() + 1;
+                                let day = newDate.getDate();
+                                let month = newDate.getMonth() + 1;
                                 const year = newDate.getFullYear();
-
-                                return `${day}/${month}/${year}`;
-                              };
+                                let hour = newDate.getHours();
+                                let min = newDate.getMinutes();
+                                let period = 'AM';
+                            
+                                // Convert hours to 12-hour format
+                                if (hour === 0) {
+                                    hour = 12;
+                                } else if (hour >= 12) {
+                                    period = 'PM';
+                                    if (hour > 12) {
+                                        hour -= 12;
+                                    }
+                                }
+        
+                                // Adding leading zero to minutes if necessary
+                                if (min < 10) {
+                                    min = '0' + min;
+                                }
+                            
+                                // Adding leading zero to day and month if necessary
+                                if (day < 10) {
+                                    day = '0' + day;
+                                }
+                                if (month < 10) {
+                                    month = '0' + month;
+                                }
+                            
+                                return `${day}/${month}/${year} --${hour}:${min} ${period}`;
+                            };                            
 
                               return (
                                 <tr key={project.id}>
                                   <td>
+                                  {/* <figcaption class="blockquote-footer">{project.projectCategory}</figcaption> */}
                                     <Link to="/tasks">{project.projectName}</Link>
                                     <p/>
-                                    <figcaption class="blockquote-footer">
-                                    {project.projectCategory}
-                                    </figcaption>
+                                    <figcaption class="blockquote-footer">{getFormattedDate(project.projectDate)}</figcaption>
                                   </td>
                                   {/* <td>{project.projectCategory}</td> */}
                                   <td>

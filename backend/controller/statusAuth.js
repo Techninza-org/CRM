@@ -32,7 +32,7 @@ router.get('/project-status', async (req, res) => {
 router.get('/project-status/:project_id', async (req, res) => {
     try {
         const projectStatus = await ProjectStatus.find({ project_id: req.params.project_id }).populate("user_id");
-        console.log(projectStatus);
+        // console.log(projectStatus);
         if (!projectStatus) {
             return res.status(404).json({ message: "Project status not found" });
         }

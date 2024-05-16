@@ -140,7 +140,108 @@ const Tasks = () => {
     };
   });
 
-  // GET ALL PROJECTS
+  //UPDATE PROJECT
+  const [taskFormData, setTaskFormData] = useState({
+    projectName: "",
+    taskCategory: "",
+    taskImages: null,
+    taskStartDate: "",
+    taskEndDate: "",
+    taskAssignPerson: "",
+    taskPriority: "",
+    description: "",
+  });
+  const [toEdit, setToEdit] = useState("");
+  // console.log(projectFormData);
+  useEffect(() => {
+    // Assuming fetchData() fetches the data of the item to edit based on its ID
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8000/api/tasks/${toEdit}`
+        );
+        const { data } = response;
+        let formattedDate = "";
+        const fDate = (data) => {
+          const sd = new Date(data);
+          const sy = sd.getFullYear();
+          const sm =
+            sd.getMonth() + 1 < 10
+              ? "0" + (Number(sd.getMonth()) + 1)
+              : sd.getMonth();
+          const sdd = sd.getDate() < 10 ? "0" + sd.getDate() : sd.getDate();
+          formattedDate = `${sy}-${sm}-${sdd}`;
+          return formattedDate;
+        };
+        const fStartDate = fDate(data.taskStartDate);
+        const fEndDate = fDate(data.taskEndDate);
+        // console.log(fStartDate);
+        setTaskFormData({
+          projectName: data.projectName,
+          taskCategory: data.taskCategory,
+          taskImages: data.taskImages, // Assuming this is a URL or a reference to the image
+          taskStartDate: fStartDate,
+          taskEndDate: fEndDate,
+          taskAssignPerson: data.taskAssignPerson,
+          description: data.description,
+        });
+
+        // console.log();
+
+        // startDateEdit = formattedDate;
+
+        const selectedEmp = data.taskAssignPerson?.map((o) => {
+          return {
+            label: o.employeeName,
+            value: o._id,
+          };
+        });
+        setSelectedEmployees(selectedEmp);
+        // console.log(selectedEmp);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    if (toEdit) {
+      fetchData();
+    }
+  }, [toEdit]);
+  const taskHandleChange = (e) => {
+    const { name, value, files } = e.target;
+    // console.log(value);
+    setTaskFormData((prevState) => ({
+      ...prevState,
+      [name]: files ? files[0] : value,
+    }));
+  };
+  const taskHandleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const formDataToSend = new FormData();
+      delete taskFormData?.taskAssignPerson;
+      for (const key in taskFormData) {
+        formDataToSend.append(key, taskFormData[key]);
+      }
+      for (let obj of selectedEmployees) {
+        formDataToSend.append("taskAssignPerson", obj.value);
+      }
+      const response = await axios.put(
+        `http://localhost:8000/api/tasks/${toEdit}`, // Change to your update API endpoint
+        formDataToSend,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      window.location.reload(); // Refresh the page after successful update
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+  
+  // GET ALL PROJECTS IN INPUT
   const [projects, setProjects] = useState([]);
   useEffect(() => {
     const fetchProjects = async () => {
@@ -154,9 +255,6 @@ const Tasks = () => {
 
     fetchProjects();
   }, []);
-
-
-
 
 
   return (
@@ -234,7 +332,6 @@ const Tasks = () => {
                   };
 
                   return (
-                    
                     <div className="row clearfix  g-3" key={task._id}>
                       <div className="col-lg-12 col-md-12 flex-column">
                         <div className="taskboard g-3 py-xxl-4">
@@ -245,32 +342,44 @@ const Tasks = () => {
                                   <li className="dd-item" data-id={1}>
                                     <div className="dd-handle">
                                       <div className="d-flex justify-content-between">
-                                      <h6 className="fw-bold py-3 mb-0">
-                                        {task.projectName}
-                                      </h6>
-                                      
+                                        <h6 className="fw-bold py-3 mb-0">
+                                          {task.projectName}
+                                        </h6>
                                       </div>
-                                      
+
                                       <div className="task-info d-flex align-items-center justify-content-between">
                                         <h6 className="light-success-bg py-1 px-2 rounded-1 d-inline-block fw-bold small-14 mb-0">
                                           {task.taskCategory}
                                         </h6>
                                         <div className="task-priority d-flex flex-column align-items-center justify-content-center">
-                                        <div>
-                                      <div className="avatar-list avatar-list-stacked m-0 d-flex justify-content-center">
-                                            <img
-                                              className="avatar rounded-circle small-avt"
-                                              src={
-                                                "http://localhost:8000/" +
+                                          <div>
+                                            <div className="avatar-list avatar-list-stacked m-0 d-flex justify-content-center">
+                                              <img
+                                                className="avatar rounded-circle small-avt"
+                                                src={
+                                                  "http://localhost:8000/" +
+                                                  task.taskAssignPerson
+                                                    .employeeImage
+                                                }
+                                                alt=""
+                                              />
+                                            </div>
+                                            {/* <div className="avatar-list avatar-list-stacked m-0 d-flex justify-content-center">
+                                              <img
+                                                className="avatar rounded-circle small-avt"
+                                                src={
+                                                  "http://localhost:8000/" +
+                                                  task.taskImages
+                                                }
+                                                alt=""
+                                              />
+                                            </div> */}
+                                            <p>
+                                              {
                                                 task.taskAssignPerson
-                                                  .employeeImage
+                                                  .employeeName
                                               }
-                                              alt=""
-                                            />
-                                          </div>
-                                          <p>
-                                            {task.taskAssignPerson.employeeName}
-                                          </p>
+                                            </p>
                                           </div>
                                           <span className="badge bg-danger text-end mt-2">
                                             {task.taskPriority}
@@ -282,10 +391,10 @@ const Tasks = () => {
                                       </p>
                                       <div className="tikit-info row g-3 align-items-center">
                                         <div className="col-sm">
-                                          <ul className="d-flex list-unstyled align-items-center flex-wrap">
+                                          <ul className="d-flex list-unstyled align-items-center justify-content-between">
                                             <li className="me-2">
-                                              <div className="d-flex align-items-center">
-                                                Start Date :
+                                              <div className="d-flex align-items-center fw-bold">
+                                                Start:
                                                 <span className="ms-1">
                                                   {getFormattedDate(
                                                     task.taskStartDate
@@ -294,8 +403,8 @@ const Tasks = () => {
                                               </div>
                                             </li>
                                             <li className="me-2">
-                                              <div className="d-flex align-items-center">
-                                                End Date :
+                                              <div className="d-flex align-items-center fw-bold">
+                                                End:
                                                 <span className="ms-1">
                                                   {getFormattedDate(
                                                     task.taskEndDate
@@ -306,28 +415,32 @@ const Tasks = () => {
                                           </ul>
                                         </div>
                                         <div className="d-flex justify-content-center align-items-center">
-                                          {/* <button
-                                            type="button"
-                                            className="btn light-danger-bg text-end small text-truncate light-danger-bg py-1 px-2 rounded-1 d-inline-block fw-bold small"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#createtask"
-                                            onClick={() => {
-                                              setDeletableId(task._id);
-                                            }}
+                                          <div
+                                            className="btn-group"
+                                            role="group"
+                                            aria-label="Basic outlined example"
                                           >
-                                            Edit
-                                          </button> */}
-                                          <button
-                                            type="button"
-                                            className="btn light-danger-bg text-end small text-truncate light-danger-bg py-1 px-2 rounded-1 d-inline-block fw-bold small"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#dremovetask"
-                                            onClick={() => {
-                                              setDeletableId(task._id);
-                                            }}
-                                          >
-                                            Delete
-                                          </button>
+                                            <button
+                                              type="button"
+                                              className="btn btn-outline-secondary"
+                                              data-bs-toggle="modal"
+                                              data-bs-target="#editemp"
+                                              onClick={() => setToEdit(task._id)}
+                                              >
+                                              <i className="icofont-edit text-success" />
+                                            </button>
+                                            <button
+                                              type="button"
+                                              className="btn btn-outline-secondary"
+                                              data-bs-toggle="modal"
+                                              data-bs-target="#dremovetask"
+                                              onClick={() => {
+                                                setDeletableId(task._id);
+                                              }}
+                                            >
+                                              <i className="icofont-ui-delete text-danger" />
+                                            </button>
+                                          </div>
                                         </div>
                                       </div>
                                     </div>
@@ -344,7 +457,7 @@ const Tasks = () => {
               </div>
             </div>
             <>
-              {/* Modal Members*/}
+              {/* Modal Members */}
               <div
                 className="modal fade"
                 id="addUser"
@@ -591,7 +704,7 @@ const Tasks = () => {
                 </div>
               </div>
 
-              {/* Create task*/}
+              {/* Create task */}
               <div
                 className="modal fade"
                 id="createtask"
@@ -658,11 +771,13 @@ const Tasks = () => {
                         >
                           <option selected="Add Category">Add Category</option>
                           <option value={"UI/UX Design"}>UI/UX Design</option>
-                        <option value={"Website Developement"}>Website Developement</option>
-                        <option value={"App Development"}>
-                          App Development
-                        </option>
-                        {/* <option value={"Quality Assurance"}>
+                          <option value={"Website Developement"}>
+                            Website Developement
+                          </option>
+                          <option value={"App Development"}>
+                            App Development
+                          </option>
+                          {/* <option value={"Quality Assurance"}>
                           Quality Assurance
                         </option>
                         <option value={"Development"}>Development</option>
@@ -673,9 +788,11 @@ const Tasks = () => {
                           Software Testing
                         </option>
                         <option value={"Website Design"}>Website Design</option> */}
-                        <option value={"Digital Marketing"}>Digital Marketing</option>
-                        {/* <option value={"SEO"}>SEO</option> */}
-                        {/* <option value={"Other"}>Other</option> */}
+                          <option value={"Digital Marketing"}>
+                            Digital Marketing
+                          </option>
+                          {/* <option value={"SEO"}>SEO</option> */}
+                          {/* <option value={"Other"}>Other</option> */}
                         </select>
                       </div>
                       <div className="mb-3">
@@ -689,7 +806,7 @@ const Tasks = () => {
                           className="form-control"
                           type="file"
                           id="formFileMultipleone"
-                          multiple=""
+                          multiple
                           name="taskImages"
                           onChange={handleFileChange}
                         />
@@ -804,7 +921,7 @@ const Tasks = () => {
                 </div>
               </div>
 
-              {/* Modal  Delete Task*/}
+              {/* Modal  Delete Task */}
               <div
                 className="modal fade"
                 id="dremovetask"
@@ -848,6 +965,223 @@ const Tasks = () => {
                         onClick={handleDeleteProject}
                       >
                         Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Update task */}
+              <div
+                className="modal fade"
+                id="editemp"
+                tabIndex={-1}
+                aria-hidden="true"
+              >
+                <div className="modal-dialog modal-dialog-centered modal-md modal-dialog-scrollable">
+                  <div className="modal-content">
+                    <div className="modal-header">
+                      <h5
+                        className="modal-title  fw-bold"
+                        id="createprojectlLabel"
+                      >
+                        {" "}
+                        Update Task
+                      </h5>
+                      <button
+                        type="button"
+                        className="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                      />
+                    </div>
+                    <div className="modal-body">
+                      <div className="mb-3">
+                        <label className="form-label">Project Name</label>
+                        {/* <input
+                          type="text"
+                          className="form-control"
+                          id="exampleFormControlInput77"
+                          placeholder="Project Name"
+                          name="projectName"
+                          value={formData.projectName}
+                          onChange={handleChange}
+                        /> */}
+                        <select
+                          className="form-select"
+                          placeholder="Add Category"
+                          aria-label="Default select Project Category"
+                          name="projectName"
+                          value={taskFormData.projectName}
+                          onChange={taskHandleChange}
+                        >
+                          <option>Chosse Project</option>
+                          {projects.map((project) => (
+                            <option
+                              key={project.id}
+                              value={project.projectName}
+                            >
+                              {project.projectName}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="mb-3">
+                        <label className="form-label">Task Category</label>
+                        <select
+                          className="form-select"
+                          placeholder="Add Category"
+                          aria-label="Default select Project Category"
+                          name="taskCategory"
+                          value={taskFormData.taskCategory}
+                          onChange={taskHandleChange}
+                        >
+                          <option selected="Add Category">Add Category</option>
+                          <option value={"UI/UX Design"}>UI/UX Design</option>
+                          <option value={"Website Developement"}>
+                            Website Developement
+                          </option>
+                          <option value={"App Development"}>
+                            App Development
+                          </option>
+                          {/* <option value={"Quality Assurance"}>
+                          Quality Assurance
+                        </option>
+                        <option value={"Development"}>Development</option>
+                        <option value={"Backend Development"}>
+                          Backend Development
+                        </option>
+                        <option value={"Software Testing"}>
+                          Software Testing
+                        </option>
+                        <option value={"Website Design"}>Website Design</option> */}
+                          <option value={"Digital Marketing"}>
+                            Digital Marketing
+                          </option>
+                          {/* <option value={"SEO"}>SEO</option> */}
+                          {/* <option value={"Other"}>Other</option> */}
+                        </select>
+                      </div>
+                      <div className="mb-3">
+                        <label
+                          htmlFor="formFileMultipleone"
+                          className="form-label"
+                        >
+                          Task Images &amp; Document
+                        </label>
+                        <input
+                          className="form-control"
+                          type="file"
+                          id="formFileMultipleone"
+                          multiple=""
+                          name="taskImages"
+                          onChange={taskHandleChange}
+                        />
+                      </div>
+                      <div className="deadline-form mb-3">
+                        <form>
+                          <div className="row">
+                            <div className="col">
+                              <label
+                                htmlFor="datepickerded"
+                                className="form-label"
+                              >
+                                Task Start Date
+                              </label>
+                              <input
+                                type="date"
+                                className="form-control"
+                                id="datepickerded"
+                                name="taskStartDate"
+                                value={taskFormData.taskStartDate}
+                                onChange={taskHandleChange}
+                              />
+                            </div>
+                            <div className="col">
+                              <label
+                                htmlFor="datepickerdedone"
+                                className="form-label"
+                              >
+                                Task End Date
+                              </label>
+                              <input
+                                type="date"
+                                className="form-control"
+                                id="datepickerdedone"
+                                name="taskEndDate"
+                                value={taskFormData.taskEndDate}
+                                onChange={taskHandleChange}
+                              />
+                            </div>
+                          </div>
+                        </form>
+                      </div>
+                      <div className="row g-3 mb-3">
+                        <div className="col-sm">
+                          <label className="form-label">
+                            Task Assign Person
+                          </label>
+                          <div>
+                            <MultiSelect
+                              options={assignEmployee}
+                              value={selectedEmployees}
+                              onChange={setSelectedEmployees}
+                              labelledBy="Select Employees"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="row g-3 mb-3">
+                        <div className="col-sm">
+                          <label className="form-label">Task Priority</label>
+                          <select
+                            className="form-select"
+                            aria-label="Default select Priority"
+                            name="taskPriority"
+                            value={taskFormData.taskPriority}
+                            onChange={taskHandleChange}
+                          >
+                            <option placeholder="set priority">
+                              Set Priority
+                            </option>
+                            <option value={"Heighest"}>Heighest</option>
+                            <option value={"Medium"}>Medium</option>
+                            <option value={"Lowest"}>Lowest</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div className="mb-3">
+                        <label
+                          htmlFor="exampleFormControlTextarea786"
+                          className="form-label"
+                        >
+                          Description (optional)
+                        </label>
+                        <textarea
+                          className="form-control"
+                          id="exampleFormControlTextarea786"
+                          rows={3}
+                          placeholder="Explain The Task What To Do & How To Do"
+                          name="description"
+                          value={taskFormData.description}
+                          onChange={taskHandleChange}
+                        />
+                      </div>
+                    </div>
+                    <div className="modal-footer">
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        data-bs-dismiss="modal"
+                      >
+                        Done
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-primary"
+                        onClick={taskHandleSubmit}
+                      >
+                        Create
                       </button>
                     </div>
                   </div>
