@@ -231,7 +231,7 @@ const Project = () => {
                         >
                           <thead>
                             <tr>
-                            <th>Project Name</th>
+                              <th>Project Name</th>
                               {/* <th>Project Category</th> */}
                               <th>Start Date</th>
                               <th>End Date</th>
@@ -257,9 +257,9 @@ const Project = () => {
                                     <Link to="/employee-tasks">
                                       {project.projectName}
                                     </Link>
-                                    <p/>
+                                    <p />
                                     <figcaption class="blockquote-footer">
-                                    {project.projectCategory}
+                                      {project.projectCategory}
                                     </figcaption>
                                   </td>
                                   {/* <td>{project.projectCategory}</td> */}
@@ -275,7 +275,9 @@ const Project = () => {
                                     )}
                                   </td>
                                   <td>
-                                    <div className="d-flex justify-content-center" >0%</div>
+                                    <div className="d-flex justify-content-center">
+                                      0%
+                                    </div>
                                   </td>
                                   <td>
                                     <button
@@ -312,7 +314,7 @@ const Project = () => {
               <div className="modal-dialog modal-dialog-centered modal-lg">
                 <div className="modal-content">
                   <div className="modal-header">
-                    <h5 className="modal-title  fw-bold" id="addUserLabel">
+                    <h5 className="modal-title fs-4 fw-bold" id="addUserLabel">
                       {selectProject.projectName}
                     </h5>
                     <button
@@ -366,21 +368,32 @@ const Project = () => {
                             </select>
                           </div>
                         </div>
-                        <div>
-                          <label htmlFor="currentStatus">Status:</label>
-                          <textarea
-                            rows=""
-                            cols="95"
-                            type="text"
-                            id="currentStatus"
-                            value={currentStatus}
-                            onChange={(e) => setCurrentStatus(e.target.value)}
-                          />
-                        </div>
-                        <div className=" d-flex justify-content-end">
-                          <button type="submit" className="btn btn-dark">
-                            Submit
-                          </button>
+                        <div className="container">
+                          <div className="row">
+                            <div className="col-12">
+                              <label htmlFor="currentStatus" className="fw-bold fs-5">
+                                Add Status
+                              </label>
+                              <textarea
+                                rows=""
+                                cols="50"
+                                type="text"
+                                id="currentStatus"
+                                value={currentStatus}
+                                onChange={(e) =>
+                                  setCurrentStatus(e.target.value)
+                                }
+                                className="form-control"
+                              />
+                            </div>
+                          </div>
+                          <div className="row mt-3">
+                            <div className="col-12 d-flex justify-content-end">
+                              <button type="submit" className="btn btn-dark">
+                                Submit
+                              </button>
+                            </div>
+                          </div>
                         </div>
                       </form>
 
@@ -416,7 +429,7 @@ const Project = () => {
                                     alt=""
                                   />
                                   <p
-                                    className="text-muted text-uppercase"
+                                    className="fw-bold text-uppercase"
                                     style={{ width: "6rem" }}
                                   >
                                     {status.user_id.employeeName}

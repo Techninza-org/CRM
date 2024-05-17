@@ -10,15 +10,13 @@ exports.createProject = async (req, res) => {
         // console.log(req.file);
         const path = req.file?.path;
         // console.log(path);
-        const newPath = path.replace('uploads\\', "");
+        const newPath = path?.replace('uploads\\', "");
         // console.log(req.body);
         const taskAssigner = req.body.taskAssignPerson;
-        // const taskManage = req.body.taskManager
         // console.log(taskAssigner)
         const filteredTaskAssigner = taskAssigner?.filter((task) => task !== "");
-        // const filteredTaskManager = taskManage?.filter((task) => task !== "");
-        // console.log(filteredTaskManager);
         // console.log(filteredTaskAssigner);
+
         req.body.projectImage = newPath;
         const project = new Project({ ...req.body, taskAssignPerson: filteredTaskAssigner });
         // console.log(project);
@@ -46,9 +44,11 @@ exports.getAllProjects = async (req, res) => {
                 }
             }
             const percent = (completedTaskNum / totalTasks * 100 || 0).toFixed(2);
+            const status = percent === "100.00" ? "Completed" : "In Progress";
             updatedProjects[i] = {
                 ...project._doc,
-                progress: percent
+                progress: percent,
+                status: status
             }
         }
         res.json(updatedProjects);
@@ -69,7 +69,6 @@ exports.getProjectById = async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 };
-
 exports.searchProjects = async (req, res) => {
     const queries = req.query;
     if (!queries.id) {

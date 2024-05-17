@@ -25,10 +25,10 @@ const jwt = require('jsonwebtoken')
 exports.createTask = async (req, res) => {
   try {
     // Extracting paths of uploaded files
-    const paths = req.files.map(file => file.path);
+    const paths = req.files?.map(file => file.path);
     
     // Removing 'uploads\' from paths
-    const newPaths = paths.map(path => path.replace('uploads\\', ""));
+    const newPaths = paths?.map(path => path.replace('uploads\\', ""));
     // console.log(newPaths);
     
     // Filtering task assigners to remove empty strings
@@ -37,6 +37,7 @@ exports.createTask = async (req, res) => {
     
     // Adding paths of uploaded images to req.body
     req.body.taskImages = newPaths;
+    console.log(req.body, "body");
     
     // Creating a new Task instance
     const task = new Task({ ...req.body, taskAssignPerson: filteredTaskAssigner});

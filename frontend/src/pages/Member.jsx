@@ -972,7 +972,7 @@ const Member = () => {
                         type="text"
                         className="form-control"
                         id="exampleFormControlInput877"
-                        placeholder="Explain what the Project Name"
+                        placeholder="Employee Name"
                         name="employeeName"
                         value={formData.employeeName}
                         onChange={handleChange}
@@ -989,7 +989,7 @@ const Member = () => {
                         type="text"
                         className="form-control"
                         id="exampleFormControlInput977"
-                        placeholder="Explain what the Project Name"
+                        placeholder="Employee Company"
                         name="employeeCompany"
                         value={formData.employeeCompany}
                         onChange={handleChange}
@@ -1000,7 +1000,7 @@ const Member = () => {
                         htmlFor="formFileMultipleoneone"
                         className="form-label"
                       >
-                        Employee Profile
+                        Employee Image
                       </label>
                       <input
                         className="form-control"
@@ -1024,7 +1024,7 @@ const Member = () => {
                               type="text"
                               className="form-control"
                               id="exampleFormControlInput1778"
-                              placeholder="User Name"
+                              placeholder="Employee ID"
                               name="employeeId"
                               value={formData.employeeId}
                               onChange={handleChange}
@@ -1095,7 +1095,7 @@ const Member = () => {
                               type="email"
                               className="form-control"
                               id="exampleFormControlInput477"
-                              placeholder="User Name"
+                              placeholder="Email ID"
                               name="emailid"
                               value={formData.emailid}
                               onChange={handleChange}
@@ -1112,7 +1112,7 @@ const Member = () => {
                               type="text"
                               className="form-control"
                               id="exampleFormControlInput777"
-                              placeholder="User Name"
+                              placeholder="Phone"
                               name="phone"
                               value={formData.phone}
                               onChange={handleChange}

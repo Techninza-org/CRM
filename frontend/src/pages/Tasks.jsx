@@ -3,6 +3,7 @@ import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import { MultiSelect } from "react-multi-select-component";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Tasks = () => {
   //CREATE TASK
@@ -26,9 +27,11 @@ const Tasks = () => {
   };
 
   const handleFileChange = (e) => {
+    console.log(e.target.files);
     setFormData({
       ...formData,
-      taskImages: e.target.files[0],
+      taskImages: e.target.files,
+      // taskImages: e.target.files[0],
     });
   };
 
@@ -53,8 +56,20 @@ const Tasks = () => {
           },
         }
       );
-      console.log(response.data);
-      window.location.reload();
+      // console.log(response.data);
+      // window.location.reload();
+      setTasks([...tasks, response.data]);
+      // Clear the form data after successful submission
+      setFormData({
+        projectName: "",
+        taskCategory: "",
+        taskImages: null,
+        taskStartDate: "",
+        taskEndDate: "",
+        taskAssignPerson: "",
+        taskPriority: "",
+        description: "",
+      });
     } catch (error) {
       console.error("Error:", error);
     }
@@ -67,6 +82,7 @@ const Tasks = () => {
       try {
         const response = await axios.get("http://localhost:8000/api/tasks");
         setTasks(response.data);
+        // console.log(response.data);
       } catch (error) {
         console.error("Error:", error);
       }
@@ -240,7 +256,7 @@ const Tasks = () => {
       console.error("Error:", error);
     }
   };
-  
+
   // GET ALL PROJECTS IN INPUT
   const [projects, setProjects] = useState([]);
   useEffect(() => {
@@ -255,6 +271,8 @@ const Tasks = () => {
 
     fetchProjects();
   }, []);
+
+  const [showFullDescription, setShowFullDescription] = useState('');
 
 
   return (
@@ -321,139 +339,132 @@ const Tasks = () => {
                   </div>
                 </div>{" "}
                 {/* Row end  */}
-                {tasks.map((task) => {
-                  const getFormattedDate = (date) => {
-                    const newDate = new Date(date);
-                    const day = newDate.getDate();
-                    const month = newDate.getMonth() + 1;
-                    const year = newDate.getFullYear();
+                <div className="row">
+                  {tasks.map((task) => {
+                    const getFormattedDate = (date) => {
+                      const newDate = new Date(date);
+                      const day = newDate.getDate();
+                      const month = newDate.getMonth() + 1;
+                      const year = newDate.getFullYear();
 
-                    return `${day}/${month}/${year}`;
-                  };
+                      return `${day}/${month}/${year}`;
+                    };
 
-                  return (
-                    <div className="row clearfix  g-3" key={task._id}>
-                      <div className="col-lg-12 col-md-12 flex-column">
-                        <div className="taskboard g-3 py-xxl-4">
-                          <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-12 mt-xxl-4 mt-xl-4 mt-lg-4 mt-md-4 mt-sm-4 mt-4">
-                            <div className="">
-                              <div className="dd" data-plugin="nestable">
-                                <ol className="dd-list">
-                                  <li className="dd-item" data-id={1}>
-                                    <div className="dd-handle">
-                                      <div className="d-flex justify-content-between">
-                                        <h6 className="fw-bold py-3 mb-0">
-                                          {task.projectName}
-                                        </h6>
-                                      </div>
-
-                                      <div className="task-info d-flex align-items-center justify-content-between">
-                                        <h6 className="light-success-bg py-1 px-2 rounded-1 d-inline-block fw-bold small-14 mb-0">
-                                          {task.taskCategory}
-                                        </h6>
-                                        <div className="task-priority d-flex flex-column align-items-center justify-content-center">
-                                          <div>
-                                            <div className="avatar-list avatar-list-stacked m-0 d-flex justify-content-center">
-                                              <img
-                                                className="avatar rounded-circle small-avt"
-                                                src={
-                                                  "http://localhost:8000/" +
-                                                  task.taskAssignPerson
-                                                    .employeeImage
-                                                }
-                                                alt=""
-                                              />
-                                            </div>
-                                            {/* <div className="avatar-list avatar-list-stacked m-0 d-flex justify-content-center">
-                                              <img
-                                                className="avatar rounded-circle small-avt"
-                                                src={
-                                                  "http://localhost:8000/" +
-                                                  task.taskImages
-                                                }
-                                                alt=""
-                                              />
-                                            </div> */}
-                                            <p>
-                                              {
-                                                task.taskAssignPerson
-                                                  .employeeName
-                                              }
-                                            </p>
-                                          </div>
-                                          <span className="badge bg-danger text-end mt-2">
-                                            {task.taskPriority}
-                                          </span>
-                                        </div>
-                                      </div>
-                                      <p className="py-2 mb-0 ">
-                                        {task.description}
-                                      </p>
-                                      <div className="tikit-info row g-3 align-items-center">
-                                        <div className="col-sm">
-                                          <ul className="d-flex list-unstyled align-items-center justify-content-between">
-                                            <li className="me-2">
-                                              <div className="d-flex align-items-center fw-bold">
-                                                Start:
-                                                <span className="ms-1">
-                                                  {getFormattedDate(
-                                                    task.taskStartDate
-                                                  )}
-                                                </span>
-                                              </div>
-                                            </li>
-                                            <li className="me-2">
-                                              <div className="d-flex align-items-center fw-bold">
-                                                End:
-                                                <span className="ms-1">
-                                                  {getFormattedDate(
-                                                    task.taskEndDate
-                                                  )}
-                                                </span>
-                                              </div>
-                                            </li>
-                                          </ul>
-                                        </div>
-                                        <div className="d-flex justify-content-center align-items-center">
-                                          <div
-                                            className="btn-group"
-                                            role="group"
-                                            aria-label="Basic outlined example"
-                                          >
-                                            <button
-                                              type="button"
-                                              className="btn btn-outline-secondary"
-                                              data-bs-toggle="modal"
-                                              data-bs-target="#editemp"
-                                              onClick={() => setToEdit(task._id)}
-                                              >
-                                              <i className="icofont-edit text-success" />
-                                            </button>
-                                            <button
-                                              type="button"
-                                              className="btn btn-outline-secondary"
-                                              data-bs-toggle="modal"
-                                              data-bs-target="#dremovetask"
-                                              onClick={() => {
-                                                setDeletableId(task._id);
-                                              }}
-                                            >
-                                              <i className="icofont-ui-delete text-danger" />
-                                            </button>
-                                          </div>
-                                        </div>
-                                      </div>
+                    return (
+                      <>
+                        <div className="col-md-4 mb-4" key={task._id}>
+                          <div className="card" style={{ width: "18rem" }}>
+                            <div className="card-body dd-handle">
+                              <div className="d-flex justify-content-between">
+                                <h6 className="fw-bold py-3 mb-0">
+                                  {task.projectName}
+                                </h6>
+                                {task.isCompleted && (
+                                  <i className="bi bi-check-circle-fill text-success h5" />
+                                )}
+                              </div>
+                              <div className="task-info d-flex align-items-center justify-content-between">
+                                <h6 className="light-success-bg py-1 px-1 rounded-1 d-inline-block fw-bold small-14 mb-0">
+                                  {task.taskCategory}
+                                </h6>
+                                <div className="task-priority d-flex flex-column align-items-center justify-content-center">
+                                  <div>
+                                    <div className="avatar-list avatar-list-stacked m-0 d-flex justify-content-center">
+                                      <img
+                                        className="avatar rounded-circle small-avt"
+                                        src={
+                                          "http://localhost:8000/" +
+                                          task.taskAssignPerson.employeeImage
+                                        }
+                                        alt=""
+                                      />
                                     </div>
-                                  </li>
-                                </ol>
+
+                                    <p>{task.taskAssignPerson.employeeName}</p>
+                                  </div>
+                                  <span className="badge bg-danger text-end mt-2">
+                                    {task.taskPriority}
+                                  </span>
+                                </div>
+                              </div>
+                              <p
+                                className="py-2 mb-0 task-description"
+                                style={{
+                                  maxHeight: showFullDescription
+                                    ? "none"
+                                    : "11em",
+                                  overflowY: "auto",
+                                  
+                                }}
+                              >
+                                {task.description}
+                              </p>
+                              <div className="tikit-info row g-3 align-items-center">
+                                <div className="col-sm ">
+                                  <ul className="d-flex list-unstyled align-items-center justify-content-between mt-1 mb-1">
+                                    <li className="me-2">
+                                      <div className="d-flex align-items-center fw-bold">
+                                        Start:
+                                        <span className="ms-1">
+                                          {getFormattedDate(task.taskStartDate)}
+                                        </span>
+                                      </div>
+                                    </li>
+                                    <li className="me-2">
+                                      <div className="d-flex align-items-center fw-bold">
+                                        End:
+                                        <span className="ms-1">
+                                          {getFormattedDate(task.taskEndDate)}
+                                        </span>
+                                      </div>
+                                    </li>
+                                  </ul>
+                                </div>
+                                <div className="d-flex justify-content-between align-items-center">
+                                  <div
+                                    className="btn-group"
+                                    role="group"
+                                    aria-label="Basic outlined example"
+                                  >
+                                    <button
+                                      type="button"
+                                      className="btn btn-outline-secondary"
+                                      data-bs-toggle="modal"
+                                      data-bs-target="#editemp"
+                                      onClick={() => setToEdit(task._id)}
+                                    >
+                                      <i className="icofont-edit text-success" />
+                                    </button>
+                                    <button
+                                      type="button"
+                                      className="btn btn-outline-secondary"
+                                      data-bs-toggle="modal"
+                                      data-bs-target="#dremovetask"
+                                      onClick={() => {
+                                        setDeletableId(task._id);
+                                      }}
+                                    >
+                                      <i className="icofont-ui-delete text-danger" />
+                                    </button>
+                                  </div>
+
+                                  <a
+                                    href={
+                                      "http://localhost:8000/" + task.taskImages
+                                    }
+                                    target="_blank"
+                                  >
+                                    <i className=" bi-paperclip fs-5" />
+                                  </a>
+                                </div>
                               </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                  );
-                })}
+                      </>
+                    );
+                  })}
+                </div>
               </div>
             </div>
             <>
@@ -731,15 +742,6 @@ const Tasks = () => {
                     <div className="modal-body">
                       <div className="mb-3">
                         <label className="form-label">Project Name</label>
-                        {/* <input
-                          type="text"
-                          className="form-control"
-                          id="exampleFormControlInput77"
-                          placeholder="Project Name"
-                          name="projectName"
-                          value={formData.projectName}
-                          onChange={handleChange}
-                        /> */}
                         <select
                           className="form-select"
                           placeholder="Add Category"
@@ -777,22 +779,9 @@ const Tasks = () => {
                           <option value={"App Development"}>
                             App Development
                           </option>
-                          {/* <option value={"Quality Assurance"}>
-                          Quality Assurance
-                        </option>
-                        <option value={"Development"}>Development</option>
-                        <option value={"Backend Development"}>
-                          Backend Development
-                        </option>
-                        <option value={"Software Testing"}>
-                          Software Testing
-                        </option>
-                        <option value={"Website Design"}>Website Design</option> */}
                           <option value={"Digital Marketing"}>
                             Digital Marketing
                           </option>
-                          {/* <option value={"SEO"}>SEO</option> */}
-                          {/* <option value={"Other"}>Other</option> */}
                         </select>
                       </div>
                       <div className="mb-3">
@@ -1187,7 +1176,6 @@ const Tasks = () => {
                   </div>
                 </div>
               </div>
-
             </>
           </>
         </div>

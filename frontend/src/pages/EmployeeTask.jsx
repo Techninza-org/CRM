@@ -75,20 +75,16 @@ const Tasks = () => {
     fetchTasks();
   }, []);
 
-  //done task
 
+
+//done task
   const [taskId, setTaskId] = useState("");
-  const [updatedTask, setUpdatedTask] = useState(null);
-  const [error, setError] = useState(null);
-
   const handleTaskUpdate = async () => {
     try {
       const response = await axios.put(
         `http://localhost:8000/api/update/${taskId}`,
         { isCompleted: true }
       );
-      // setUpdatedTask(response.data);
-      // setError(null);
       window.location.reload()
     } catch (error) {
       setError(error.message);
@@ -100,8 +96,6 @@ const Tasks = () => {
       await axios.put(`http://localhost:8000/api/update/${taskId}`, {
         isCompleted: false,
       });
-      // setUpdatedTask(null);
-      // setError(null);
       window.location.reload()
     } catch (error) {
       setError("Error clearing task");
@@ -172,6 +166,7 @@ const Tasks = () => {
                   </div>
                 </div>{" "}
                 {/* Row end  */}
+                <div className="row">
                 {tasks.map((task) => {
                   const getFormattedDate = (date) => {
                     const newDate = new Date(date);
@@ -183,15 +178,9 @@ const Tasks = () => {
                   };
 
                   return (
-                    <div className="row clearfix  g-3" key={task._id}>
-                      <div className="col-lg-12 col-md-12 flex-column">
-                        <div className="row taskboard g-3 py-xxl-4">
-                          <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-12 mt-xxl-4 mt-xl-4 mt-lg-4 mt-md-4 mt-sm-4 mt-4">
-                            <div className="">
-                              <div className="dd" data-plugin="nestable">
-                                <ol className="dd-list">
-                                  <li className="dd-item" data-id={1}>
-                                    <div className="dd-handle">
+                    <div className="col-md-4 mb-4" key={task._id}>
+                          <div className="card" style={{ width: "18rem" }}>
+                            <div className="card-body dd-handle">
                                       <div className="d-flex justify-content-between">
                                         <h5 className="fw-bold">
                                           {task.projectName}
@@ -229,10 +218,10 @@ const Tasks = () => {
                                       </p>
                                       <div className="tikit-info row g-3 align-items-center">
                                         <div className="col-sm">
-                                          <ul className="d-flex list-unstyled align-items-center flex-wrap">
+                                          <ul className="d-flex list-unstyled align-items-center justify-content-between">
                                             <li className="me-2">
-                                              <div className="d-flex align-items-center">
-                                                Start Date :
+                                              <div className="d-flex align-items-center fw-bold">
+                                                Start:
                                                 <span className="ms-1">
                                                   {getFormattedDate(
                                                     task.taskStartDate
@@ -241,8 +230,8 @@ const Tasks = () => {
                                               </div>
                                             </li>
                                             <li className="me-2">
-                                              <div className="d-flex align-items-center">
-                                                End Date :
+                                              <div className="d-flex align-items-center fw-bold">
+                                                End:
                                                 <span className="ms-1">
                                                   {getFormattedDate(
                                                     task.taskEndDate
@@ -252,7 +241,7 @@ const Tasks = () => {
                                             </li>
                                           </ul>
                                         </div>
-                                        <div className="d-flex justify-content-around align-items-center">
+                                        <div className="d-flex justify-content-between align-items-center">
                                           {task.isCompleted ? (
                                             <div>
                                               <button
@@ -278,20 +267,27 @@ const Tasks = () => {
                                               Done
                                             </button>
                                           )}
+                                          <a
+                                              href={
+                                                "http://localhost:8000/" +
+                                                task.taskImages
+                                              }
+                                              target="_blank"
+                                            >
+                                              <i className=" bi-paperclip fs-5"/>
+                                            </a>
                                         </div>
                                         <div></div>
                                       </div>
                                     </div>
-                                  </li>
-                                </ol>
+                                  
                               </div>
                             </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+
+                         
                   );
                 })}
+              </div>
               </div>
             </div>
           </>
@@ -302,97 +298,3 @@ const Tasks = () => {
 };
 
 export default Tasks;
-
-{
-  /* <div className="row clearfix  g-3">
-                      <div className="col-lg-12 col-md-12 flex-column">
-                        <div className="row taskboard g-3 py-xxl-4">
-                          <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-12 mt-xxl-4 mt-xl-4 mt-lg-4 mt-md-4 mt-sm-4 mt-4">
-                            <div className="">
-                              <div className="dd" data-plugin="nestable">
-                                <ol className="dd-list">
-                                  <li className="dd-item" data-id={1}>
-                                    <div className="dd-handle">
-                                      <div className="d-flex justify-content-between">
-                                        <h5 className="fw-bold">
-                                         sssssssss
-                                        </h5>
-                                        {updatedTask && (
-                                          <i className="bi bi-check-circle-fill text-success h5" />
-                                        )}
-                                      </div>
-                                      <div className="task-info d-flex align-items-center justify-content-between">
-                                        <h6 className="light-success-bg py-1 px-2 rounded-1 d-inline-block fw-bold small-14 mb-0">
-                                          ssssssssss
-                                        </h6>
-                                        <div className="task-priority d-flex flex-column align-items-center justify-content-center">
-                                          <div className="avatar-list avatar-list-stacked m-0">
-                                            <img
-                                              className="avatar rounded-circle small-avt"
-                                              src="image.jpg"
-                                              alt=""
-                                            />
-                                          </div>
-                                          <div>
-                                            llllllll
-                                          </div>
-                                          <span className="badge bg-danger text-end mt-2">
-                                           sssssssssss
-                                          </span>
-                                        </div>
-                                      </div>
-                                      <p className="py-2 mb-0 ">
-                                        ssssssssssss
-                                      </p>
-                                      <div className="tikit-info row g-3 align-items-center">
-                                        <div className="col-sm">
-                                          <ul className="d-flex list-unstyled align-items-center flex-wrap">
-                                            <li className="me-2">
-                                              <div className="d-flex align-items-center">
-                                                Start Date :
-                                                <span className="ms-1">
-                                                  sssssssss
-                                                </span>
-                                              </div>
-                                            </li>
-                                            <li className="me-2">
-                                              <div className="d-flex align-items-center">
-                                                End Date :
-                                                <span className="ms-1">
-                                                  ssssssssssssss
-                                                </span>
-                                              </div>
-                                            </li>
-                                          </ul>
-                                        </div>
-                                        <div className="d-flex justify-content-around align-items-center">
-                                          <button
-                                            type="button"
-                                            className="btn bg-info text-end small text-truncate py-1 px-2 rounded-1 d-inline-block fw-bold small"
-                                            onClick={() => {
-                                              setTaskId(task._id);
-                                              handleTaskUpdate();
-                                            }}
-                                          >
-                                            Done
-                                          </button>
-                                          <button
-                                            type="button"
-                                            className="btn light-danger-bg text-end small text-truncate py-1 px-2 rounded-1 d-inline-block fw-bold small"
-                                          >
-                                            Clear
-                                          </button>
-                                        </div>
-                                        <div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </li>
-                                </ol>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div> */
-}

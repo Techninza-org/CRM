@@ -6,8 +6,6 @@ import axios from "axios";
 import { MultiSelect } from "react-multi-select-component";
 
 const Project = () => {
-
-
   // CREATE PROJECT
   const [formData, setFormData] = useState({
     projectName: "",
@@ -59,9 +57,10 @@ const Project = () => {
     }
   };
 
-
   // GET ALL PROJECTS
   const [projects, setProjects] = useState([]);
+  const [filteredProjects, setFilteredProjects] = useState([]);
+  const [activeTab, setActiveTab] = useState("All");
   useEffect(() => {
     const fetchProjects = async () => {
       try {
@@ -69,6 +68,7 @@ const Project = () => {
 
         // console.log(response.data, 'projects');
         setProjects(response.data);
+        setFilteredProjects(response.data); // Initialize with all projects
       } catch (error) {
         console.error("Error fetching projects:", error);
       }
@@ -76,7 +76,22 @@ const Project = () => {
 
     fetchProjects();
   }, []);
-
+  useEffect(() => {
+    filterProjects();
+  }, [activeTab, projects]);
+  const filterProjects = () => {
+    if (activeTab === "All") {
+      setFilteredProjects(projects);
+    } else if (activeTab === "Completed") {
+      setFilteredProjects(
+        projects.filter((project) => project.status === "Completed")
+      );
+    } else if (activeTab === "In Progress") {
+      setFilteredProjects(
+        projects.filter((project) => project.status === "In Progress")
+      );
+    }
+  };
 
   //DELETE PROJECT
   const [deletableId, setDeletableId] = useState("");
@@ -91,7 +106,6 @@ const Project = () => {
       console.error("Error:", error);
     }
   };
-
 
   //UPDATE PROJECT
   const [projectFormData, setProjectFormData] = useState({
@@ -199,7 +213,6 @@ const Project = () => {
     }
   };
 
-
   // GET SINGLE PROJECT
   const [searchQuery, setSearchQuery] = useState("");
   const handleSearch = async (searchQuery) => {
@@ -251,7 +264,6 @@ const Project = () => {
     };
   });
 
-
   // Status
   const [selectProject, setSelectProject] = useState([]);
   const [projectStatuses, setProjectStatuses] = useState([]);
@@ -277,8 +289,6 @@ const Project = () => {
     }
   }, [projectId]);
 
-
-
   //GET TASK
   const [tasks, setTasks] = useState([]);
   useEffect(() => {
@@ -293,12 +303,7 @@ const Project = () => {
 
     fetchTasks();
   }, []);
-// console.log(tasks);
-
-
-
-
-
+  // console.log(tasks);
 
   return (
     <>
@@ -320,14 +325,59 @@ const Project = () => {
                       <div className="d-flex me-2">
                         <button
                           type="button"
-                          className="btn btn-dark me-1 w-sm-100"
+                          className="btn btn-dark w-sm-100"
                           data-bs-toggle="modal"
                           data-bs-target="#createproject"
                         >
-                          <i className="icofont-plus-circle me-2 fs-6" />
+                          <i className="icofont-plus-circle me-1" />
                           Create Project
                         </button>
-                        <div className="order-0 ">
+                        <ul
+                          className="nav nav-tabs tab-body-header rounded ms-1 prtab-set w-sm-100"
+                          role="tablist"
+                        >
+                          <li className="nav-item">
+                            <a
+                              className={`nav-link ${
+                                activeTab === "All" ? "active" : ""
+                              }`}
+                              onClick={() => setActiveTab("All")}
+                              data-bs-toggle="tab"
+                              href="#All-list"
+                              role="tab"
+                            >
+                              All
+                            </a>
+                          </li>
+                          <li className="nav-item">
+                            <a
+                              className={`nav-link ${
+                                activeTab === "In Progress" ? "active" : ""
+                              }`}
+                              onClick={() => setActiveTab("In Progress")}
+                              data-bs-toggle="tab"
+                              href="#Started-list"
+                              role="tab"
+                            >
+                              In Progress
+                            </a>
+                          </li>
+                          <li className="nav-item">
+                            <a
+                              className={`nav-link ${
+                                activeTab === "Completed" ? "active" : ""
+                              }`}
+                              onClick={() => setActiveTab("Completed")}
+                              data-bs-toggle="tab"
+                              href="#Completed-list"
+                              role="tab"
+                            >
+                              Completed
+                            </a>
+                          </li>
+                        </ul>
+
+                        {/* <div className="order-0 ms-1">
                           <div className="input-group">
                             <input
                               type="search"
@@ -359,21 +409,15 @@ const Project = () => {
                               <i className="fa fa-search" />
                             </button>
                           </div>
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   </div>
                 </div>{" "}
-
                 {/* Row end  */}
                 <div className="row g-3 mb-3 row-deck">
                   <div className="col-md-12">
                     <div className="card mb-3">
-                      {/* <div className="card-header py-3 d-flex justify-content-between align-items-center">
-                        <div className="info-header">
-                          <h6 className="mb-0 fw-bold ">Project Information</h6>
-                        </div>
-                      </div> */}
                       <div className="card-body">
                         <table
                           className="table table-hover align-middle mb-0"
@@ -393,7 +437,7 @@ const Project = () => {
                             </tr>
                           </thead>
                           <tbody>
-                            {projects.map((project) => {
+                            {filteredProjects.map((project) => {
                               const getFormattedDate = (date) => {
                                 const newDate = new Date(date);
                                 let day = newDate.getDate();
@@ -401,41 +445,45 @@ const Project = () => {
                                 const year = newDate.getFullYear();
                                 let hour = newDate.getHours();
                                 let min = newDate.getMinutes();
-                                let period = 'AM';
-                            
+                                let period = "AM";
+
                                 // Convert hours to 12-hour format
                                 if (hour === 0) {
-                                    hour = 12;
+                                  hour = 12;
                                 } else if (hour >= 12) {
-                                    period = 'PM';
-                                    if (hour > 12) {
-                                        hour -= 12;
-                                    }
+                                  period = "PM";
+                                  if (hour > 12) {
+                                    hour -= 12;
+                                  }
                                 }
-        
+
                                 // Adding leading zero to minutes if necessary
                                 if (min < 10) {
-                                    min = '0' + min;
+                                  min = "0" + min;
                                 }
-                            
+
                                 // Adding leading zero to day and month if necessary
                                 if (day < 10) {
-                                    day = '0' + day;
+                                  day = "0" + day;
                                 }
                                 if (month < 10) {
-                                    month = '0' + month;
+                                  month = "0" + month;
                                 }
-                            
+
                                 return `${day}/${month}/${year} --${hour}:${min} ${period}`;
-                            };                            
+                              };
 
                               return (
                                 <tr key={project.id}>
                                   <td>
-                                  {/* <figcaption class="blockquote-footer">{project.projectCategory}</figcaption> */}
-                                    <Link to="/tasks">{project.projectName}</Link>
-                                    <p/>
-                                    <figcaption class="blockquote-footer">{getFormattedDate(project.projectDate)}</figcaption>
+                                    {/* <figcaption class="blockquote-footer">{project.projectCategory}</figcaption> */}
+                                    <Link to="/tasks">
+                                      {project.projectName}
+                                    </Link>
+                                    <p />
+                                    <figcaption class="blockquote-footer">
+                                      {getFormattedDate(project.projectDate)}
+                                    </figcaption>
                                   </td>
                                   {/* <td>{project.projectCategory}</td> */}
                                   <td>
@@ -450,7 +498,9 @@ const Project = () => {
                                     )}
                                   </td>
                                   <td>
-                                    <div className="d-flex justify-content-center" >{project.progress}%</div>
+                                    <div className="d-flex justify-content-center">
+                                      {project.progress}%
+                                    </div>
                                   </td>
                                   <td>
                                     <button
@@ -548,24 +598,15 @@ const Project = () => {
                       >
                         <option selected="">Add Category</option>
                         <option value={"UI/UX Design"}>UI/UX Design</option>
-                        <option value={"Website Developement"}>Website Developement</option>
+                        <option value={"Website Developement"}>
+                          Website Developement
+                        </option>
                         <option value={"App Development"}>
                           App Development
                         </option>
-                        {/* <option value={"Quality Assurance"}>
-                          Quality Assurance
+                        <option value={"Digital Marketing"}>
+                          Digital Marketing
                         </option>
-                        <option value={"Development"}>Development</option>
-                        <option value={"Backend Development"}>
-                          Backend Development
-                        </option>
-                        <option value={"Software Testing"}>
-                          Software Testing
-                        </option>
-                        <option value={"Website Design"}>Website Design</option> */}
-                        <option value={"Digital Marketing"}>Digital Marketing</option>
-                        {/* <option value={"SEO"}>SEO</option> */}
-                        {/* <option value={"Other"}>Other</option> */}
                       </select>
                     </div>
 
@@ -627,7 +668,7 @@ const Project = () => {
                               htmlFor="formFileMultipleone"
                               className="form-label"
                             >
-                              Task Assign Person
+                              Project Assign Person
                             </label>
                             <div>
                               <MultiSelect
@@ -731,7 +772,9 @@ const Project = () => {
                       >
                         <option selected=""></option>
                         <option value={"UI/UX Design"}>UI/UX Design</option>
-                        <option value={"Website Developement"}>Website Developement</option>
+                        <option value={"Website Developement"}>
+                          Website Developement
+                        </option>
                         <option value={"App Development"}>
                           App Development
                         </option>
@@ -746,7 +789,9 @@ const Project = () => {
                           Software Testing
                         </option>
                         <option value={"Website Design"}>Website Design</option> */}
-                        <option value={"Digital Marketing"}>Digital Marketing</option>
+                        <option value={"Digital Marketing"}>
+                          Digital Marketing
+                        </option>
                         {/* <option value={"SEO"}>SEO</option> */}
                         {/* <option value={"Other"}>Other</option> */}
                       </select>
@@ -1000,7 +1045,7 @@ const Project = () => {
 
                               return `${day}/${month}/${year} ${hours}:${minutes} ${meridiem}`;
                             };
-// console.log(status);
+                            // console.log(status);
                             return (
                               <div
                                 key={status._id}
@@ -1009,11 +1054,18 @@ const Project = () => {
                                 <div className="no-thumbnail mb-2 mb-md-0">
                                   <img
                                     className="avatar md rounded-circle"
-                                    src={"http://localhost:8000/"+status.user_id.employeeImage}
+                                    src={
+                                      "http://localhost:8000/" +
+                                      status.user_id.employeeImage
+                                    }
                                     alt=""
                                   />
-                                  <p className="text-muted text-uppercase"style={{width: "6rem"}}>{status.user_id.employeeName}</p>
-                                  
+                                  <p
+                                    className="text-muted text-uppercase"
+                                    style={{ width: "6rem" }}
+                                  >
+                                    {status.user_id.employeeName}
+                                  </p>
                                 </div>
                                 <div className="flex-fill ms-3 text-truncate">
                                   <p className="mb-0  fw-bold">
@@ -1038,7 +1090,6 @@ const Project = () => {
                 </div>
               </div>
             </div>
-
           </>
         </div>
       </div>
