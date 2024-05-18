@@ -8,18 +8,23 @@ const Task = require('../model/taskModel');
 exports.createProject = async (req, res) => {
     try {
         // console.log(req.file);
-        const path = req.file?.path;
+        // const path = req.file?.path;
+        const paths = req.files?.map(file => file.path);
         // console.log(path);
-        const newPath = path?.replace('uploads\\', "");
-        // console.log(req.body);
+        // const newPath = path?.replace('uploads\\', "");
+        const newPaths = paths?.map(path => path.replace('uploads\\', ""));
+
+        // console.log(req.body, 'body');
         const taskAssigner = req.body.taskAssignPerson;
-        // console.log(taskAssigner)
-        const filteredTaskAssigner = taskAssigner?.filter((task) => task !== "");
+        // console.log(taskAssigner, 'taskassigner')
+        const filteredTaskAssigner = taskAssigner.filter((task) => task !== "");
         // console.log(filteredTaskAssigner);
 
-        req.body.projectImage = newPath;
+        // console.log(req.body.projectImage);
+        req.body.projectImage = newPaths;
+        // console.log(req.body, "body");
         const project = new Project({ ...req.body, taskAssignPerson: filteredTaskAssigner });
-        // console.log(project);
+        // console.log(project, "project");
         const savedProject = await project.save();
         res.status(201).json(savedProject);
     } catch (err) {

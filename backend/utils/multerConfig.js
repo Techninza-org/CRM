@@ -13,14 +13,14 @@ const storage = multer.diskStorage({
 
 const project_storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, './uploads/project')
+        cb(null, './uploads/project');
     },
     filename: function (req, file, cb) {
-        // console.log(req.file, "multer2");
-        const uniqueSuffix = Date.now() + '-' + file.originalname
-        cb(null, file.fieldname + '-' + uniqueSuffix)
+        const uniqueSuffix = Date.now() + '-' + file.originalname;
+        cb(null, file.fieldname + '-' + uniqueSuffix);
     }
-})
+});
+
 
 // const task_storage = multer.diskStorage({
 //     destination: function (req, file, cb) {
@@ -43,7 +43,7 @@ const task_storage = multer.diskStorage({
   });
 
 const upload = multer({ storage: storage })
-const project_upload = multer({ storage: project_storage })
+const project_upload = multer({ storage: project_storage });
 // const task_upload = multer({ storage: task_storage })
 const task_upload = multer({ storage: task_storage });
 

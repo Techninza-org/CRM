@@ -3,6 +3,7 @@ import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import { MultiSelect } from "react-multi-select-component";
 import axios from "axios";
+import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 const Tasks = () => {
@@ -27,7 +28,7 @@ const Tasks = () => {
   };
 
   const handleFileChange = (e) => {
-    console.log(e.target.files);
+    // console.log(e.target.files);
     setFormData({
       ...formData,
       taskImages: e.target.files,
@@ -39,6 +40,9 @@ const Tasks = () => {
     e.preventDefault();
     try {
       const formDataToSend = new FormData();
+      for (let i = 0; i < formData.taskImages.length; i++) {
+        formDataToSend.append('taskImages', formData.taskImages[i]);
+      }
       for (let key in formData) {
         formDataToSend.append(key, formData[key]);
       }
@@ -57,19 +61,19 @@ const Tasks = () => {
         }
       );
       // console.log(response.data);
-      // window.location.reload();
-      setTasks([...tasks, response.data]);
-      // Clear the form data after successful submission
-      setFormData({
-        projectName: "",
-        taskCategory: "",
-        taskImages: null,
-        taskStartDate: "",
-        taskEndDate: "",
-        taskAssignPerson: "",
-        taskPriority: "",
-        description: "",
-      });
+      window.location.reload();
+      // setTasks([...tasks, response.data]);
+      // // Clear the form data after successful submission
+      // setFormData({
+      //   projectName: "",
+      //   taskCategory: "",
+      //   taskImages: null,
+      //   taskStartDate: "",
+      //   taskEndDate: "",
+      //   taskAssignPerson: "",
+      //   taskPriority: "",
+      //   description: "",
+      // });
     } catch (error) {
       console.error("Error:", error);
     }
@@ -271,7 +275,6 @@ const Tasks = () => {
 
     fetchProjects();
   }, []);
-
   const [showFullDescription, setShowFullDescription] = useState('');
 
 
@@ -448,14 +451,33 @@ const Tasks = () => {
                                     </button>
                                   </div>
 
-                                  <a
+                                  {/* <a
                                     href={
                                       "http://localhost:8000/" + task.taskImages
                                     }
                                     target="_blank"
                                   >
                                     <i className=" bi-paperclip fs-5" />
-                                  </a>
+                                  </a> */}
+                                  {/* {task.taskImages.map((image, index) => (
+                                    <a
+                                      key={index} // Ensure each element in the list has a unique key
+                                      href={"http://localhost:8000/" + image}
+                                      target="_blank"
+                                    >
+                                      <i className="bi-paperclip fs-5" />
+                                    </a>
+                                  ))} */}
+                                  <Link
+                                        to="/images"
+                                        state={{
+                                          images: task.taskImages,
+                                          projectName: task.projectName,
+                                        }}
+                                        
+                                      >
+                                        <i className="bi-paperclip fs-6" />
+                                      </Link>
                                 </div>
                               </div>
                             </div>
@@ -866,7 +888,7 @@ const Tasks = () => {
                             <option placeholder="set priority">
                               Set Priority
                             </option>
-                            <option value={"Heighest"}>Heighest</option>
+                            <option value={"Heighest"}>Highest</option>
                             <option value={"Medium"}>Medium</option>
                             <option value={"Lowest"}>Lowest</option>
                           </select>

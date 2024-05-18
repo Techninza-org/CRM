@@ -37,7 +37,7 @@ exports.createTask = async (req, res) => {
     
     // Adding paths of uploaded images to req.body
     req.body.taskImages = newPaths;
-    console.log(req.body, "body");
+    // console.log(req.body, "body");
     
     // Creating a new Task instance
     const task = new Task({ ...req.body, taskAssignPerson: filteredTaskAssigner});

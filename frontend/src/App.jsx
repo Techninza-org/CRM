@@ -14,6 +14,7 @@ import Project from './pages/Project'
 import EmployeeProject from './pages/EmployeeProject'
 import Tasks from './pages/Tasks'
 import EmployeeTasks from './pages/EmployeeTask'
+import Images from './pages/Image'
 
 
 
@@ -33,7 +34,9 @@ function App() {
         <Route path='/projects' element={<Project />}></Route>
         <Route path='/employee-projects' element={<EmployeeProject />}></Route>
         <Route path='/tasks' element={<Tasks />}></Route>        
-        <Route path='/employee-tasks' element={<EmployeeTasks />}></Route>        
+        <Route path='/employee-tasks' element={<EmployeeTasks />}></Route>   
+        <Route path='/images' element={<Images/>}></Route>   
+             
 
 
 

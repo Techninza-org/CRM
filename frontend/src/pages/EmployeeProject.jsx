@@ -104,7 +104,6 @@ const Project = () => {
       setCurrentStatus("");
       setUser_id(UserDetails);
       setProject_id("");
-      // debugger;
       window.location.reload();
     } catch (error) {
       console.error(error.message);

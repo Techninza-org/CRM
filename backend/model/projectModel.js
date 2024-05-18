@@ -14,10 +14,10 @@ const projectSchema = new Schema({
         type: String,
         required: true
     },
-    projectImage: {
+    projectImage: [{
         type: String,
         // required: true
-    },
+    }],
     projectStartDate: {
         type: Date,
         required: true
@@ -29,10 +29,6 @@ const projectSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Employee'
     }],
-    taskManager: {
-        type: Schema.Types.ObjectId,
-        ref: 'Task'
-    },
     description: {
         type: String
     },

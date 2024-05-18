@@ -10,7 +10,7 @@ const Project = () => {
   const [formData, setFormData] = useState({
     projectName: "",
     projectCategory: "",
-    projectImages: null,
+    projectImage: null,
     projectStartDate: "",
     projectEndDate: "",
     taskAssignPerson: "",
@@ -24,14 +24,19 @@ const Project = () => {
     });
   };
   const handleFileChange = (e) => {
+    // console.log(e.target.files);
     setFormData({
       ...formData,
-      projectImage: e.target.files[0],
+      projectImage: e.target.files,
     });
   };
+  // console.log(formData);
   const handleSubmit = async () => {
     try {
       const formDataToSend = new FormData();
+      for (let i = 0; i < formData.projectImage.length; i++) {
+        formDataToSend.append("projectImage", formData.projectImage[i]);
+      }
       for (let key in formData) {
         formDataToSend.append(key, formData[key]);
       }
@@ -49,7 +54,7 @@ const Project = () => {
           },
         }
       );
-      // console.log(response.data);
+      console.log(response);
       window.location.reload();
     } catch (error) {
       console.error("Error:", error);
@@ -305,6 +310,27 @@ const Project = () => {
   }, []);
   // console.log(tasks);
 
+  // const imgViewerNewTabs = (links) => {
+  //   links.forEach((link) => {
+  //     const validUrl = link.replaceAll("\\", "/");
+  //     const a = document.createElement("a");
+  //     // a.target = "_blank";
+  //     a.href = `http://localhost:8000/${validUrl}`;
+  //     document.body.appendChild(a);
+  //     a.click();
+  //     // Remove the anchor from the document after clicking to keep the DOM clean
+  //     document.body.removeChild(a);
+  //   });
+  // };
+  // const imgViewerNewTabs = (links) => {
+  //   links.forEach((link, index) => {
+  //     const validUrl = link.replaceAll("\\", "/");
+  //     setTimeout(() => {
+  //       window.open(`http://localhost:8000/${validUrl}`, "_blank");
+  //     }, index * 100); // Adjust the delay as needed
+  //   });
+  // };
+
   return (
     <>
       <div id="mytask-layout">
@@ -476,16 +502,26 @@ const Project = () => {
                               return (
                                 <tr key={project.id}>
                                   <td>
-                                    {/* <figcaption class="blockquote-footer">{project.projectCategory}</figcaption> */}
-                                    <Link to="/tasks">
-                                      {project.projectName}
-                                    </Link>
-                                    <p />
-                                    <figcaption class="blockquote-footer">
-                                      {getFormattedDate(project.projectDate)}
-                                    </figcaption>
+                                    <div className="">
+                                      <Link to="/tasks">
+                                        {project.projectName}
+                                      </Link>
+
+                                      <Link
+                                        to="/images"
+                                        state={{
+                                          images: project.projectImage,
+                                          projectName: project.projectName,
+                                        }}
+                                        style={{ marginLeft: "33px" }}
+                                      >
+                                        <i className="bi-paperclip fs-6" />
+                                      </Link>
+                                    </div>
+                                    <div className="text-muted">
+                                      -{getFormattedDate(project.projectDate)}
+                                    </div>
                                   </td>
-                                  {/* <td>{project.projectCategory}</td> */}
                                   <td>
                                     {getFormattedDate(project.projectStartDate)}
                                   </td>
@@ -621,8 +657,8 @@ const Project = () => {
                         className="form-control"
                         type="file"
                         id="formFileMultipleone"
-                        multiple=""
-                        name="projectImages"
+                        multiple
+                        name="projectImage"
                         onChange={handleFileChange}
                       />
                     </div>
