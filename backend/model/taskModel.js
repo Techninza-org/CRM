@@ -36,6 +36,9 @@ const taskSchema = new Schema({
         default: false,
         required: true
     },
+    taskChat:{
+        type: String,
+    },
     description: {
         type: String,
     }

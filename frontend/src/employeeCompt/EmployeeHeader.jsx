@@ -42,6 +42,12 @@ const Header = () => {
     }
   }, [navigation]);
 
+  const handleSignOut = () => {
+    localStorage.removeItem("emp_token");
+    localStorage.removeItem("emp_user");
+    navigation("/employeesignin");
+  };
+
   //   GET EMPLOYEES
   const [employees, setEmployees] = useState([]);
   useEffect(() => {
@@ -439,13 +445,13 @@ const Header = () => {
                         <i className="icofont-ui-user-group fs-6 me-3" /> Edit
                         Profile
                       </Link>
-                      <Link
-                        to="/employeesignin"
+                      <button
+                        onClick={handleSignOut}
                         className="list-group-item list-group-item-action border-0 "
                       >
                         <i className="icofont-logout fs-6 me-3" />
                         Signout
-                      </Link>
+                      </button>
                       <div>
                         <hr className="dropdown-divider border-dark" />
                       </div>

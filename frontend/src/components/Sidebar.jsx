@@ -68,7 +68,7 @@ const Sidebar = () => {
                                         <span>Tasks</span>
                                     </Link>
                                 </li>
-                                <li>
+                                {/* <li>
                                     <a className="ms-link" href="timesheet.html">
                                         <span>Timesheet</span>
                                     </a>
@@ -77,10 +77,10 @@ const Sidebar = () => {
                                     <a className="ms-link" href="team-leader.html">
                                         <span>Leaders</span>
                                     </a>
-                                </li>
+                                </li> */}
                             </ul>
                         </li>
-                        <li className="collapsed">
+                        {/* <li className="collapsed">
                             <a
                                 className="m-link"
                                 data-bs-toggle="collapse"
@@ -90,7 +90,6 @@ const Sidebar = () => {
                                 <i className="icofont-ticket" /> <span>Tickets</span>{" "}
                                 <span className="arrow icofont-dotted-down ms-auto text-end fs-5" />
                             </a>
-                            {/* Menu: Sub menu ul */}
                             <ul className="sub-menu collapse" id="tikit-Components">
                                 <li>
                                     <a className="ms-link" href="tickets.html">
@@ -116,7 +115,6 @@ const Sidebar = () => {
                                 <i className="icofont-user-male" /> <span>Our Clients</span>{" "}
                                 <span className="arrow icofont-dotted-down ms-auto text-end fs-5" />
                             </a>
-                            {/* Menu: Sub menu ul */}
                             <ul className="sub-menu collapse" id="client-Components">
                                 <li>
                                     <a className="ms-link" href="ourclients.html">
@@ -131,7 +129,7 @@ const Sidebar = () => {
                                     </a>
                                 </li>
                             </ul>
-                        </li>
+                        </li> */}
                         <li className="collapsed">
                             <a
                                 className="m-link"
@@ -150,7 +148,7 @@ const Sidebar = () => {
                                         <span>Members</span>
                                     </Link>
                                 </li>
-                                <li>
+                                {/* <li>
                                     <a className="ms-link" href="employee-profile.html">
                                         {" "}
                                         <span>Members Profile</span>
@@ -191,10 +189,10 @@ const Sidebar = () => {
                                         {" "}
                                         <span>Loan</span>
                                     </a>
-                                </li>
+                                </li> */}
                             </ul>
                         </li>
-                        <li className="collapsed">
+                        {/* <li className="collapsed">
                             <a
                                 className="m-link"
                                 data-bs-toggle="collapse"
@@ -204,7 +202,6 @@ const Sidebar = () => {
                                 <i className="icofont-ui-calculator" /> <span>Accounts</span>{" "}
                                 <span className="arrow icofont-dotted-down ms-auto text-end fs-5" />
                             </a>
-                            {/* Menu: Sub menu ul */}
                             <ul className="sub-menu collapse" id="menu-Componentsone">
                                 <li>
                                     <a className="ms-link" href="invoices.html">
@@ -238,7 +235,6 @@ const Sidebar = () => {
                                 <i className="icofont-users-alt-5" /> <span>Payroll</span>{" "}
                                 <span className="arrow icofont-dotted-down ms-auto text-end fs-5" />
                             </a>
-                            {/* Menu: Sub menu ul */}
                             <ul className="sub-menu collapse" id="payroll-Components">
                                 <li>
                                     <a className="ms-link" href="salaryslip.html">
@@ -257,7 +253,6 @@ const Sidebar = () => {
                                 <i className="icofont-contrast" /> <span>App</span>{" "}
                                 <span className="arrow icofont-dotted-down ms-auto text-end fs-5" />
                             </a>
-                            {/* Menu: Sub menu ul */}
                             <ul className="sub-menu collapse" id="app-Components">
                                 <li>
                                     <a className="ms-link" href="calendar.html">
@@ -282,7 +277,6 @@ const Sidebar = () => {
                                 <i className="icofont-code-alt" /> <span>Other Pages</span>{" "}
                                 <span className="arrow icofont-dotted-down ms-auto text-end fs-5" />
                             </a>
-                            {/* Menu: Sub menu ul */}
                             <ul className="sub-menu collapse" id="extra-Components">
                                 <li>
                                     <a className="ms-link" href="charts.html">
@@ -332,9 +326,8 @@ const Sidebar = () => {
                             <a className="m-link" href="ui-elements/ui-alerts.html">
                                 <i className="icofont-paint" /> <span>UI Components</span>
                             </a>
-                        </li>
+                        </li> */}
                     </ul>
-                    {/* Menu: menu collepce btn */}
                     <button
                         type="button"
                         className="btn btn-link sidebar-mini-btn text-light"

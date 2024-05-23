@@ -4,8 +4,12 @@ import Header from "../components/Header";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { MultiSelect } from "react-multi-select-component";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Project = () => {
+  const [projects, setProjects] = useState([]);
+
   // CREATE PROJECT
   const [formData, setFormData] = useState({
     projectName: "",
@@ -30,21 +34,19 @@ const Project = () => {
       projectImage: e.target.files,
     });
   };
-  // console.log(formData);
   const handleSubmit = async () => {
     try {
       const formDataToSend = new FormData();
-      for (let i = 0; i < formData.projectImage.length; i++) {
+      for (let i = 0; i < formData.projectImage?.length; i++) {
         formDataToSend.append("projectImage", formData.projectImage[i]);
       }
       for (let key in formData) {
         formDataToSend.append(key, formData[key]);
       }
       for (let obj of selectedEmployees) {
-        // console.log(obj);
         formDataToSend.append("taskAssignPerson", obj.value);
       }
-      // console.log(formDataToSend);
+
       const response = await axios.post(
         "http://localhost:8000/api/projects",
         formDataToSend,
@@ -54,8 +56,36 @@ const Project = () => {
           },
         }
       );
+
+      // Assuming the response contains the new project data
+      const newProject = response.data;
+
+      // Update the projects state
+      setProjects((prevProjects) => [newProject, ...prevProjects]);
+      // Clear the form data
+      setFormData({
+        projectName: "",
+        projectCategory: "",
+        projectImage: null,
+        projectStartDate: "",
+        projectEndDate: "",
+        taskAssignPerson: "",
+        description: "",
+      });
+
+      // Close the modal programmatically
+      const modalElement = document.getElementById("createproject");
+      const modal = window.bootstrap.Modal.getInstance(modalElement);
+      modal.hide();
+
+      toast.success('Project Created Successfully!', {
+        style: {
+          backgroundColor: '#4c3575',
+          color: 'white',
+        },
+      });
+
       console.log(response);
-      window.location.reload();
     } catch (error) {
       console.error("Error:", error);
       setError("An error occurred. Please try again later.");
@@ -63,17 +93,24 @@ const Project = () => {
   };
 
   // GET ALL PROJECTS
-  const [projects, setProjects] = useState([]);
+
   const [filteredProjects, setFilteredProjects] = useState([]);
   const [activeTab, setActiveTab] = useState("All");
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/projects");
+        const response = await axios.get(
+          "http://localhost:8000/api/projects"
+        );
 
         // console.log(response.data, 'projects');
-        setProjects(response.data);
-        setFilteredProjects(response.data); // Initialize with all projects
+        // setProjects(response.data);
+        // setFilteredProjects(response.data); // Initialize with all projects
+        const sortedProjects = response.data.sort(
+          (a, b) => new Date(b.projectDate) - new Date(a.projectDate)
+        );
+        setProjects(sortedProjects);
+        setFilteredProjects(sortedProjects);
       } catch (error) {
         console.error("Error fetching projects:", error);
       }
@@ -106,7 +143,24 @@ const Project = () => {
         `http://localhost:8000/api/projects/${deletableId}`
       );
       // console.log(response.data);
-      window.location.reload();
+
+      const remainingProjects = projects.filter((prevProjects) => {
+        return prevProjects._id !== deletableId;
+      });
+      // console.log(remainingProjects);
+      setProjects(remainingProjects);
+      // Hide the modal
+      const modalElement = document.getElementById("deleteproject");
+      const modal = window.bootstrap.Modal.getInstance(modalElement);
+      modal.hide();
+
+      toast.error('Project Deleted Successfully!', {
+        style: {
+          backgroundColor: '#4c3575',
+          color: 'white',
+        },
+      });
+
     } catch (error) {
       console.error("Error:", error);
     }
@@ -190,15 +244,11 @@ const Project = () => {
     e.preventDefault();
     try {
       const formDataToSend = new FormData();
-      // console.log(selectedEmployees);
-      // console.log(projectFormData);
       delete projectFormData?.taskAssignPerson;
       for (const key in projectFormData) {
-        // console.log(key);
         formDataToSend.append(key, projectFormData[key]);
       }
       for (let obj of selectedEmployees) {
-        // console.log(obj.value);
         formDataToSend.append("taskAssignPerson", obj.value);
       }
       const response = await axios.put(
@@ -210,15 +260,50 @@ const Project = () => {
           },
         }
       );
-
       // console.log(response.data);
-      window.location.reload();
+      const updatedProject = response.data;
+    const updatedProjectData = projects.map((pro) => {
+      if (pro._id === toEdit) {
+        return {
+          ...pro,
+          projectName: updatedProject.projectName,
+          projectCategory: updatedProject.projectCategory,
+          projectImage: updatedProject.projectImage,
+          projectStartDate: updatedProject.projectStartDate,
+          projectEndDate: updatedProject.projectEndDate,
+          taskAssignPerson: updatedProject.taskAssignPerson,
+          description: updatedProject.description,
+        };
+        } else {
+          return pro;
+        }
+
+      });
+      // console.log(updatedProjectData);
+
+      setProjects(updatedProjectData);
+      // setProjectFormData(formDataToSend)
+
+      // Close the modal programmatically
+      const modalElement = document.getElementById("editproject");
+      const modal = window.bootstrap.Modal.getInstance(modalElement);
+      modal.hide();
+
+      toast.success('Project Updated Successfully!', {
+        style: {
+          backgroundColor: '#4c3575',
+          color: 'white',
+        },
+      });
+
+      
     } catch (error) {
       console.error("Error:", error);
     }
   };
 
   // GET SINGLE PROJECT
+
   const [searchQuery, setSearchQuery] = useState("");
   const handleSearch = async (searchQuery) => {
     if (searchQuery !== "") {
@@ -249,7 +334,9 @@ const Project = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/employees");
+        const response = await axios.get(
+          "http://localhost:8000/api/employees"
+        );
         setEmployees(response.data);
         // console.log(response.data);
       } catch (error) {
@@ -299,7 +386,9 @@ const Project = () => {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/tasks");
+        const response = await axios.get(
+          "http://localhost:8000/api/tasks"
+        );
         setTasks(response.data);
       } catch (error) {
         console.error("Error:", error);
@@ -309,27 +398,6 @@ const Project = () => {
     fetchTasks();
   }, []);
   // console.log(tasks);
-
-  // const imgViewerNewTabs = (links) => {
-  //   links.forEach((link) => {
-  //     const validUrl = link.replaceAll("\\", "/");
-  //     const a = document.createElement("a");
-  //     // a.target = "_blank";
-  //     a.href = `http://localhost:8000/${validUrl}`;
-  //     document.body.appendChild(a);
-  //     a.click();
-  //     // Remove the anchor from the document after clicking to keep the DOM clean
-  //     document.body.removeChild(a);
-  //   });
-  // };
-  // const imgViewerNewTabs = (links) => {
-  //   links.forEach((link, index) => {
-  //     const validUrl = link.replaceAll("\\", "/");
-  //     setTimeout(() => {
-  //       window.open(`http://localhost:8000/${validUrl}`, "_blank");
-  //     }, index * 100); // Adjust the delay as needed
-  //   });
-  // };
 
   return (
     <>
@@ -747,7 +815,8 @@ const Project = () => {
                     </button>
                     <button
                       type="button"
-                      className="btn btn-primary"
+                      className="btn btn-primary close"
+                      data-dismiss="modal"
                       onClick={handleSubmit}
                     >
                       Create
@@ -1128,6 +1197,7 @@ const Project = () => {
             </div>
           </>
         </div>
+        <ToastContainer />
       </div>
     </>
   );

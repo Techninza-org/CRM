@@ -3,25 +3,6 @@ const Task = require('../model/taskModel');
 const jwt = require('jsonwebtoken')
 
 
-// Create a new task
-// exports.createTask = async (req, res) => {
-//   try {
-//     // console.log(req.file);
-//     const path = req.file?.path;
-//     // console.log(path);
-//     const newPath = path.replace('uploads\\', "");
-//     // console.log(newPath);
-//     const taskAssigner = req.body.taskAssignPerson;
-//     const filteredTaskAssigner = taskAssigner.filter((task) => task !== "");
-//     req.body.taskImages = newPath;
-//     const task = new Task({ ...req.body, taskAssignPerson: filteredTaskAssigner });
-//     // console.log(task);
-//     const savedTask = await task.save();
-//     res.status(201).json(savedTask);
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// };
 exports.createTask = async (req, res) => {
   try {
     // Extracting paths of uploaded files

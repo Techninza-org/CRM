@@ -1,13 +1,16 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom"; // Import Navigate
+import React, {useEffect, useState } from "react";
+import { Link, Navigate, useNavigate  } from 'react-router-dom'; // Import Navigate
 import axios from "axios";
 
 const Signin = () => {
+  const nav = useNavigate();
 
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+  // const [isSignIn, setIsSignIn] = useState(false);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -16,6 +19,13 @@ const Signin = () => {
       [name]: value,
     });
   };
+
+  useEffect(() => {
+    const token = localStorage.getItem("emp_token");
+    if (token) {
+      nav("/employee-dashboard");
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,11 +44,14 @@ const Signin = () => {
       localStorage.setItem("emp_user", JSON.stringify(user));
       console.log(JSON.stringify(response.data));
       alert("Login successful!");
-      window.location.href = "/employee-dashboard";
+      nav("/employee-dashboard")
     } catch (error) {
       console.log(error);
     }
   };
+  // if (isSignIn) {
+  //   return <Navigate to="/employee-dashboard" />; // Use Navigate component
+  // }
 
   return (
     <div id="mytask-layout">
@@ -138,14 +151,14 @@ const Signin = () => {
                     </div>
                     {/* {error && <p>{error}</p>} */}
                   </form>
-                  <div className="col-12 text-center mt-4">
+                  {/* <div className="col-12 text-center mt-4">
                     <span className="text-muted">
                       Don't have an account yet?{" "}
                       <Link to="/employeesignup" className="text-secondary">
                         Sign up here
                       </Link>
                     </span>
-                  </div>
+                  </div> */}
                   {/* End Form */}
                 </div>
               </div>

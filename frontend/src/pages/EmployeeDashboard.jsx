@@ -3,6 +3,7 @@ import Sidebar from '../employeeCompt/EmployeeSidebar'
 import Header from '../employeeCompt/EmployeeHeader'
 
 import axios from 'axios'
+import { Link } from 'react-router-dom'
 
 const EmployeeDashboard = () => {
 
@@ -25,7 +26,7 @@ const EmployeeDashboard = () => {
                       alt="No Data"
                     />
                     <div className="mt-4 mb-2">
-                      <a href="https://techninza.in/" className="text-muted">GO TO THE WEBSITE</a>
+                      <Link to="https://techninza.in/" className="text-muted">GO TO THE WEBSITE</Link>
                     </div>
                     {/* <button
                       type="button"

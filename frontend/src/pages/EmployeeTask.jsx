@@ -4,13 +4,48 @@ import Header from "../employeeCompt/EmployeeHeader";
 import axios from "axios";
 
 const Tasks = () => {
-  // GET SINGLE PROJECT
+  // // GET SINGLE PROJECT
+  // const [searchQuery, setSearchQuery] = useState("");
+  // const handleSearch = async (searchQuery) => {
+  //   if (searchQuery !== "") {
+  //     try {
+  //       const response = await axios.get(
+  //         `https://crm-front-back-26vy.onrender.com/api/pros/search?id=${searchQuery}`
+  //       );
+  //       setTasks(response.data);
+  //     } catch (error) {
+  //       console.error("Error:", error);
+  //       setTasks(null);
+  //     }
+  //   } else {
+  //     const fetchData = async () => {
+  //       try {
+  //         const response = await axios.get(
+  //           "https://crm-front-back-26vy.onrender.com/api/tasks"
+  //         );
+  //         setTasks(response.data);
+  //       } catch (error) {
+  //         console.error("Error:", error);
+  //       }
+  //     };
+
+  //     fetchData();
+  //   }
+  // };
+
+  // GET SINGLE TASK BY TOKEN
   const [searchQuery, setSearchQuery] = useState("");
   const handleSearch = async (searchQuery) => {
+    const Token = localStorage.getItem("emp_token");
     if (searchQuery !== "") {
       try {
         const response = await axios.get(
-          `http://localhost:8000/api/pros/search?id=${searchQuery}`
+          `http://localhost:8000/api/pros/search?id=${searchQuery}`,
+          {
+            headers: {
+              Authorization: Token,
+            },
+          }
         );
         setTasks(response.data);
       } catch (error) {
@@ -18,16 +53,19 @@ const Tasks = () => {
         setTasks(null);
       }
     } else {
-      const fetchData = async () => {
-        try {
-          const response = await axios.get("http://localhost:8000/api/tasks");
-          setTasks(response.data);
-        } catch (error) {
-          console.error("Error:", error);
-        }
-      };
-
-      fetchData();
+      try {
+        const response = await axios.get(
+          "http://localhost:8000/api/tasks",
+          {
+            headers: {
+              Authorization: Token,
+            },
+          }
+        );
+        setTasks(response.data);
+      } catch (error) {
+        console.error("Error:", error);
+      }
     }
   };
 
@@ -35,7 +73,9 @@ const Tasks = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/employees");
+        const response = await axios.get(
+          "http://localhost:8000/api/employees"
+        );
         setEmployees(response.data);
         // console.log(response.data);
       } catch (error) {
@@ -61,11 +101,14 @@ const Tasks = () => {
     const Token = localStorage.getItem("emp_token");
     async function fetchTasks() {
       try {
-        const response = await axios.get("http://localhost:8000/api/author", {
-          headers: {
-            Authorization: Token,
-          },
-        });
+        const response = await axios.get(
+          "http://localhost:8000/api/author",
+          {
+            headers: {
+              Authorization: Token,
+            },
+          }
+        );
         setTasks(response.data);
       } catch (error) {
         console.error("Error fetching tasks:", error);
@@ -75,32 +118,33 @@ const Tasks = () => {
     fetchTasks();
   }, []);
 
-
-
-//done task
-  const [taskId, setTaskId] = useState("");
-  const handleTaskUpdate = async () => {
+  //done task
+  // const [taskId, setTaskId] = useState("");
+  const handleTaskUpdate = async (id) => {
     try {
       const response = await axios.put(
-        `http://localhost:8000/api/update/${taskId}`,
+        `http://localhost:8000/api/update/${id}`,
         { isCompleted: true }
       );
-      window.location.reload()
+      setTasks(tasks.map(task => task._id === id ? { ...task, isCompleted: true } : task));
     } catch (error) {
       setError(error.message);
     }
   };
-
-  const clearTask = async () => {
+  const clearTask = async (id) => {
     try {
-      await axios.put(`http://localhost:8000/api/update/${taskId}`, {
-        isCompleted: false,
-      });
-      window.location.reload()
+      const response = await axios.put(
+        `http://localhost:8000/api/update/${id}`,
+        {isCompleted: false}
+      );
+      setTasks(tasks.map(task => task._id === id ? { ...task, isCompleted: false } : task));
+      // window.location.reload();
     } catch (error) {
       setError("Error clearing task");
     }
   };
+
+  const [showFullDescription, setShowFullDescription] = useState("");
 
   return (
     <>
@@ -167,127 +211,117 @@ const Tasks = () => {
                 </div>{" "}
                 {/* Row end  */}
                 <div className="row">
-                {tasks.map((task) => {
-                  const getFormattedDate = (date) => {
-                    const newDate = new Date(date);
-                    const day = newDate.getDate();
-                    const month = newDate.getMonth() + 1;
-                    const year = newDate.getFullYear();
+                  {tasks.map((task) => {
+                    const getFormattedDate = (date) => {
+                      const newDate = new Date(date);
+                      const day = newDate.getDate();
+                      const month = newDate.getMonth() + 1;
+                      const year = newDate.getFullYear();
 
-                    return `${day}/${month}/${year}`;
-                  };
+                      return `${day}/${month}/${year}`;
+                    };
 
-                  return (
-                    <div className="col-md-4 mb-4" key={task._id}>
-                          <div className="card" style={{ width: "18rem" }}>
-                            <div className="card-body dd-handle">
-                                      <div className="d-flex justify-content-between">
-                                        <h5 className="fw-bold">
-                                          {task.projectName}
-                                        </h5>
-                                        {task.isCompleted && (
-                                          <i className="bi bi-check-circle-fill text-success h5" />
-                                        )}
-                                      </div>
-                                      <div className="task-info d-flex align-items-center justify-content-between">
-                                        <h6 className="light-success-bg py-1 px-2 rounded-1 d-inline-block fw-bold small-14 mb-0">
-                                          {task.taskCategory}
-                                        </h6>
-                                        <div className="task-priority d-flex flex-column align-items-center justify-content-center">
-                                          <div className="avatar-list avatar-list-stacked m-0">
-                                            <img
-                                              className="avatar rounded-circle small-avt"
-                                              src={
-                                                "http://localhost:8000/" +
-                                                task.taskAssignPerson
-                                                  .employeeImage
-                                              }
-                                              alt=""
-                                            />
-                                          </div>
-                                          <div>
-                                            {task.taskAssignPerson.employeeName}
-                                          </div>
-                                          <span className="badge bg-danger text-end mt-2">
-                                            {task.taskPriority}
-                                          </span>
-                                        </div>
-                                      </div>
-                                      <p className="py-2 mb-0 ">
-                                        {task.description}
-                                      </p>
-                                      <div className="tikit-info row g-3 align-items-center">
-                                        <div className="col-sm">
-                                          <ul className="d-flex list-unstyled align-items-center justify-content-between">
-                                            <li className="me-2">
-                                              <div className="d-flex align-items-center fw-bold">
-                                                Start:
-                                                <span className="ms-1">
-                                                  {getFormattedDate(
-                                                    task.taskStartDate
-                                                  )}
-                                                </span>
-                                              </div>
-                                            </li>
-                                            <li className="me-2">
-                                              <div className="d-flex align-items-center fw-bold">
-                                                End:
-                                                <span className="ms-1">
-                                                  {getFormattedDate(
-                                                    task.taskEndDate
-                                                  )}
-                                                </span>
-                                              </div>
-                                            </li>
-                                          </ul>
-                                        </div>
-                                        <div className="d-flex justify-content-between align-items-center">
-                                          {task.isCompleted ? (
-                                            <div>
-                                              <button
-                                                type="button"
-                                                className="btn light-danger-bg text-end small text-truncate py-1 px-2 rounded-1 d-inline-block fw-bold small"
-                                                onClick={() => {
-                                                  setTaskId(task._id);
-                                                  clearTask();
-                                                }}
-                                              >
-                                                Clear
-                                              </button>
-                                            </div>
-                                          ) : (
-                                            <button
-                                              type="button"
-                                              className="btn bg-info text-end small text-truncate py-1 px-2 rounded-1 d-inline-block fw-bold small"
-                                              onClick={() => {
-                                                setTaskId(task._id);
-                                                handleTaskUpdate();
-                                              }}
-                                            >
-                                              Done
-                                            </button>
-                                          )}
-                                          <a
-                                              href={
-                                                "http://localhost:8000/" +
-                                                task.taskImages
-                                              }
-                                              target="_blank"
-                                            >
-                                              <i className=" bi-paperclip fs-5"/>
-                                            </a>
-                                        </div>
-                                        <div></div>
-                                      </div>
-                                    </div>
-                                  
+                    return (
+                      <div className="col-md-4 mb-4" key={task._id}>
+                        <div className="card" style={{ width: "18rem" }}>
+                          <div className="card-body dd-handle">
+                            <div className="d-flex justify-content-between">
+                              <h5 className="fw-bold">{task.projectName}</h5>
+                              {task.isCompleted && (
+                                <i className="bi bi-check-circle-fill text-success h5" />
+                              )}
+                            </div>
+                            <div className="task-info d-flex align-items-center justify-content-between">
+                              <h6 className="light-success-bg py-1 px-2 rounded-1 d-inline-block fw-bold small-14 mb-0">
+                                {task.taskCategory}
+                              </h6>
+                              <div className="task-priority d-flex flex-column align-items-center justify-content-center">
+                                <div className="avatar-list avatar-list-stacked m-0">
+                                  <img
+                                    className="avatar rounded-circle small-avt"
+                                    src={
+                                      "http://localhost:8000/" +
+                                      task.taskAssignPerson.employeeImage
+                                    }
+                                    alt=""
+                                  />
+                                </div>
+                                <div>{task.taskAssignPerson.employeeName}</div>
+                                <span className="badge bg-danger text-end mt-2">
+                                  {task.taskPriority}
+                                </span>
                               </div>
                             </div>
-
-                         
-                  );
-                })}
-              </div>
+                            <p
+                              className="py-2 mb-0 task-description"
+                              style={{
+                                maxHeight: showFullDescription
+                                  ? "none"
+                                  : "11em",
+                                overflowY: "auto",
+                              }}
+                            >
+                              {task.description}
+                            </p>
+                            <div className="tikit-info row g-3 align-items-center">
+                              <div className="col-sm">
+                                <ul className="d-flex list-unstyled align-items-center justify-content-between">
+                                  <li className="me-2">
+                                    <div className="d-flex align-items-center fw-bold">
+                                      Start:
+                                      <span className="ms-1">
+                                        {getFormattedDate(task.taskStartDate)}
+                                      </span>
+                                    </div>
+                                  </li>
+                                  <li className="me-2">
+                                    <div className="d-flex align-items-center fw-bold">
+                                      End:
+                                      <span className="ms-1">
+                                        {getFormattedDate(task.taskEndDate)}
+                                      </span>
+                                    </div>
+                                  </li>
+                                </ul>
+                              </div>
+                              <div className="d-flex justify-content-between align-items-center">
+                                {task.isCompleted ? (
+                                  <div>
+                                    <button
+                                      type="button"
+                                      className="btn light-danger-bg text-end small text-truncate py-1 px-2 rounded-1 d-inline-block fw-bold small"
+                                      onClick={() => clearTask(task._id)}
+                                    >
+                                      Clear
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    className="btn bg-info text-end small text-truncate py-1 px-2 rounded-1 d-inline-block fw-bold small"
+                                    onClick={() => handleTaskUpdate(task._id)}
+                                  >
+                                    Done
+                                  </button>
+                                )}
+                                <a
+                                  href={
+                                    "http://localhost:8000/" +
+                                    task.taskImages
+                                  }
+                                  target="_blank"
+                                >
+                                  <i className=" bi-paperclip fs-5" />
+                                </a>
+                              </div>
+                              {/* <div></div> */}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </>

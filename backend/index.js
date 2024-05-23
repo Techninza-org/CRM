@@ -10,7 +10,6 @@ const taskRoutes = require('./routes/taskRoutes');
 const statusController = require('./controller/statusAuth')
 const cors = require('cors');
 
-
 dotenv.config();
 
 //Middleware setup

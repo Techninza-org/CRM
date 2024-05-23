@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from 'react-router-dom'; // Import Navigate
 import axios from "axios";
 
 const Signup = () => {
@@ -37,13 +37,16 @@ const Signup = () => {
       );
       console.log(response.data);
       alert("Signup successful!");
-      window.location.href = "/employeesignin";
+      setIsSignIn(true);
       // Handle successful response
     } catch (error) {
       console.error("Error:", error);
       // Handle error
     }
   };
+  if (isSignIn) {
+    return <Navigate to="/employeesignin" />; // Use Navigate component
+  }
 
   return (
     <>

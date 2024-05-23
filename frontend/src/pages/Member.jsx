@@ -3,8 +3,12 @@ import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Member = () => {
+  const [employees, setEmployees] = useState([]);
+
   //CREATE EMPLOYEE
   const [formData, setFormData] = useState({
     employeeName: "",
@@ -15,7 +19,7 @@ const Member = () => {
     username: "",
     password: "",
     emailid: "",
-    phone: "",
+    phone: "+91 ",
     department: "",
     designation: "",
     description: "",
@@ -54,8 +58,39 @@ const Member = () => {
           },
         }
       );
-      console.log(response.data);
-      window.location.reload();
+
+      const newEmployee = response.data;
+      setEmployees((prevEmployee) => [newEmployee, ...prevEmployee]);
+      // Clear the form
+      setFormData({
+        employeeName: "",
+        employeeCompany: "",
+        employeeImage: null,
+        employeeId: "",
+        joiningDate: "",
+        username: "",
+        password: "",
+        emailid: "",
+        phone: "+91 ",
+        department: "",
+        designation: "",
+        description: "",
+      });
+
+      // Close the modal programmatically
+      const modalElement = document.getElementById("createemp");
+      const modal = window.bootstrap.Modal.getInstance(modalElement);
+      modal.hide();
+
+      // console.log(response.data);
+      // window.location.reload();
+
+      toast.success('Employee Added Successfully!', {
+        style: {
+          backgroundColor: '#4c3575',
+          color: 'white',
+        },
+      });
       // Handle successful response
     } catch (error) {
       console.error("Error:", error);
@@ -64,12 +99,30 @@ const Member = () => {
   };
 
   //   GET EMPLOYEES
-  const [employees, setEmployees] = useState([]);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/employees");
+        const response = await axios.get(
+          "http://localhost:8000/api/employees"
+        );
+
+        let lastOldId = "1";
+        for (let d of response.data) {
+          // console.log(d);
+          const newId = Number(d.employeeId.slice(2));
+          if (!Number.isNaN(newId)) {
+            if (newId > Number(lastOldId)) {
+              lastOldId = newId.toString();
+            }
+          }
+        }
+        // console.log(lastOldId);
+        const newId = `TN${++lastOldId}`;
+        // console.log(newId);
+        setFormData({
+          ...formData,
+          employeeId: newId,
+        });
         setEmployees(response.data);
       } catch (error) {
         console.error("Error:", error);
@@ -86,8 +139,24 @@ const Member = () => {
       const response = await axios.delete(
         "http://localhost:8000/api/employees/" + deletableId
       );
-      console.log(response.data);
-      window.location.reload();
+      // console.log(response.data);
+      // window.location.reload();
+      const remainingEmployee = employees.filter((prevEmployee) => {
+        return prevEmployee._id !== deletableId;
+      });
+      setEmployees(remainingEmployee);
+
+      const modalElement = document.getElementById("deleteproject");
+      const modal = window.bootstrap.Modal.getInstance(modalElement);
+      modal.hide();
+
+      toast.error('Employee Deleted Successfully!', {
+        style: {
+          backgroundColor: '#4c3575',
+          color: 'white',
+        },
+      });
+
     } catch (error) {
       console.error("Error:", error);
     }
@@ -103,7 +172,7 @@ const Member = () => {
     username: "",
     password: "",
     emailid: "",
-    phone: "",
+    phone: "+91",
     department: "",
     designation: "",
     description: "",
@@ -179,9 +248,43 @@ const Member = () => {
           },
         }
       );
-
       // console.log(response.data);
-      window.location.reload();
+      const updatedEmployee = response.data;
+      const updatedEmployeeData = employees.map((pro) => {
+        if (pro._id === toEdit) {
+          return {
+            ...pro,
+            employeeName: updatedEmployee.employeeName,
+            employeeCompany: updatedEmployee.employeeCompany,
+            employeeImage: updatedEmployee.employeeImage,
+            employeeId: updatedEmployee.employeeId,
+            joiningDate: updatedEmployee.joiningDate,
+            username: updatedEmployee.username,
+            password: updatedEmployee.password,
+            emailid: updatedEmployee.emailid,
+            phone: updatedEmployee.phone,
+            department: updatedEmployee.department,
+            designation: updatedEmployee.designation,
+            description: updatedEmployee.description,
+          };
+        } else {
+          return pro;
+        }
+      });
+      setEmployees(updatedEmployeeData)
+
+      const modalElement = document.getElementById("editemp");
+      const modal = window.bootstrap.Modal.getInstance(modalElement);
+      modal.hide();
+      // window.location.reload();
+
+      toast.success('Employee Updated Successfully!', {
+        style: {
+          backgroundColor: '#4c3575',
+          color: 'white',
+        },
+      });
+
     } catch (error) {
       console.error("Error:", error);
     }
@@ -216,8 +319,6 @@ const Member = () => {
     }
   };
 
-
-  
   return (
     <>
       <div id="mytask-layout">
@@ -308,12 +409,12 @@ const Member = () => {
                                 <div className="followers me-2">
                                   <i class="bi bi-person-vcard-fill text-danger fs-6 me-2" />
                                   <span className="">
-                                    ID - {employee.employeeId}
+                                    {employee.employeeId}
                                   </span>
                                 </div>
                                 <div className="followers me-2">
-                                  <i class="bi bi-person-fill text-primary fs-6 me-2" />
-                                  <span className="">{employee.username}</span>
+                                  {/* <i class="bi bi-person-fill text-primary fs-6 me-2" />
+                                  <span className="">{employee.username}</span> */}
                                 </div>
 
                                 <div className="own-video">
@@ -321,6 +422,10 @@ const Member = () => {
                                   <i class="bi bi-telephone-fill text-success fs-6 me-2" />
                                   <span className="">{employee.phone}</span>
                                 </div>
+                                <p className=" rounded-1 d-inline-block fw-bold small-11 mb-1 d-flex">
+                                  <i class="bi bi-envelope-at-fill text-primary fs-6 me-1" />
+                                  {employee.emailid}
+                                </p>
                               </div>
                             </div>
                             <div className="teacher-info border-start ps-xl-4 ps-md-3 ps-sm-4 ps-4 w-100">
@@ -367,14 +472,10 @@ const Member = () => {
                                 </div>
                               </div>
                               <div className="video-setting-icon mt-2 pt-2 border-top">
-                                <p className="light-info-bg p-1 rounded-1 d-inline-block fw-bold small-11 mb-1">
-                                  <i class="bi bi-envelope-at-fill text-primary fs-6 me-2" />
-                                  {employee.emailid}
-                                </p>
                                 <p>{employee.description}</p>
                               </div>
                               <div className="d-flex justify-content-center">
-                                <Link
+                                {/* <Link
                                   className="ms-link d-flex justify-content-center"
                                   to="/tasks"
                                 >
@@ -382,7 +483,7 @@ const Member = () => {
                                     <i className="icofont-plus-circle me-2 fs-6" />
                                     Add Task
                                   </div>
-                                </Link>
+                                </Link> */}
                               </div>
                             </div>
                           </div>
@@ -693,7 +794,7 @@ const Member = () => {
                         onChange={updateChange}
                       />
                     </div>
-                    <div className="mb-3">
+                    {/* <div className="mb-3">
                       <label
                         htmlFor="exampleFormControlInput977"
                         className="form-label"
@@ -709,7 +810,7 @@ const Member = () => {
                         value={employeeData.employeeCompany}
                         onChange={updateChange}
                       />
-                    </div>
+                    </div> */}
                     <div className="mb-3">
                       <label
                         htmlFor="formFileMultipleoneone"
@@ -763,7 +864,7 @@ const Member = () => {
                           </div>
                         </div>
                         <div className="row g-3 mb-3">
-                          <div className="col">
+                          {/* <div className="col">
                             <label
                               htmlFor="exampleFormControlInput177"
                               className="form-label"
@@ -777,6 +878,23 @@ const Member = () => {
                               placeholder="User Name"
                               name="username"
                               value={employeeData.username}
+                              onChange={updateChange}
+                            />
+                          </div> */}
+                          <div className="col">
+                            <label
+                              htmlFor="exampleFormControlInput477"
+                              className="form-label"
+                            >
+                              Email ID
+                            </label>
+                            <input
+                              type="email"
+                              className="form-control"
+                              id="exampleFormControlInput477"
+                              placeholder="User Name"
+                              name="emailid"
+                              value={employeeData.emailid}
                               onChange={updateChange}
                             />
                           </div>
@@ -799,23 +917,7 @@ const Member = () => {
                           </div>
                         </div>
                         <div className="row g-3 mb-3">
-                          <div className="col">
-                            <label
-                              htmlFor="exampleFormControlInput477"
-                              className="form-label"
-                            >
-                              Email ID
-                            </label>
-                            <input
-                              type="email"
-                              className="form-control"
-                              id="exampleFormControlInput477"
-                              placeholder="User Name"
-                              name="emailid"
-                              value={employeeData.emailid}
-                              onChange={updateChange}
-                            />
-                          </div>
+                          
                           <div className="col">
                             <label
                               htmlFor="exampleFormControlInput777"
@@ -827,7 +929,8 @@ const Member = () => {
                               type="text"
                               className="form-control"
                               id="exampleFormControlInput777"
-                              placeholder="User Name"
+                              placeholder="phone"
+                              maxLength={14}
                               name="phone"
                               value={employeeData.phone}
                               onChange={updateChange}
@@ -978,7 +1081,7 @@ const Member = () => {
                         onChange={handleChange}
                       />
                     </div>
-                    <div className="mb-3">
+                    {/* <div className="mb-3">
                       <label
                         htmlFor="exampleFormControlInput977"
                         className="form-label"
@@ -994,7 +1097,7 @@ const Member = () => {
                         value={formData.employeeCompany}
                         onChange={handleChange}
                       />
-                    </div>
+                    </div> */}
                     <div className="mb-3">
                       <label
                         htmlFor="formFileMultipleoneone"
@@ -1028,6 +1131,7 @@ const Member = () => {
                               name="employeeId"
                               value={formData.employeeId}
                               onChange={handleChange}
+                              disabled
                             />
                           </div>
                           <div className="col-sm-6">
@@ -1048,7 +1152,7 @@ const Member = () => {
                           </div>
                         </div>
                         <div className="row g-3 mb-3">
-                          <div className="col">
+                          {/* <div className="col">
                             <label
                               htmlFor="exampleFormControlInput177"
                               className="form-label"
@@ -1062,6 +1166,23 @@ const Member = () => {
                               placeholder="User Name"
                               name="username"
                               value={formData.username}
+                              onChange={handleChange}
+                            />
+                          </div> */}
+                          <div className="col">
+                            <label
+                              htmlFor="exampleFormControlInput477"
+                              className="form-label"
+                            >
+                              Email ID
+                            </label>
+                            <input
+                              type="email"
+                              className="form-control"
+                              id="exampleFormControlInput477"
+                              placeholder="Email ID"
+                              name="emailid"
+                              value={formData.emailid}
                               onChange={handleChange}
                             />
                           </div>
@@ -1086,23 +1207,6 @@ const Member = () => {
                         <div className="row g-3 mb-3">
                           <div className="col">
                             <label
-                              htmlFor="exampleFormControlInput477"
-                              className="form-label"
-                            >
-                              Email ID
-                            </label>
-                            <input
-                              type="email"
-                              className="form-control"
-                              id="exampleFormControlInput477"
-                              placeholder="Email ID"
-                              name="emailid"
-                              value={formData.emailid}
-                              onChange={handleChange}
-                            />
-                          </div>
-                          <div className="col">
-                            <label
                               htmlFor="exampleFormControlInput777"
                               className="form-label"
                             >
@@ -1113,6 +1217,7 @@ const Member = () => {
                               className="form-control"
                               id="exampleFormControlInput777"
                               placeholder="Phone"
+                              maxLength={14}
                               name="phone"
                               value={formData.phone}
                               onChange={handleChange}
@@ -1129,7 +1234,7 @@ const Member = () => {
                               value={formData.department}
                               onChange={handleChange}
                             >
-                              <option value={""}></option>
+                              <option value={""}>Select Department</option>
                               <option value={"Web Development"}>
                                 Web Development
                               </option>
@@ -1149,7 +1254,7 @@ const Member = () => {
                               value={formData.designation}
                               onChange={handleChange}
                             >
-                              <option value={""}></option>
+                              <option value={""}>Select Designation</option>
                               <option value={"UI/UX Design"}>
                                 UI/UX Design
                               </option>
@@ -1272,6 +1377,7 @@ const Member = () => {
             </div>
           </>
         </div>
+        <ToastContainer />
       </div>
     </>
   );

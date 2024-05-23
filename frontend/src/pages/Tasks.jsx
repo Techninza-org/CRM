@@ -5,8 +5,12 @@ import { MultiSelect } from "react-multi-select-component";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Tasks = () => {
+  const [tasks, setTasks] = useState([]);
+
   //CREATE TASK
   const [formData, setFormData] = useState({
     projectName: "",
@@ -40,8 +44,8 @@ const Tasks = () => {
     e.preventDefault();
     try {
       const formDataToSend = new FormData();
-      for (let i = 0; i < formData.taskImages.length; i++) {
-        formDataToSend.append('taskImages', formData.taskImages[i]);
+      for (let i = 0; i < formData.taskImages?.length; i++) {
+        formDataToSend.append("taskImages", formData.taskImages[i]);
       }
       for (let key in formData) {
         formDataToSend.append(key, formData[key]);
@@ -61,26 +65,38 @@ const Tasks = () => {
         }
       );
       // console.log(response.data);
-      window.location.reload();
-      // setTasks([...tasks, response.data]);
-      // // Clear the form data after successful submission
-      // setFormData({
-      //   projectName: "",
-      //   taskCategory: "",
-      //   taskImages: null,
-      //   taskStartDate: "",
-      //   taskEndDate: "",
-      //   taskAssignPerson: "",
-      //   taskPriority: "",
-      //   description: "",
-      // });
+      // window.location.reload();
+      const newTask = response.data;
+      setTasks((prevTasks) => [newTask, ...prevTasks]);
+      // Clear the form data after successful submission
+      setFormData({
+        projectName: "",
+        taskCategory: "",
+        taskImages: null,
+        taskStartDate: "",
+        taskEndDate: "",
+        taskAssignPerson: "",
+        taskPriority: "",
+        description: "",
+      });
+
+      // Close the modal programmatically
+      const modalElement = document.getElementById("createtask");
+      const modal = window.bootstrap.Modal.getInstance(modalElement);
+      modal.hide();
+
+      toast.success("Task Created Successfully!", {
+        style: {
+          backgroundColor: "#4c3575",
+          color: "white",
+        },
+      });
     } catch (error) {
       console.error("Error:", error);
     }
   };
 
   //GET TASK
-  const [tasks, setTasks] = useState([]);
   useEffect(() => {
     const fetchTasks = async () => {
       try {
@@ -103,7 +119,23 @@ const Tasks = () => {
         `http://localhost:8000/api/tasks/${deletableId}`
       );
       // console.log(response.data);
-      window.location.reload();
+      // window.location.reload();
+      const remainingTasks = tasks.filter((prevTasks) => {
+        return prevTasks._id !== deletableId;
+      });
+      // console.log(remainingProjects);
+      setTasks(remainingTasks);
+      // Hide the modal
+      const modalElement = document.getElementById("dremovetask");
+      const modal = window.bootstrap.Modal.getInstance(modalElement);
+      modal.hide();
+
+      toast.error("Task Deleted Successfully!", {
+        style: {
+          backgroundColor: "#4c3575",
+          color: "white",
+        },
+      });
     } catch (error) {
       console.error("Error:", error);
     }
@@ -222,7 +254,6 @@ const Tasks = () => {
         console.error("Error fetching data:", error);
       }
     };
-
     if (toEdit) {
       fetchData();
     }
@@ -255,7 +286,39 @@ const Tasks = () => {
           },
         }
       );
-      window.location.reload(); // Refresh the page after successful update
+      const updatedTask = response.data;
+      const updatedTaskData = tasks.map((pro) => {
+        if (pro._id === toEdit) {
+          return {
+            ...pro,
+            projectName: updatedTask.projectName,
+            taskCategory: updatedTask.taskCategory,
+            taskImages: updatedTask.taskImages,
+            taskStartDate: updatedTask.taskStartDate,
+            taskEndDate: updatedTask.taskEndDate,
+            taskAssignPerson: updatedTask.taskAssignPerson,
+            taskPriority: updatedTask.taskPriority,
+            description: updatedTask.description,
+          };
+        } else {
+          return pro;
+        }
+      });
+
+      setTasks(updatedTaskData);
+
+      // Close the modal programmatically
+      const modalElement = document.getElementById("editemp");
+      const modal = window.bootstrap.Modal.getInstance(modalElement);
+      modal.hide();
+      // window.location.reload();
+
+      toast.success("Task Updated Successfully!", {
+        style: {
+          backgroundColor: "#4c3575",
+          color: "white",
+        },
+      });
     } catch (error) {
       console.error("Error:", error);
     }
@@ -275,8 +338,8 @@ const Tasks = () => {
 
     fetchProjects();
   }, []);
-  const [showFullDescription, setShowFullDescription] = useState('');
 
+  const [showFullDescription, setShowFullDescription] = useState("");
 
   return (
     <>
@@ -397,7 +460,6 @@ const Tasks = () => {
                                     ? "none"
                                     : "11em",
                                   overflowY: "auto",
-                                  
                                 }}
                               >
                                 {task.description}
@@ -451,33 +513,41 @@ const Tasks = () => {
                                     </button>
                                   </div>
 
-                                  {/* <a
-                                    href={
-                                      "http://localhost:8000/" + task.taskImages
-                                    }
-                                    target="_blank"
+                                  <div
+                                    className="btn-group"
+                                    role="group"
+                                    aria-label="Basic outlined example"
                                   >
-                                    <i className=" bi-paperclip fs-5" />
-                                  </a> */}
-                                  {/* {task.taskImages.map((image, index) => (
-                                    <a
-                                      key={index} // Ensure each element in the list has a unique key
-                                      href={"http://localhost:8000/" + image}
-                                      target="_blank"
+                                    <button
+                                      type="button"
+                                      className="btn btn-outline-secondary"
+                                      data-bs-toggle="modal"
+                                      data-bs-target="#chatUser"
+                                      // onClick={() => setToEdit(task._id)}
                                     >
-                                      <i className="bi-paperclip fs-5" />
-                                    </a>
-                                  ))} */}
-                                  <Link
-                                        to="/images"
-                                        state={{
-                                          images: task.taskImages,
-                                          projectName: task.projectName,
-                                        }}
-                                        
-                                      >
-                                        <i className="bi-paperclip fs-6" />
-                                      </Link>
+                                      <i className="bi bi-chat-left-text-fill text-primary" />
+                                    </button>
+                                    <Link
+                                      to="/images"
+                                      className="btn btn-outline-secondary"
+                                      state={{
+                                        images: task.taskImages,
+                                        projectName: task.projectName,
+                                      }}
+                                    >
+                                      <i className="bi-paperclip fs-6" />
+                                    </Link>
+                                  </div>
+
+                                  {/* <Link
+                                    to="/images"
+                                    state={{
+                                      images: task.taskImages,
+                                      projectName: task.projectName,
+                                    }}
+                                  >
+                                    <i className="bi-paperclip fs-6" />
+                                  </Link> */}
                                 </div>
                               </div>
                             </div>
@@ -490,253 +560,6 @@ const Tasks = () => {
               </div>
             </div>
             <>
-              {/* Modal Members */}
-              <div
-                className="modal fade"
-                id="addUser"
-                tabIndex={-1}
-                aria-labelledby="addUserLabel"
-                aria-hidden="true"
-              >
-                <div className="modal-dialog modal-dialog-centered modal-lg">
-                  <div className="modal-content">
-                    <div className="modal-header">
-                      <h5 className="modal-title  fw-bold" id="addUserLabel">
-                        Employee Invitation
-                      </h5>
-                      <button
-                        type="button"
-                        className="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
-                      />
-                    </div>
-                    <div className="modal-body">
-                      <div className="inviteby_email">
-                        <div className="input-group mb-3">
-                          <input
-                            type="email"
-                            className="form-control"
-                            placeholder="Email address"
-                            id="exampleInputEmail1"
-                            aria-describedby="exampleInputEmail1"
-                          />
-                          <button
-                            className="btn btn-dark"
-                            type="button"
-                            id="button-addon2"
-                          >
-                            Sent
-                          </button>
-                        </div>
-                      </div>
-                      <div className="members_list">
-                        <h6 className="fw-bold ">Employee </h6>
-                        <ul className="list-unstyled list-group list-group-custom list-group-flush mb-0">
-                          <li className="list-group-item py-3 text-center text-md-start">
-                            <div className="d-flex align-items-center flex-column flex-sm-column flex-md-column flex-lg-row">
-                              <div className="no-thumbnail mb-2 mb-md-0">
-                                <img
-                                  className="avatar lg rounded-circle"
-                                  src="assets/images/xs/avatar2.jpg"
-                                  alt=""
-                                />
-                              </div>
-                              <div className="flex-fill ms-3 text-truncate">
-                                <h6 className="mb-0  fw-bold">
-                                  Rachel Carr(you)
-                                </h6>
-                                <span className="text-muted">
-                                  rachel.carr@gmail.com
-                                </span>
-                              </div>
-                              <div className="members-action">
-                                <span className="members-role ">Admin</span>
-                                <div className="btn-group">
-                                  <button
-                                    type="button"
-                                    className="btn bg-transparent dropdown-toggle"
-                                    data-bs-toggle="dropdown"
-                                    aria-expanded="false"
-                                  >
-                                    <i className="icofont-ui-settings  fs-6" />
-                                  </button>
-                                  <ul className="dropdown-menu dropdown-menu-end">
-                                    <li>
-                                      <a className="dropdown-item" href="#">
-                                        <i className="icofont-ui-password fs-6 me-2" />
-                                        ResetPassword
-                                      </a>
-                                    </li>
-                                    <li>
-                                      <a className="dropdown-item" href="#">
-                                        <i className="icofont-chart-line fs-6 me-2" />
-                                        ActivityReport
-                                      </a>
-                                    </li>
-                                  </ul>
-                                </div>
-                              </div>
-                            </div>
-                          </li>
-                          <li className="list-group-item py-3 text-center text-md-start">
-                            <div className="d-flex align-items-center flex-column flex-sm-column flex-md-column flex-lg-row">
-                              <div className="no-thumbnail mb-2 mb-md-0">
-                                <img
-                                  className="avatar lg rounded-circle"
-                                  src="assets/images/xs/avatar3.jpg"
-                                  alt=""
-                                />
-                              </div>
-                              <div className="flex-fill ms-3 text-truncate">
-                                <h6 className="mb-0  fw-bold">
-                                  Lucas Baker
-                                  <a href="#" className="link-secondary ms-2">
-                                    (Resend invitation)
-                                  </a>
-                                </h6>
-                                <span className="text-muted">
-                                  lucas.baker@gmail.com
-                                </span>
-                              </div>
-                              <div className="members-action">
-                                <div className="btn-group">
-                                  <button
-                                    type="button"
-                                    className="btn bg-transparent dropdown-toggle"
-                                    data-bs-toggle="dropdown"
-                                    aria-expanded="false"
-                                  >
-                                    Members
-                                  </button>
-                                  <ul className="dropdown-menu dropdown-menu-end">
-                                    <li>
-                                      <a className="dropdown-item" href="#">
-                                        <i className="icofont-check-circled" />
-                                        <span>All operations permission</span>
-                                      </a>
-                                    </li>
-                                    <li>
-                                      <a className="dropdown-item" href="#">
-                                        <i className="fs-6 p-2 me-1" />
-                                        <span>
-                                          Only Invite &amp; manage team
-                                        </span>
-                                      </a>
-                                    </li>
-                                  </ul>
-                                </div>
-                                <div className="btn-group">
-                                  <button
-                                    type="button"
-                                    className="btn bg-transparent dropdown-toggle"
-                                    data-bs-toggle="dropdown"
-                                    aria-expanded="false"
-                                  >
-                                    <i className="icofont-ui-settings  fs-6" />
-                                  </button>
-                                  <ul className="dropdown-menu dropdown-menu-end">
-                                    <li>
-                                      <a className="dropdown-item" href="#">
-                                        <i className="icofont-delete-alt fs-6 me-2" />
-                                        Delete Member
-                                      </a>
-                                    </li>
-                                  </ul>
-                                </div>
-                              </div>
-                            </div>
-                          </li>
-                          <li className="list-group-item py-3 text-center text-md-start">
-                            <div className="d-flex align-items-center flex-column flex-sm-column flex-md-column flex-lg-row">
-                              <div className="no-thumbnail mb-2 mb-md-0">
-                                <img
-                                  className="avatar lg rounded-circle"
-                                  src="assets/images/xs/avatar8.jpg"
-                                  alt=""
-                                />
-                              </div>
-                              <div className="flex-fill ms-3 text-truncate">
-                                <h6 className="mb-0  fw-bold">Una Coleman</h6>
-                                <span className="text-muted">
-                                  una.coleman@gmail.com
-                                </span>
-                              </div>
-                              <div className="members-action">
-                                <div className="btn-group">
-                                  <button
-                                    type="button"
-                                    className="btn bg-transparent dropdown-toggle"
-                                    data-bs-toggle="dropdown"
-                                    aria-expanded="false"
-                                  >
-                                    Members
-                                  </button>
-                                  <ul className="dropdown-menu dropdown-menu-end">
-                                    <li>
-                                      <a className="dropdown-item" href="#">
-                                        <i className="icofont-check-circled" />
-                                        <span>All operations permission</span>
-                                      </a>
-                                    </li>
-                                    <li>
-                                      <a className="dropdown-item" href="#">
-                                        <i className="fs-6 p-2 me-1" />
-                                        <span>
-                                          Only Invite &amp; manage team
-                                        </span>
-                                      </a>
-                                    </li>
-                                  </ul>
-                                </div>
-                                <div className="btn-group">
-                                  <div className="btn-group">
-                                    <button
-                                      type="button"
-                                      className="btn bg-transparent dropdown-toggle"
-                                      data-bs-toggle="dropdown"
-                                      aria-expanded="false"
-                                    >
-                                      <i className="icofont-ui-settings  fs-6" />
-                                    </button>
-                                    <ul className="dropdown-menu dropdown-menu-end">
-                                      <li>
-                                        <a className="dropdown-item" href="#">
-                                          <i className="icofont-ui-password fs-6 me-2" />
-                                          ResetPassword
-                                        </a>
-                                      </li>
-                                      <li>
-                                        <a className="dropdown-item" href="#">
-                                          <i className="icofont-chart-line fs-6 me-2" />
-                                          ActivityReport
-                                        </a>
-                                      </li>
-                                      <li>
-                                        <a className="dropdown-item" href="#">
-                                          <i className="icofont-delete-alt fs-6 me-2" />
-                                          Suspend member
-                                        </a>
-                                      </li>
-                                      <li>
-                                        <a className="dropdown-item" href="#">
-                                          <i className="icofont-not-allowed fs-6 me-2" />
-                                          Delete Member
-                                        </a>
-                                      </li>
-                                    </ul>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
               {/* Create task */}
               <div
                 className="modal fade"
@@ -1198,9 +1021,126 @@ const Tasks = () => {
                   </div>
                 </div>
               </div>
+
+              {/* Chat Modal */}
+              <div
+                className="modal fade"
+                id="chatUser"
+                tabIndex={-1}
+                aria-labelledby="chatUserLabel"
+                aria-hidden="true"
+              >
+                <div className="modal-dialog modal-dialog-centered modal-lg">
+                  <div className="modal-content">
+                    <div className="modal-header">
+                      <h5
+                        className="modal-title fs-4 fw-bold"
+                        id="addUserLabel"
+                      >
+                        {/* {tasks.projectName} */}
+                      </h5>
+                      <button
+                        type="button"
+                        className="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                      />
+                    </div>
+                    <div className="modal-body">
+                      <div className="members_list">
+                        
+                        <ul className="list-unstyled list-group list-group-custom list-group-flush mb-0">
+                          <li className="list-group-item py-3 text-center text-md-start">
+                            {/* {projectStatuses.map((status) => {
+                            const getFormattedDate = (date) => {
+                              const newDate = new Date(date);
+                              const day = newDate.getDate();
+                              const month = newDate.getMonth() + 1;
+                              const year = newDate.getFullYear();
+                              let hours = newDate.getHours();
+                              const minutes = newDate.getMinutes();
+
+                              const meridiem = hours >= 12 ? "PM" : "AM";
+                              hours = hours % 12 || 12;
+
+                              return `${day}/${month}/${year} ${hours}:${minutes} ${meridiem}`;
+                            };
+
+                            return (
+                              <div
+                                key={status._id}
+                                className="d-flex align-items-center flex-column flex-sm-column flex-md-column flex-lg-row"
+                              >
+                                <div className="no-thumbnail mb-2 mb-md-0">
+                                  <img
+                                    className="avatar md rounded-circle"
+                                    src={
+                                      "http://localhost:8000/" +
+                                      status.user_id.employeeImage
+                                    }
+                                    alt=""
+                                  />
+                                  <p
+                                    className="fw-bold text-uppercase"
+                                    style={{ width: "6rem" }}
+                                  >
+                                    {status.user_id.employeeName}
+                                  </p>
+                                </div>
+                                <div className="flex-fill ms-3 text-truncate">
+                                  <p className="mb-0  fw-bold">
+                                    {status.currentStatus}
+                                  </p>
+                                  <span className="text-muted">
+                                    {getFormattedDate(status.createdAt)}
+                                  </span>
+                                </div>
+                                <div className="members-action">
+                                </div>
+                              </div>
+                            );
+                          })} */}
+                          </li>
+                        </ul>
+
+
+
+                        <div className="row g-3 mb-3">
+                          {/* <div className="col">
+                            <label className="form-label" hidden>
+                              Employee Name
+                            </label>
+                            <select
+                              className="form-select"
+                              aria-label="Default select Project Category"
+                              id="user_id"
+                              // value={user_id}
+                              // onChange={(e) => setUser_id(e.target.value)}
+                              // hidden
+                            >
+                            </select>
+                          </div> */}
+                        </div>
+                          <div className="d-flex ">
+                            <textarea
+                              rows="1"
+                              cols=""
+                              type="text"
+                              className="form-control"
+                            />
+                            <button type="submit" className="btn btn-dark">
+                              Submit
+                            </button>
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </>
           </>
         </div>
+        {/* <ToastContainer /> */}
       </div>
     </>
   );

@@ -3,6 +3,8 @@ import Sidebar from "../employeeCompt/EmployeeSidebar";
 import Header from "../employeeCompt/EmployeeHeader";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Project = () => {
   // GET SINGLE PROJECT
@@ -78,62 +80,77 @@ const Project = () => {
 
   // Status
   const [currentStatus, setCurrentStatus] = useState("");
-  const [user_id, setUser_id] = useState("");
-  const [project_id, setProject_id] = useState("");
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    // console.log(user_id);
+const [user_id, setUser_id] = useState("");
+const [project_id, setProject_id] = useState("");
 
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const response = await fetch("http://localhost:8000/api/project-status", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        currentStatus,
+        user_id: loginUserId,
+        project_id: selectProject._id,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to add project status");
+    }
+
+    setCurrentStatus("");
+    setUser_id(UserDetails);
+    setProject_id("");
+
+    // Close the modal programmatically
+    const modalElement = document.getElementById("addUser");
+    const modal = window.bootstrap.Modal.getInstance(modalElement);
+    modal.hide();
+
+    toast.success('Status Added Successfully!', {
+      style: {
+        backgroundColor: '#4c3575',
+        color: 'white',
+      },
+    });
+    
+  } catch (error) {
+    console.error(error.message);
+  }
+};
+
+const [projectStatuses, setProjectStatuses] = useState([]);
+const [projectId, setProjectId] = useState("");
+
+useEffect(() => {
+  const fetchProjectStatuses = async () => {
     try {
-      const response = await fetch("http://localhost:8000/api/project-status", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          currentStatus,
-          user_id: loginUserId,
-          project_id: selectProject._id,
-        }),
-      });
-      // console.log(loginUserId);
-      // debugger;
+      const response = await fetch(
+        `http://localhost:8000/api/project-status/${projectId}`
+      );
+      
       if (!response.ok) {
-        throw new Error("Failed to add project status");
+        throw new Error("Failed to fetch project statuses");
       }
-      setCurrentStatus("");
-      setUser_id(UserDetails);
-      setProject_id("");
-      window.location.reload();
+      
+      const data = await response.json();
+      setProjectStatuses(data);
     } catch (error) {
       console.error(error.message);
     }
   };
-  const [projectStatuses, setProjectStatuses] = useState([]);
-  const [projectId, setProjectId] = useState("");
-  useEffect(() => {
-    const fetchProjectStatuses = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:8000/api/project-status/${projectId}`
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch project statuses");
-        }
-        const data = await response.json();
-        // console.log(data);
-        setProjectStatuses(data);
-      } catch (error) {
-        console.error(error.message);
-      }
-    };
-    if (projectId) {
-      fetchProjectStatuses();
-    }
-  }, [projectId]);
+  
+  if (projectId) {
+    fetchProjectStatuses();
+  }
+}, [projectId]);
+
 
   // Delete Status
-
   const handleDelete = async () => {
     try {
       const response = await fetch(
@@ -515,6 +532,7 @@ const Project = () => {
             </div>
           </div>
         </div>
+        <ToastContainer />
       </div>
     </>
   );
