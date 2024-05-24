@@ -179,7 +179,7 @@ const Header = () => {
           <div className="container-xxl">
             {/* header rightbar icon */}
             <div className="h-right d-flex align-items-center mr-5 mr-lg-0 order-1">
-              <div className="d-flex">
+              {/* <div className="d-flex">
                 <a
                   className="nav-link text-primary collapsed"
                   href="help.html"
@@ -226,8 +226,8 @@ const Header = () => {
                     <i className="icofont-ui-add" />
                   </span>
                 </div>
-              </div>
-              <div className="dropdown notifications">
+              </div> */}
+              {/* <div className="dropdown notifications">
                 <a
                   className="nav-link dropdown-toggle pulse"
                   href="#"
@@ -383,7 +383,7 @@ const Header = () => {
                     </a>
                   </div>
                 </div>
-              </div>
+              </div> */}
               <div className="dropdown user-profile ml-2 ml-sm-3 d-flex align-items-center">
                 <div className="u-info me-2">
                   <p className="mb-0 text-end line-height-sm ">
@@ -428,13 +428,13 @@ const Header = () => {
                       </div>
                     </div>
                     <div className="list-group m-2 ">
-                      <a
+                      {/* <a
                         href="task.html"
                         className="list-group-item list-group-item-action border-0 "
                       >
                         <i className="icofont-tasks fs-5 me-3" />
                         My Task
-                      </a>
+                      </a> */}
                       <Link
                         type=""
                         className="list-group-item list-group-item-action border-0"
@@ -455,18 +455,18 @@ const Header = () => {
                       <div>
                         <hr className="dropdown-divider border-dark" />
                       </div>
-                      <a
+                      {/* <a
                         href="ui-elements/auth-signup.html"
                         className="list-group-item list-group-item-action border-0 "
                       >
                         <i className="icofont-contact-add fs-5 me-3" />
                         Add personal account
-                      </a>
+                      </a> */}
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="px-md-1">
+              {/* <div className="px-md-1">
                 <a
                   href="#offcanvas_setting"
                   data-bs-toggle="offcanvas"
@@ -489,7 +489,7 @@ const Header = () => {
                     <path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" />
                   </svg>
                 </a>
-              </div>
+              </div> */}
             </div>
             {/* menu toggler */}
             <button
@@ -500,9 +500,8 @@ const Header = () => {
             >
               <span className="fa fa-bars" />
             </button>
-            {/* main menu Search*/}
             <div className="order-0 col-lg-4 col-md-4 col-sm-12 col-12 mb-3 mb-md-0 ">
-              <div className="input-group flex-nowrap input-group-lg">
+              {/* <div className="input-group flex-nowrap input-group-lg">
                 <button
                   type="button"
                   className="input-group-text"
@@ -526,9 +525,11 @@ const Header = () => {
                 >
                   <i className="fa fa-plus" />
                 </button>
-              </div>
+              </div> */}
             </div>
-            {/* Update Employee*/}
+            
+
+            {/* Edit Employee*/}
             <div
               className="modal fade"
               id="editemp"

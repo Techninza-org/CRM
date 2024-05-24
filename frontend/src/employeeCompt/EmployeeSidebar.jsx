@@ -67,7 +67,7 @@ const Sidebar = () => {
                                         <span>Tasks</span>
                                     </Link>
                                 </li>
-                                <li>
+                                {/* <li>
                                     <a className="ms-link" href="timesheet.html">
                                         <span>Timesheet</span>
                                     </a>
@@ -76,7 +76,7 @@ const Sidebar = () => {
                                     <a className="ms-link" href="team-leader.html">
                                         <span>Leaders</span>
                                     </a>
-                                </li>
+                                </li> */}
                             </ul>
                         </li>
                     </ul>

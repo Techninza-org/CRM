@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Sidebar from "../employeeCompt/EmployeeSidebar";
 import Header from "../employeeCompt/EmployeeHeader";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 const Tasks = () => {
   // // GET SINGLE PROJECT
@@ -54,14 +55,11 @@ const Tasks = () => {
       }
     } else {
       try {
-        const response = await axios.get(
-          "http://localhost:8000/api/tasks",
-          {
-            headers: {
-              Authorization: Token,
-            },
-          }
-        );
+        const response = await axios.get("http://localhost:8000/api/tasks", {
+          headers: {
+            Authorization: Token,
+          },
+        });
         setTasks(response.data);
       } catch (error) {
         console.error("Error:", error);
@@ -73,9 +71,7 @@ const Tasks = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:8000/api/employees"
-        );
+        const response = await axios.get("http://localhost:8000/api/employees");
         setEmployees(response.data);
         // console.log(response.data);
       } catch (error) {
@@ -101,14 +97,11 @@ const Tasks = () => {
     const Token = localStorage.getItem("emp_token");
     async function fetchTasks() {
       try {
-        const response = await axios.get(
-          "http://localhost:8000/api/author",
-          {
-            headers: {
-              Authorization: Token,
-            },
-          }
-        );
+        const response = await axios.get("http://localhost:8000/api/author", {
+          headers: {
+            Authorization: Token,
+          },
+        });
         setTasks(response.data);
       } catch (error) {
         console.error("Error fetching tasks:", error);
@@ -126,7 +119,11 @@ const Tasks = () => {
         `http://localhost:8000/api/update/${id}`,
         { isCompleted: true }
       );
-      setTasks(tasks.map(task => task._id === id ? { ...task, isCompleted: true } : task));
+      setTasks(
+        tasks.map((task) =>
+          task._id === id ? { ...task, isCompleted: true } : task
+        )
+      );
     } catch (error) {
       setError(error.message);
     }
@@ -135,14 +132,57 @@ const Tasks = () => {
     try {
       const response = await axios.put(
         `http://localhost:8000/api/update/${id}`,
-        {isCompleted: false}
+        { isCompleted: false }
       );
-      setTasks(tasks.map(task => task._id === id ? { ...task, isCompleted: false } : task));
+      setTasks(
+        tasks.map((task) =>
+          task._id === id ? { ...task, isCompleted: false } : task
+        )
+      );
       // window.location.reload();
     } catch (error) {
       setError("Error clearing task");
     }
   };
+
+  // //Task Chat
+  // const [formData, setFormData] = useState({
+  //   taskId: "",
+  //   senderId: "",
+  //   adminId: "",
+  //   empId: "",
+  //   message: "",
+  // });
+
+  // const handleChange = (e) => {
+  //   setFormData({ ...formData, [e.target.name]: e.target.value });
+  // };
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     const res = await axios.post("http://localhost:8000/api/chats", formData);
+  //     console.log("New chat created:", res.data);
+  //   } catch (err) {
+  //     console.error("Error creating chat:", err);
+  //   }
+  // };
+
+  // const [chats, setChats] = useState([]);
+  // useEffect(() => {
+  //   const fetchChats = async () => {
+  //     try {
+  //       const res = await axios.get(
+  //         `http://localhost:8000/api/chats/${taskId}`
+  //       );
+  //       setChats(res.data);
+  //     } catch (err) {
+  //       console.error("Error fetching chats:", err);
+  //     }
+  //   };
+
+  //   fetchChats();
+  // }, []);
 
   const [showFullDescription, setShowFullDescription] = useState("");
 
@@ -304,7 +344,33 @@ const Tasks = () => {
                                     Done
                                   </button>
                                 )}
-                                <a
+
+                                <div
+                                  className="btn-group"
+                                  role="group"
+                                  aria-label="Basic outlined example"
+                                >
+                                  {/* <button
+                                    type="button"
+                                    className="btn btn-outline-secondary"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#chatUser"
+                                  >
+                                    <i className="bi bi-chat-left-text-fill text-primary" />
+                                  </button> */}
+                                  <Link
+                                    to="/images"
+                                    className="btn btn-outline-secondary"
+                                    state={{
+                                      images: task.taskImages,
+                                      projectName: task.projectName,
+                                    }}
+                                  >
+                                    <i className="bi-paperclip fs-6" />
+                                  </Link>
+                                </div>
+
+                                {/* <a
                                   href={
                                     "http://localhost:8000/" +
                                     task.taskImages
@@ -312,7 +378,7 @@ const Tasks = () => {
                                   target="_blank"
                                 >
                                   <i className=" bi-paperclip fs-5" />
-                                </a>
+                                </a> */}
                               </div>
                               {/* <div></div> */}
                             </div>
@@ -323,6 +389,66 @@ const Tasks = () => {
                   })}
                 </div>
               </div>
+
+              {/* Chat Modal */}
+              {/* <div
+                className="modal fade"
+                id="chatUser"
+                tabIndex={-1}
+                aria-labelledby="chatUserLabel"
+                aria-hidden="true"
+              >
+                <div className="modal-dialog modal-dialog-centered modal-lg">
+                  <div className="modal-content">
+                    <div className="modal-header">
+                      <h5
+                        className="modal-title fs-4 fw-bold"
+                        id="addUserLabel"
+                      >
+                        {tasks.projectName}
+                      </h5>
+                      <button
+                        type="button"
+                        className="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                      />
+                    </div>
+                    <div className="modal-body">
+                      <div className="members_list">
+                        <ul className="list-unstyled list-group list-group-custom list-group-flush mb-0">
+                          <li className="list-group-item py-3 text-center text-md-start">
+                            {chats.map((chat) => (
+                              <li key={chat._id}>{chat.message}</li>
+                            ))}
+                          </li>
+                        </ul>
+
+                        <div className="row g-3 mb-3">
+                        </div>
+                        <div className="d-flex" style={{ gap: "6px" }}>
+                          <textarea
+                            rows="1"
+                            cols=""
+                            type="text"
+                            className="form-control"
+                            name="taskId"
+                            value={formData.taskId}
+                            onChange={handleChange}
+                          />
+                          <button
+                            type="button"
+                            className="btn btn-dark"
+                            onClick={handleSubmit}
+                          >
+                            Send
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div> */}
             </div>
           </>
         </div>

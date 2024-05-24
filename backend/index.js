@@ -7,7 +7,8 @@ const employeeController = require('./controller/employeeAuth');
 const projectRoutes = require('./routes/projectRoutes');
 const adminUserRoutes = require('./userRoute/adminUserRoutes');
 const taskRoutes = require('./routes/taskRoutes');
-const statusController = require('./controller/statusAuth')
+const statusController = require('./controller/statusAuth');
+const chatRoutes = require('./routes/chatRoutes');
 const cors = require('cors');
 
 dotenv.config();
@@ -35,6 +36,7 @@ app.use('/api', employeeController);
 app.use('/api', projectRoutes);
 app.use('/api', statusController);
 app.use('/api', taskRoutes);
+app.use('/api', chatRoutes);
 app.use('/api', adminUserRoutes);
 
 

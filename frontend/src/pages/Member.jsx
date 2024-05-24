@@ -117,7 +117,7 @@ const Member = () => {
           }
         }
         // console.log(lastOldId);
-        const newId = `TN${++lastOldId}`;
+        const newId = `TN00${++lastOldId}`;
         // console.log(newId);
         setFormData({
           ...formData,

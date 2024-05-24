@@ -1,31 +1,33 @@
 const express = require('express');
+// import Project from './../../frontend/src/pages/Project';
+const Project = require('../model/projectModel');
 const Task = require('../model/taskModel');
 const jwt = require('jsonwebtoken')
 
-
+// Create Task
 exports.createTask = async (req, res) => {
   try {
     // Extracting paths of uploaded files
     const paths = req.files?.map(file => file.path);
-    
+
     // Removing 'uploads\' from paths
     const newPaths = paths?.map(path => path.replace('uploads\\', ""));
     // console.log(newPaths);
-    
+
     // Filtering task assigners to remove empty strings
     const taskAssigner = req.body.taskAssignPerson;
     const filteredTaskAssigner = taskAssigner.filter(task => task !== "");
-    
+
     // Adding paths of uploaded images to req.body
     req.body.taskImages = newPaths;
     // console.log(req.body, "body");
-    
+
     // Creating a new Task instance
-    const task = new Task({ ...req.body, taskAssignPerson: filteredTaskAssigner});
-    
+    const task = new Task({ ...req.body, taskAssignPerson: filteredTaskAssigner });
+
     // Saving the task to the database
     const savedTask = await task.save();
-    
+
     // Sending the saved task as response
     res.status(201).json(savedTask);
   } catch (error) {
@@ -34,17 +36,27 @@ exports.createTask = async (req, res) => {
   }
 };
 
-
 // Get all tasks
 exports.getAllTasks = async (req, res) => {
   try {
     const tasks = await Task.find().populate('taskAssignPerson');
+    // console.log(tasks[0]);
+    const tasks_with_person = [];
+    for (let i = 0; i < tasks.length; i++) {
+      const project_persons = await Project.find({ projectName: tasks[i].projectName }).populate({
+        path: 'taskAssignPerson',
+        select: 'employeeName'
+      })
+
+      tasks[i] = tasks[i].toObject(); 
+      tasks[i].projectMembers = project_persons
+      // console.log(project_persons);
+    }
     res.json(tasks);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
-
 
 // Get a single task
 exports.getTaskById = async (req, res) => {
@@ -74,7 +86,6 @@ exports.searchTask = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
-
 
 // Update a task
 exports.updateTaskById = async (req, res) => {
@@ -140,3 +151,4 @@ exports.updateTaskStatus = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+

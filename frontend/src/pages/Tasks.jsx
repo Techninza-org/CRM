@@ -185,12 +185,6 @@ const Tasks = () => {
 
   const [selectedEmployees, setSelectedEmployees] = useState([]);
   // console.log(selectedEmployees);
-  const assignEmployee = employees.map((emp) => {
-    return {
-      label: emp.employeeName,
-      value: emp._id,
-    };
-  });
 
   //UPDATE PROJECT
   const [taskFormData, setTaskFormData] = useState({
@@ -339,7 +333,53 @@ const Tasks = () => {
     fetchProjects();
   }, []);
 
+  const ccc = projects.filter((pro) => {
+    return pro.projectName === formData.projectName;
+  })[0];
+  console.log(ccc);
+  const assignEmployee =
+    ccc?.taskAssignPerson?.map((per) => {
+      return {
+        label: per.employeeName,
+        value: per._id,
+      };
+    }) || [];
+  // console.log(assignEmployee, 23423);
+
   const [showFullDescription, setShowFullDescription] = useState("");
+
+  // //CHAT Task
+  // const [chatMessages, setChatMessages] = useState([]);
+  // const [newMessage, setNewMessage] = useState("");
+  // const [selectedTaskId, setSelectedTaskId] = useState(null);
+
+  // const handleChatModalOpen = async (taskId) => {
+  //   setSelectedTaskId(taskId);
+  //   try {
+  //     const response = await axios.get(
+  //       `http://localhost:8000/api/tasks/${taskId}/chat`
+  //     );
+  //     setChatMessages(response.data);
+  //   } catch (error) {
+  //     console.error("Error fetching chat messages:", error);
+  //   }
+  // };
+
+  // const handleSendMessage = async () => {
+  //   if (!newMessage) return;
+  //   try {
+  //     const response = await axios.post(
+  //       `http://localhost:8000/api/tasks/${selectedTaskId}/chat`,
+  //       {
+  //         message: newMessage,
+  //       }
+  //     );
+  //     setChatMessages([...chatMessages, response.data]);
+  //     setNewMessage("");
+  //   } catch (error) {
+  //     console.error("Error sending message:", error);
+  //   }
+  // };
 
   return (
     <>
@@ -518,15 +558,17 @@ const Tasks = () => {
                                     role="group"
                                     aria-label="Basic outlined example"
                                   >
-                                    <button
+                                    {/* <button
                                       type="button"
                                       className="btn btn-outline-secondary"
                                       data-bs-toggle="modal"
                                       data-bs-target="#chatUser"
-                                      // onClick={() => setToEdit(task._id)}
+                                      onClick={() =>
+                                        handleChatModalOpen(task._id)
+                                      }
                                     >
                                       <i className="bi bi-chat-left-text-fill text-primary" />
-                                    </button>
+                                    </button> */}
                                     <Link
                                       to="/images"
                                       className="btn btn-outline-secondary"
@@ -1023,7 +1065,7 @@ const Tasks = () => {
               </div>
 
               {/* Chat Modal */}
-              <div
+              {/* <div
                 className="modal fade"
                 id="chatUser"
                 tabIndex={-1}
@@ -1037,7 +1079,7 @@ const Tasks = () => {
                         className="modal-title fs-4 fw-bold"
                         id="addUserLabel"
                       >
-                        {/* {tasks.projectName} */}
+                        {tasks.projectName}
                       </h5>
                       <button
                         type="button"
@@ -1048,99 +1090,47 @@ const Tasks = () => {
                     </div>
                     <div className="modal-body">
                       <div className="members_list">
-                        
                         <ul className="list-unstyled list-group list-group-custom list-group-flush mb-0">
                           <li className="list-group-item py-3 text-center text-md-start">
-                            {/* {projectStatuses.map((status) => {
-                            const getFormattedDate = (date) => {
-                              const newDate = new Date(date);
-                              const day = newDate.getDate();
-                              const month = newDate.getMonth() + 1;
-                              const year = newDate.getFullYear();
-                              let hours = newDate.getHours();
-                              const minutes = newDate.getMinutes();
-
-                              const meridiem = hours >= 12 ? "PM" : "AM";
-                              hours = hours % 12 || 12;
-
-                              return `${day}/${month}/${year} ${hours}:${minutes} ${meridiem}`;
-                            };
-
-                            return (
-                              <div
-                                key={status._id}
-                                className="d-flex align-items-center flex-column flex-sm-column flex-md-column flex-lg-row"
-                              >
-                                <div className="no-thumbnail mb-2 mb-md-0">
-                                  <img
-                                    className="avatar md rounded-circle"
-                                    src={
-                                      "http://localhost:8000/" +
-                                      status.user_id.employeeImage
-                                    }
-                                    alt=""
-                                  />
-                                  <p
-                                    className="fw-bold text-uppercase"
-                                    style={{ width: "6rem" }}
-                                  >
-                                    {status.user_id.employeeName}
-                                  </p>
-                                </div>
-                                <div className="flex-fill ms-3 text-truncate">
-                                  <p className="mb-0  fw-bold">
-                                    {status.currentStatus}
-                                  </p>
-                                  <span className="text-muted">
-                                    {getFormattedDate(status.createdAt)}
-                                  </span>
-                                </div>
-                                <div className="members-action">
-                                </div>
+                            {chatMessages.map((msg, index) => (
+                              <div key={index} className="chat-message">
+                                <p>{msg.message}</p>
+                                <small className="text-muted">
+                                  {new Date(msg.createdAt).toLocaleString()}
+                                </small>
                               </div>
-                            );
-                          })} */}
+                            ))}
                           </li>
                         </ul>
 
-
-
                         <div className="row g-3 mb-3">
-                          {/* <div className="col">
-                            <label className="form-label" hidden>
-                              Employee Name
-                            </label>
-                            <select
-                              className="form-select"
-                              aria-label="Default select Project Category"
-                              id="user_id"
-                              // value={user_id}
-                              // onChange={(e) => setUser_id(e.target.value)}
-                              // hidden
-                            >
-                            </select>
-                          </div> */}
                         </div>
-                          <div className="d-flex ">
-                            <textarea
-                              rows="1"
-                              cols=""
-                              type="text"
-                              className="form-control"
-                            />
-                            <button type="submit" className="btn btn-dark">
-                              Submit
-                            </button>
-                          </div>
+                        <div className="d-flex" style={{ gap: "6px" }}>
+                          <textarea
+                            rows="1"
+                            cols=""
+                            type="text"
+                            className="form-control"
+                            value={newMessage}
+                            onChange={(e) => setNewMessage(e.target.value)}
+                          />
+                          <button
+                            type="submit"
+                            className="btn btn-dark"
+                            onClick={handleSendMessage}
+                          >
+                            Submit
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> */}
             </>
           </>
         </div>
-        {/* <ToastContainer /> */}
+        <ToastContainer />
       </div>
     </>
   );
