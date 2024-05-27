@@ -28,7 +28,7 @@ const Signup = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/signup",
+        `${import.meta.env.VITE_BASE_URL}api/signup`,
         form
       );
       console.log(response.data);

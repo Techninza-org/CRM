@@ -14,7 +14,7 @@ const Project = () => {
     if (searchQuery !== "") {
       try {
         const response = await axios.get(
-          `http://localhost:8000/api/pro/search?id=${searchQuery}`
+          `${import.meta.env.VITE_BASE_URL}api/pro/search?id=${searchQuery}`
         );
         setProjects(response.data);
       } catch (error) {
@@ -25,7 +25,7 @@ const Project = () => {
       const fetchData = async () => {
         try {
           const response = await axios.get(
-            "http://localhost:8000/api/projects"
+            `${import.meta.env.VITE_BASE_URL}api/projects`
           );
           setProjects(response.data);
         } catch (error) {
@@ -39,7 +39,7 @@ const Project = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/employees");
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/employees`);
         setEmployees(response.data);
         // console.log(response.data);
       } catch (error) {
@@ -63,7 +63,7 @@ const Project = () => {
 
     async function fetchData() {
       try {
-        const response = await axios.get("http://localhost:8000/api/auth", {
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/auth`, {
           headers: {
             authorization: Token,
           },
@@ -86,7 +86,7 @@ const [project_id, setProject_id] = useState("");
 const handleSubmit = async (e) => {
   e.preventDefault();
   try {
-    const response = await fetch("http://localhost:8000/api/project-status", {
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/project-status`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -97,13 +97,27 @@ const handleSubmit = async (e) => {
         project_id: selectProject._id,
       }),
     });
+    // console.log(response.json);
 
     if (!response.ok) {
       throw new Error("Failed to add project status");
     }
 
+    // console.log(response.data);
+
+    // const newStatus = await response.json(); // Assuming the response contains the new status
+
+      // // Update the state of the project to include the new status
+      // setProjects(prevProjects => prevProjects.map(project => 
+      //   project._id === selectProject._id 
+      //     ? { newStatus, ...prevProjects }
+      //     : project
+      // ));
+      // setProjects((prevProjects) => [newStatus, ...prevProjects]);
+
+
     setCurrentStatus("");
-    setUser_id(UserDetails);
+    setUser_id("");
     setProject_id("");
 
     // Close the modal programmatically
@@ -111,12 +125,17 @@ const handleSubmit = async (e) => {
     const modal = window.bootstrap.Modal.getInstance(modalElement);
     modal.hide();
 
+    
+
     toast.success('Status Added Successfully!', {
       style: {
         backgroundColor: '#4c3575',
         color: 'white',
       },
     });
+
+    window.location.reload()
+    
     
   } catch (error) {
     console.error(error.message);
@@ -130,7 +149,7 @@ useEffect(() => {
   const fetchProjectStatuses = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8000/api/project-status/${projectId}`
+        `${import.meta.env.VITE_BASE_URL}api/project-status/${projectId}`
       );
       
       if (!response.ok) {
@@ -154,7 +173,7 @@ useEffect(() => {
   const handleDelete = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8000/api/project-status/${projectId}`,
+        `${import.meta.env.VITE_BASE_URL}api/project-status/${projectId}`,
         {
           method: "DELETE",
         }
@@ -359,7 +378,75 @@ useEffect(() => {
                         </button>
                       </div>
                     </div> */}
-                    <div className="members_list">
+                    <div className="members_list" >
+                      
+                      <ul className="list-unstyled list-group list-group-custom list-group-flush mb-0">
+                        <li className="list-group-item py-3 text-center text-md-start" style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                          {projectStatuses.map((status) => {
+                            const getFormattedDate = (date) => {
+                              const newDate = new Date(date);
+                              const day = newDate.getDate();
+                              const month = newDate.getMonth() + 1;
+                              const year = newDate.getFullYear();
+                              let hours = newDate.getHours();
+                              const minutes = newDate.getMinutes();
+
+                              const meridiem = hours >= 12 ? "PM" : "AM";
+                              hours = hours % 12 || 12;
+
+                              return `${day}/${month}/${year} ${hours}:${minutes} ${meridiem}`;
+                            };
+
+                            return (
+                              <div
+                                key={status._id}
+                                className="d-flex align-items-center flex-column flex-sm-column flex-md-column flex-lg-row"
+                              >
+                                <div className="no-thumbnail mb-2 mb-md-0">
+                                  <img
+                                    className="avatar md rounded-circle"
+                                    src={
+                                      `${import.meta.env.VITE_BASE_URL}` +
+                                      status.user_id.employeeImage
+                                    }
+                                    alt=""
+                                  />
+                                  <p
+                                    className="fw-bold text-uppercase"
+                                    style={{ width: "6rem" }}
+                                  >
+                                    {status.user_id.employeeName}
+                                  </p>
+                                </div>
+                                <div className="flex-fill ms-3 text-truncate">
+                                  <p className="mb-0  fw-bold">
+                                    {status.currentStatus}
+                                  </p>
+                                  <span className="text-muted">
+                                    {getFormattedDate(status.createdAt)}
+                                  </span>
+                                </div>
+                                <div className="members-action">
+                                  {/* <div className="btn-group">
+                                    <div className="btn-group">
+                                      <button
+                                        type=""
+                                        className="btn outline-secondary icofont-ui-delete text-danger "
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#deleteproject"
+                                        onClick={() => {
+                                          setProjectId(status._id);
+                                        }}
+                                      ></button>
+                                    </div>
+                                  </div> */}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </li>
+                      </ul>
+
                       <form onSubmit={handleSubmit}>
                         <div className="row g-3 mb-3">
                           <div className="col">
@@ -412,73 +499,6 @@ useEffect(() => {
                           </div>
                         </div>
                       </form>
-
-                      <ul className="list-unstyled list-group list-group-custom list-group-flush mb-0">
-                        <li className="list-group-item py-3 text-center text-md-start">
-                          {projectStatuses.map((status) => {
-                            const getFormattedDate = (date) => {
-                              const newDate = new Date(date);
-                              const day = newDate.getDate();
-                              const month = newDate.getMonth() + 1;
-                              const year = newDate.getFullYear();
-                              let hours = newDate.getHours();
-                              const minutes = newDate.getMinutes();
-
-                              const meridiem = hours >= 12 ? "PM" : "AM";
-                              hours = hours % 12 || 12;
-
-                              return `${day}/${month}/${year} ${hours}:${minutes} ${meridiem}`;
-                            };
-
-                            return (
-                              <div
-                                key={status._id}
-                                className="d-flex align-items-center flex-column flex-sm-column flex-md-column flex-lg-row"
-                              >
-                                <div className="no-thumbnail mb-2 mb-md-0">
-                                  <img
-                                    className="avatar md rounded-circle"
-                                    src={
-                                      "http://localhost:8000/" +
-                                      status.user_id.employeeImage
-                                    }
-                                    alt=""
-                                  />
-                                  <p
-                                    className="fw-bold text-uppercase"
-                                    style={{ width: "6rem" }}
-                                  >
-                                    {status.user_id.employeeName}
-                                  </p>
-                                </div>
-                                <div className="flex-fill ms-3 text-truncate">
-                                  <p className="mb-0  fw-bold">
-                                    {status.currentStatus}
-                                  </p>
-                                  <span className="text-muted">
-                                    {getFormattedDate(status.createdAt)}
-                                  </span>
-                                </div>
-                                <div className="members-action">
-                                  {/* <div className="btn-group">
-                                    <div className="btn-group">
-                                      <button
-                                        type=""
-                                        className="btn outline-secondary icofont-ui-delete text-danger "
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#deleteproject"
-                                        onClick={() => {
-                                          setProjectId(status._id);
-                                        }}
-                                      ></button>
-                                    </div>
-                                  </div> */}
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </li>
-                      </ul>
                     </div>
                   </div>
                 </div>

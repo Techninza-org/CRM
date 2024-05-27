@@ -13,7 +13,7 @@ const SingleProjectImage = () => {
       <div>
         <h2>{projectName}</h2>
         {images.map((img) => {
-          return <img src={`http://localhost:8000/${img}`} />;
+          return <img src={`${import.meta.env.VITE_BASE_URL}${img}`} />;
         })}
       </div>
     </div>

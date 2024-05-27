@@ -48,7 +48,7 @@ const Project = () => {
       }
 
       const response = await axios.post(
-        "http://localhost:8000/api/projects",
+        `${import.meta.env.VITE_BASE_URL}api/projects`,
         formDataToSend,
         {
           headers: {
@@ -56,6 +56,8 @@ const Project = () => {
           },
         }
       );
+
+      // console.log(response.data);
 
       // Assuming the response contains the new project data
       const newProject = response.data;
@@ -100,7 +102,7 @@ const Project = () => {
     const fetchProjects = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8000/api/projects"
+          `${import.meta.env.VITE_BASE_URL}api/projects`
         );
 
         // console.log(response.data, 'projects');
@@ -140,7 +142,7 @@ const Project = () => {
   const handleDeleteProject = async () => {
     try {
       const response = await axios.delete(
-        `http://localhost:8000/api/projects/${deletableId}`
+        `${import.meta.env.VITE_BASE_URL}api/projects/${deletableId}`
       );
       // console.log(response.data);
 
@@ -183,7 +185,7 @@ const Project = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8000/api/projects/${toEdit}`
+          `${import.meta.env.VITE_BASE_URL}api/projects/${toEdit}`
         );
         const { data } = response;
         let formattedDate = "";
@@ -252,7 +254,7 @@ const Project = () => {
         formDataToSend.append("taskAssignPerson", obj.value);
       }
       const response = await axios.put(
-        `http://localhost:8000/api/projects/${toEdit}`,
+        `${import.meta.env.VITE_BASE_URL}api/projects/${toEdit}`,
         formDataToSend,
         {
           headers: {
@@ -309,7 +311,7 @@ const Project = () => {
     if (searchQuery !== "") {
       try {
         const response = await axios.get(
-          `http://localhost:8000/api/pro/search?id=${searchQuery}`
+          `${import.meta.env.VITE_BASE_URL}api/pro/search?id=${searchQuery}`
         );
         setProjects(response.data);
       } catch (error) {
@@ -320,7 +322,7 @@ const Project = () => {
       const fetchData = async () => {
         try {
           const response = await axios.get(
-            "http://localhost:8000/api/projects"
+            `${import.meta.env.VITE_BASE_URL}api/projects`
           );
           setProjects(response.data);
         } catch (error) {
@@ -335,7 +337,7 @@ const Project = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8000/api/employees"
+          `${import.meta.env.VITE_BASE_URL}api/employees`
         );
         setEmployees(response.data);
         // console.log(response.data);
@@ -364,7 +366,7 @@ const Project = () => {
     const fetchProjectStatuses = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8000/api/project-status/${projectId}`
+          `${import.meta.env.VITE_BASE_URL}api/project-status/${projectId}`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch project statuses");
@@ -387,7 +389,7 @@ const Project = () => {
     const fetchTasks = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8000/api/tasks"
+          `${import.meta.env.VITE_BASE_URL}api/tasks`
         );
         setTasks(response.data);
       } catch (error) {
@@ -1134,7 +1136,7 @@ const Project = () => {
                       </div>
                     </div> */}
                     <div className="members_list">
-                      <ul className="list-unstyled list-group list-group-custom list-group-flush mb-0">
+                      <ul className="list-unstyled list-group list-group-custom list-group-flush mb-0"style={{ maxHeight: '350px', overflowY: 'auto' }}>
                         <li className="list-group-item py-3 text-center text-md-start">
                           {projectStatuses.map((status) => {
                             const getFormattedDate = (date) => {
@@ -1160,7 +1162,7 @@ const Project = () => {
                                   <img
                                     className="avatar md rounded-circle"
                                     src={
-                                      "http://localhost:8000/" +
+                                      `${import.meta.env.VITE_BASE_URL}` +
                                       status.user_id.employeeImage
                                     }
                                     alt=""

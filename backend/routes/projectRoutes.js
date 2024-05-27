@@ -13,7 +13,6 @@ router.delete('/projects/:projectId', projectController.deleteProject);
 router.get('/auth', projectController.getProject)
 router.get('/auth-task', projectController.getProjecttask)
 
-// router.get('/project-progress/:projectId', projectController.getProjectProgressById);
 
 
 module.exports = router;

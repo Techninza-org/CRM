@@ -56,7 +56,7 @@ const Tasks = () => {
         formDataToSend.append("taskAssignPerson", obj.value);
       }
       const response = await axios.post(
-        "http://localhost:8000/api/tasks",
+        `${import.meta.env.VITE_BASE_URL}api/tasks`,
         formDataToSend,
         {
           headers: {
@@ -100,7 +100,7 @@ const Tasks = () => {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/tasks");
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/tasks`);
         setTasks(response.data);
         // console.log(response.data);
       } catch (error) {
@@ -116,7 +116,7 @@ const Tasks = () => {
   const handleDeleteProject = async () => {
     try {
       const response = await axios.delete(
-        `http://localhost:8000/api/tasks/${deletableId}`
+        `${import.meta.env.VITE_BASE_URL}api/tasks/${deletableId}`
       );
       // console.log(response.data);
       // window.location.reload();
@@ -147,7 +147,7 @@ const Tasks = () => {
     if (searchQuery !== "") {
       try {
         const response = await axios.get(
-          `http://localhost:8000/api/pros/search?id=${searchQuery}`
+          `${import.meta.env.VITE_BASE_URL}api/pros/search?id=${searchQuery}`
         );
         setTasks(response.data);
       } catch (error) {
@@ -157,7 +157,7 @@ const Tasks = () => {
     } else {
       const fetchData = async () => {
         try {
-          const response = await axios.get("http://localhost:8000/api/tasks");
+          const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/tasks`);
           setTasks(response.data);
         } catch (error) {
           console.error("Error:", error);
@@ -172,7 +172,7 @@ const Tasks = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/employees");
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/employees`);
         setEmployees(response.data);
         // console.log(response.data);
       } catch (error) {
@@ -204,7 +204,7 @@ const Tasks = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8000/api/tasks/${toEdit}`
+          `${import.meta.env.VITE_BASE_URL}api/tasks/${toEdit}`
         );
         const { data } = response;
         let formattedDate = "";
@@ -272,7 +272,7 @@ const Tasks = () => {
         formDataToSend.append("taskAssignPerson", obj.value);
       }
       const response = await axios.put(
-        `http://localhost:8000/api/tasks/${toEdit}`, // Change to your update API endpoint
+        `${import.meta.env.VITE_BASE_URL}api/tasks/${toEdit}`, // Change to your update API endpoint
         formDataToSend,
         {
           headers: {
@@ -323,7 +323,7 @@ const Tasks = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/projects");
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/projects`);
         setProjects(response.data);
       } catch (error) {
         console.error("Error fetching projects:", error);
@@ -357,7 +357,7 @@ const Tasks = () => {
   //   setSelectedTaskId(taskId);
   //   try {
   //     const response = await axios.get(
-  //       `http://localhost:8000/api/tasks/${taskId}/chat`
+  //       `${import.meta.env.VITE_BASE_URL}api/tasks/${taskId}/chat`
   //     );
   //     setChatMessages(response.data);
   //   } catch (error) {
@@ -369,7 +369,7 @@ const Tasks = () => {
   //   if (!newMessage) return;
   //   try {
   //     const response = await axios.post(
-  //       `http://localhost:8000/api/tasks/${selectedTaskId}/chat`,
+  //       `${import.meta.env.VITE_BASE_URL}api/tasks/${selectedTaskId}/chat`,
   //       {
   //         message: newMessage,
   //       }
@@ -479,7 +479,7 @@ const Tasks = () => {
                                       <img
                                         className="avatar rounded-circle small-avt"
                                         src={
-                                          "http://localhost:8000/" +
+                                          `${import.meta.env.VITE_BASE_URL}` +
                                           task.taskAssignPerson.employeeImage
                                         }
                                         alt=""

@@ -41,7 +41,7 @@ const Tasks = () => {
     if (searchQuery !== "") {
       try {
         const response = await axios.get(
-          `http://localhost:8000/api/pros/search?id=${searchQuery}`,
+          `${import.meta.env.VITE_BASE_URL}api/pros/search?id=${searchQuery}`,
           {
             headers: {
               Authorization: Token,
@@ -55,7 +55,7 @@ const Tasks = () => {
       }
     } else {
       try {
-        const response = await axios.get("http://localhost:8000/api/tasks", {
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/tasks`, {
           headers: {
             Authorization: Token,
           },
@@ -71,7 +71,7 @@ const Tasks = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/employees");
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/employees`);
         setEmployees(response.data);
         // console.log(response.data);
       } catch (error) {
@@ -97,7 +97,7 @@ const Tasks = () => {
     const Token = localStorage.getItem("emp_token");
     async function fetchTasks() {
       try {
-        const response = await axios.get("http://localhost:8000/api/author", {
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/author`, {
           headers: {
             Authorization: Token,
           },
@@ -116,7 +116,7 @@ const Tasks = () => {
   const handleTaskUpdate = async (id) => {
     try {
       const response = await axios.put(
-        `http://localhost:8000/api/update/${id}`,
+        `${import.meta.env.VITE_BASE_URL}api/update/${id}`,
         { isCompleted: true }
       );
       setTasks(
@@ -131,7 +131,7 @@ const Tasks = () => {
   const clearTask = async (id) => {
     try {
       const response = await axios.put(
-        `http://localhost:8000/api/update/${id}`,
+        `${import.meta.env.VITE_BASE_URL}api/update/${id}`,
         { isCompleted: false }
       );
       setTasks(
@@ -161,7 +161,7 @@ const Tasks = () => {
   // const handleSubmit = async (e) => {
   //   e.preventDefault();
   //   try {
-  //     const res = await axios.post("http://localhost:8000/api/chats", formData);
+  //     const res = await axios.post("${import.meta.env.VITE_BASE_URL}api/chats", formData);
   //     console.log("New chat created:", res.data);
   //   } catch (err) {
   //     console.error("Error creating chat:", err);
@@ -173,7 +173,7 @@ const Tasks = () => {
   //   const fetchChats = async () => {
   //     try {
   //       const res = await axios.get(
-  //         `http://localhost:8000/api/chats/${taskId}`
+  //         `${import.meta.env.VITE_BASE_URL}api/chats/${taskId}`
   //       );
   //       setChats(res.data);
   //     } catch (err) {
@@ -280,7 +280,7 @@ const Tasks = () => {
                                   <img
                                     className="avatar rounded-circle small-avt"
                                     src={
-                                      "http://localhost:8000/" +
+                                      `${import.meta.env.VITE_BASE_URL}` +
                                       task.taskAssignPerson.employeeImage
                                     }
                                     alt=""
@@ -372,7 +372,7 @@ const Tasks = () => {
 
                                 {/* <a
                                   href={
-                                    "http://localhost:8000/" +
+                                    "${import.meta.env.VITE_BASE_URL}" +
                                     task.taskImages
                                   }
                                   target="_blank"

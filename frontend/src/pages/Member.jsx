@@ -50,7 +50,7 @@ const Member = () => {
       }
       console.log(formData);
       const response = await axios.post(
-        "http://localhost:8000/api/employees",
+        `${import.meta.env.VITE_BASE_URL}api/employees`,
         formDataToSend,
         {
           headers: {
@@ -103,7 +103,7 @@ const Member = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8000/api/employees"
+          `${import.meta.env.VITE_BASE_URL}api/employees`
         );
 
         let lastOldId = "1";
@@ -137,7 +137,7 @@ const Member = () => {
   const handleDelete = async () => {
     try {
       const response = await axios.delete(
-        "http://localhost:8000/api/employees/" + deletableId
+        `${import.meta.env.VITE_BASE_URL}api/employees/` + deletableId
       );
       // console.log(response.data);
       // window.location.reload();
@@ -183,7 +183,7 @@ const Member = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8000/api/employees/${toEdit}`
+          `${import.meta.env.VITE_BASE_URL}api/employees/${toEdit}`
         );
         const { data } = response;
         let formattedDate = "";
@@ -240,7 +240,7 @@ const Member = () => {
         formDataToSend.append(key, employeeData[key]);
       }
       const response = await axios.put(
-        `http://localhost:8000/api/employees/${toEdit}`,
+        `${import.meta.env.VITE_BASE_URL}api/employees/${toEdit}`,
         formDataToSend,
         {
           headers: {
@@ -296,7 +296,7 @@ const Member = () => {
     if (searchQuery !== "") {
       try {
         const response = await axios.get(
-          `http://localhost:8000/api/search?id=${searchQuery}`
+          `${import.meta.env.VITE_BASE_URL}api/search?id=${searchQuery}`
         );
         setEmployees(response.data);
       } catch (error) {
@@ -307,7 +307,7 @@ const Member = () => {
       const fetchData = async () => {
         try {
           const response = await axios.get(
-            "http://localhost:8000/api/employees"
+            `${import.meta.env.VITE_BASE_URL}api/employees`
           );
           setEmployees(response.data);
         } catch (error) {
@@ -399,7 +399,7 @@ const Member = () => {
                             <div className="profile-av pe-xl-4 pe-md-2 pe-sm-4 pe-4 text-center w220">
                               <img
                                 src={
-                                  "http://localhost:8000/" +
+                                  `${import.meta.env.VITE_BASE_URL}` +
                                   employee.employeeImage
                                 }
                                 alt=""

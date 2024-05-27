@@ -34,7 +34,7 @@ const Header = () => {
         ...employeeData,
         employeeName: user.employeeName,
         emailid: user.emailid,
-        password:user.password,
+        password: user.password,
       });
       setEmployeeName(user.employeeName);
       setEmail(user.emailid);
@@ -53,7 +53,7 @@ const Header = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/employees");
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/employees`);
         setEmployees(response.data);
       } catch (error) {
         console.error("Error:", error);
@@ -62,8 +62,6 @@ const Header = () => {
 
     fetchData();
   }, []);
-
-
 
   // UPDATE EMPLOYEE
   const [formData, setFormData] = useState({
@@ -94,7 +92,7 @@ const Header = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8000/api/employees/${toEdit}`
+          `${import.meta.env.VITE_BASE_URL}api/employees/${toEdit}`
         );
         const { data } = response;
         let formattedDate = "";
@@ -151,7 +149,7 @@ const Header = () => {
         formDataToSend.append(key, employeeData[key]);
       }
       const response = await axios.put(
-        `http://localhost:8000/api/employees/${toEdit}`,
+        `${import.meta.env.VITE_BASE_URL}api/employees/${toEdit}`,
         formDataToSend,
         {
           headers: {
@@ -169,8 +167,6 @@ const Header = () => {
       console.error("Error:", error);
     }
   };
-
-
 
   return (
     <>
@@ -256,7 +252,7 @@ const Header = () => {
                               <img
                                 className="avatar rounded-circle"
                                 src="assets/images/xs/avatar1.jpg"
-                                // src={"http://localhost:8000/" + image}
+                                // src={"${import.meta.env.VITE_BASE_URL}" + image}
                                 alt=""
                               />
                               <div className="flex-fill ms-2">
@@ -401,7 +397,7 @@ const Header = () => {
                   <img
                     className="avatar lg rounded-circle img-thumbnail"
                     // src="assets/images/profile_av.png"
-                    src={"http://localhost:8000/" + image}
+                    src={`${import.meta.env.VITE_BASE_URL}` + image}
                     alt="profile"
                   />
                 </a>
@@ -411,7 +407,7 @@ const Header = () => {
                       <div className="d-flex py-1">
                         <img
                           className="avatar rounded-circle"
-                          src={"http://localhost:8000/" + image}
+                          src={`${import.meta.env.VITE_BASE_URL}` + image}
                           alt="profile"
                         />
                         <div className="flex-fill ms-3">
@@ -527,7 +523,6 @@ const Header = () => {
                 </button>
               </div> */}
             </div>
-            
 
             {/* Edit Employee*/}
             <div

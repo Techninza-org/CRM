@@ -37,13 +37,13 @@ const Signin = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/login",
+        `${import.meta.env.VITE_BASE_URL}api/login`,
         form
       );
       const { token, user } = response.data;
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user)); // Storing user info in localStorage
-      alert("Login successful!");
+      // alert("Login successful!");
       nav("/project-dashboard");
 
       // setIsSignIn(true);
@@ -57,17 +57,17 @@ const Signin = () => {
     }
   };
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      toast.error('Sign out Successfully!', {
-        style: {
-          backgroundColor: '#4c3575',
-          color: 'white',
-        },
-      });
-    }
-  }, []);
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
+  //   if (!token) {
+  //     toast.error('Sign out Successfully!', {
+  //       style: {
+  //         backgroundColor: '#4c3575',
+  //         color: 'white',
+  //       },
+  //     });
+  //   }
+  // }, []);
 
 
   return (

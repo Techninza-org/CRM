@@ -27,7 +27,7 @@ const Signup = () => {
       }
       console.log(formData);
       const response = await axios.post(
-        "http://localhost:8000/api/employees",
+        `${import.meta.env.VITE_BASE_URL}api/employees`,
         formDataToSend,
         {
           headers: {
