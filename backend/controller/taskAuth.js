@@ -14,64 +14,54 @@ exports.createTask = async (req, res) => {
 
     // Removing 'uploads\' from paths
     const newPaths = paths?.map(path => path.replace('uploads\\', ""));
-    // console.log(newPaths);
-
-    // console.log(req.body);
+    
     // Filtering task assigners to remove empty strings
-    const taskAssigner = req.body.taskAssignPerson;
+    const taskAssigner = req.body.taskAssignPerson?.filter(task => task !== "");
 
-    // console.log(taskAssigner);
+    // Fetching emails of task assigners
     const employees = [];
     for (let i = 0; i < taskAssigner.length; i++) {
       try {
         const taskPerson = await Employee.findById(taskAssigner[i]);
-        employees.push(taskPerson.emailid);
+        if (taskPerson) {
+          employees.push(taskPerson.emailid);
+        }
       } catch (err) {
-        // console.log(err);
+        console.error(`Error fetching employee with ID ${taskAssigner[i]}: ${err.message}`);
       }
     }
-    // console.log(employees);
-    // console.log(taskPerson);
-    const filteredTaskAssigner = taskAssigner.filter(task => task !== "");
 
     // Adding paths of uploaded images to req.body
     req.body.taskImages = newPaths;
-    // console.log(req.body, "body");
 
     // Creating a new Task instance
-    const task = new Task({ ...req.body, taskAssignPerson: filteredTaskAssigner });
+    const task = new Task({ ...req.body, taskAssignPerson: taskAssigner });
 
     // Saving the task to the database
     const savedTask = await task.save();
 
-
     // Email configuration
-    for (let i = 0; i < employees.length; i++) {
-      const email = employees[i];
-      const transporter = nodemailer.createTransport({
-        host: 'smtp.ethereal.email',
-        port: 587,
-        auth: {
-          user: 'eladio.kutch70@ethereal.email',
-          pass: 'f9HqAWq5KCBhj6U2MV'
-        }
-      });
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'ravipoddar0712@gmail.com',
+        pass: 'jnrxvlqgsrjrvdbo'
+      }
+    });
 
-      // Sending email to each task assigner
-      const sendEmailPromises = filteredTaskAssigner.map(assignerEmail => {
-        const mailOptions = {
-          from: 'eladio.kutch70@ethereal.email', // sender address
-          to: email,            // list of receivers
-          subject: 'TechNinza CRM Task', // subject line
-          text: `You have been assigned a new task for the project: ${req.body.projectName}` // plain text body
-        };
+    // Sending email to each task assigner
+    const sendEmailPromises = employees.map(email => {
+      const mailOptions = {
+        from: 'ravipoddar0712@gmail.com', // sender address
+        to: email, // list of receivers
+        subject: 'TechNinza CRM Task', // subject line
+        text: `You have been assigned a new task for the project: ${req.body.projectName}` // plain text body
+      };
 
-        return transporter.sendMail(mailOptions);
-      });
-      await Promise.all(sendEmailPromises);
+      return transporter.sendMail(mailOptions);
+    });
 
-    }
-
+    await Promise.all(sendEmailPromises);
 
     // Sending the saved task as response
     res.status(201).json(savedTask);
@@ -80,7 +70,6 @@ exports.createTask = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
 // Get all tasks
 exports.getAllTasks = async (req, res) => {
   try {
