@@ -51,6 +51,47 @@ exports.loginUser = async (req, res,next) => {
   }
 };
 
+exports.changePassword = async (req, res) => {
+  const { email, oldPassword, newPassword } = req.body;
+
+  try {
+    // Check if all required fields are provided
+    if (!email || !oldPassword || !newPassword) {
+      throw new Error('Missing required fields');
+    }
+
+    // Validate new password length
+    if (newPassword.length < 8) {
+      throw new Error('New password must be at least 8 characters long');
+    }
+
+    // Find the user by email
+    const user = await User.findOne({ email });
+
+    if (user) {
+      // Verify the old password
+      const match = await bcrypt.compare(oldPassword, user.password);
+
+      if (match) {
+        // Hash the new password
+        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+        // Update the user's password in the database
+        user.password = hashedNewPassword;
+        await user.save();
+
+        res.json({ message: 'Password changed successfully' });
+      } else {
+        res.status(401).json('Incorrect old password');
+      }
+    } else {
+      res.status(401).json('User not found');
+    }
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 
 
 

@@ -7,9 +7,11 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import "./Loading.css";
 
 const Tasks = () => {
   const [tasks, setTasks] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   //CREATE TASK
   const [formData, setFormData] = useState({
@@ -99,12 +101,15 @@ const Tasks = () => {
   //GET TASK
   useEffect(() => {
     const fetchTasks = async () => {
+      setLoading(true);
       try {
         const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/tasks`);
         setTasks(response.data);
         // console.log(response.data);
       } catch (error) {
         console.error("Error:", error);
+      }finally {
+        setLoading(false);
       }
     };
 
@@ -445,6 +450,9 @@ const Tasks = () => {
                   </div>
                 </div>{" "}
                 {/* Row end  */}
+                {loading ? (
+                  <div className="custom-loader "></div>
+                ) : (
                 <div className="row">
                   {tasks.map((task) => {
                     const getFormattedDate = (date) => {
@@ -599,6 +607,7 @@ const Tasks = () => {
                     );
                   })}
                 </div>
+                 )}
               </div>
             </div>
             <>

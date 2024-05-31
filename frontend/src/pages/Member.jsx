@@ -3,11 +3,13 @@ import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "./Loading.css"
 
 const Member = () => {
   const [employees, setEmployees] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   //CREATE EMPLOYEE
   const [formData, setFormData] = useState({
@@ -85,10 +87,10 @@ const Member = () => {
       // console.log(response.data);
       // window.location.reload();
 
-      toast.success('Employee Added Successfully!', {
+      toast.success("Employee Added Successfully!", {
         style: {
-          backgroundColor: '#4c3575',
-          color: 'white',
+          backgroundColor: "#4c3575",
+          color: "white",
         },
       });
       // Handle successful response
@@ -101,6 +103,7 @@ const Member = () => {
   //   GET EMPLOYEES
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         const response = await axios.get(
           `${import.meta.env.VITE_BASE_URL}api/employees`
@@ -126,6 +129,8 @@ const Member = () => {
         setEmployees(response.data);
       } catch (error) {
         console.error("Error:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -150,13 +155,12 @@ const Member = () => {
       const modal = window.bootstrap.Modal.getInstance(modalElement);
       modal.hide();
 
-      toast.error('Employee Deleted Successfully!', {
+      toast.error("Employee Deleted Successfully!", {
         style: {
-          backgroundColor: '#4c3575',
-          color: 'white',
+          backgroundColor: "#4c3575",
+          color: "white",
         },
       });
-
     } catch (error) {
       console.error("Error:", error);
     }
@@ -271,20 +275,19 @@ const Member = () => {
           return pro;
         }
       });
-      setEmployees(updatedEmployeeData)
+      setEmployees(updatedEmployeeData);
 
       const modalElement = document.getElementById("editemp");
       const modal = window.bootstrap.Modal.getInstance(modalElement);
       modal.hide();
       // window.location.reload();
 
-      toast.success('Employee Updated Successfully!', {
+      toast.success("Employee Updated Successfully!", {
         style: {
-          backgroundColor: '#4c3575',
-          color: 'white',
+          backgroundColor: "#4c3575",
+          color: "white",
         },
       });
-
     } catch (error) {
       console.error("Error:", error);
     }
@@ -386,96 +389,99 @@ const Member = () => {
                   </div>
                 </div>
                 {/* Row End */}
-                <div className="row g-3 row-cols-1 row-cols-sm-1 row-cols-md-1 row-cols-lg-2 row-cols-xl-2 row-cols-xxl-2 row-deck py-1 pb-4">
-                  {employees.map((employee) => {
-                    const newDate = new Date(employee?.joiningDate);
-                    const date = newDate.getDate();
-                    const month = newDate.getMonth();
-                    const year = newDate.getFullYear();
-                    return (
-                      <div className="col" key={employee.employeeId}>
-                        <div className="card teacher-card">
-                          <div className="card-body d-flex">
-                            <div className="profile-av pe-xl-4 pe-md-2 pe-sm-4 pe-4 text-center w220">
-                              <img
-                                src={
-                                  `${import.meta.env.VITE_BASE_URL}` +
-                                  employee.employeeImage
-                                }
-                                alt=""
-                                className="avatar xl rounded-circle img-thumbnail shadow-sm"
-                              />
-                              <div className="about-info mt-3">
-                                <div className="followers me-2">
-                                  <i class="bi bi-person-vcard-fill text-danger fs-6 me-2" />
-                                  <span className="">
-                                    {employee.employeeId}
-                                  </span>
-                                </div>
-                                <div className="followers me-2">
-                                  {/* <i class="bi bi-person-fill text-primary fs-6 me-2" />
+                {loading ? (
+                  <div className="custom-loader "></div>
+                ) : (
+                  <div className="row g-3 row-cols-1 row-cols-sm-1 row-cols-md-1 row-cols-lg-2 row-cols-xl-2 row-cols-xxl-2 row-deck py-1 pb-4">
+                    {employees.map((employee) => {
+                      const newDate = new Date(employee?.joiningDate);
+                      const date = newDate.getDate();
+                      const month = newDate.getMonth();
+                      const year = newDate.getFullYear();
+                      return (
+                        <div className="col" key={employee.employeeId}>
+                          <div className="card teacher-card">
+                            <div className="card-body d-flex">
+                              <div className="profile-av pe-xl-4 pe-md-2 pe-sm-4 pe-4 text-center w220">
+                                <img
+                                  src={
+                                    `${import.meta.env.VITE_BASE_URL}` +
+                                    employee.employeeImage
+                                  }
+                                  alt=""
+                                  className="avatar xl rounded-circle img-thumbnail shadow-sm"
+                                />
+                                <div className="about-info mt-3">
+                                  <div className="followers me-2">
+                                    <i class="bi bi-person-vcard-fill text-danger fs-6 me-2" />
+                                    <span className="">
+                                      {employee.employeeId}
+                                    </span>
+                                  </div>
+                                  <div className="followers me-2">
+                                    {/* <i class="bi bi-person-fill text-primary fs-6 me-2" />
                                   <span className="">{employee.username}</span> */}
-                                </div>
+                                  </div>
 
-                                <div className="own-video">
-                                  {/* <i className="icofont-data color-light-orange fs-4" /> */}
-                                  <i class="bi bi-telephone-fill text-success fs-6 me-2" />
-                                  <span className="">{employee.phone}</span>
+                                  <div className="own-video">
+                                    {/* <i className="icofont-data color-light-orange fs-4" /> */}
+                                    <i class="bi bi-telephone-fill text-success fs-6 me-2" />
+                                    <span className="">{employee.phone}</span>
+                                  </div>
+                                  <p className=" rounded-1 d-inline-block fw-bold small-11 mb-1 d-flex">
+                                    <i class="bi bi-envelope-at-fill text-primary fs-6 me-1" />
+                                    {employee.emailid}
+                                  </p>
                                 </div>
-                                <p className=" rounded-1 d-inline-block fw-bold small-11 mb-1 d-flex">
-                                  <i class="bi bi-envelope-at-fill text-primary fs-6 me-1" />
-                                  {employee.emailid}
-                                </p>
                               </div>
-                            </div>
-                            <div className="teacher-info border-start ps-xl-4 ps-md-3 ps-sm-4 ps-4 w-100">
-                              <div>
-                                <div className="d-flex justify-content-between">
-                                  <h6 className="mb-0 mt-2  fw-bold d-block fs-6">
-                                    {employee.employeeName}
-                                  </h6>
-                                  <div
-                                    className="btn-group"
-                                    role="group"
-                                    aria-label="Basic outlined example"
-                                  >
-                                    <button
-                                      type="button"
-                                      className="btn btn-outline-secondary"
-                                      data-bs-toggle="modal"
-                                      data-bs-target="#editemp"
-                                      onClick={() => setToEdit(employee._id)}
+                              <div className="teacher-info border-start ps-xl-4 ps-md-3 ps-sm-4 ps-4 w-100">
+                                <div>
+                                  <div className="d-flex justify-content-between">
+                                    <h6 className="mb-0 mt-2  fw-bold d-block fs-6">
+                                      {employee.employeeName}
+                                    </h6>
+                                    <div
+                                      className="btn-group"
+                                      role="group"
+                                      aria-label="Basic outlined example"
                                     >
-                                      <i className="icofont-edit text-success" />
-                                    </button>
-                                    <button
-                                      type="button"
-                                      className="btn btn-outline-secondary"
-                                      data-bs-toggle="modal"
-                                      data-bs-target="#deleteproject"
-                                      onClick={() => {
-                                        setDeletableId(employee._id);
-                                      }}
-                                    >
-                                      <i className="icofont-ui-delete text-danger" />
-                                    </button>
+                                      <button
+                                        type="button"
+                                        className="btn btn-outline-secondary"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editemp"
+                                        onClick={() => setToEdit(employee._id)}
+                                      >
+                                        <i className="icofont-edit text-success" />
+                                      </button>
+                                      <button
+                                        type="button"
+                                        className="btn btn-outline-secondary"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#deleteproject"
+                                        onClick={() => {
+                                          setDeletableId(employee._id);
+                                        }}
+                                      >
+                                        <i className="icofont-ui-delete text-danger" />
+                                      </button>
+                                    </div>
+                                  </div>
+                                  <div className="d-flex justify-content-between">
+                                    <span className="light-info-bg py-1 px-2 rounded-1 d-inline-block fw-bold small-11 mb-0 mt-1">
+                                      <i class="bi bi-calendar-check-fill text-primary fs-6 me-2" />
+                                      {date}/{month}/{year}
+                                    </span>
+                                    <span className="light-info-bg p-2 rounded-1 d-inline-block fw-bold small-11 mb-0 mt-1">
+                                      {employee.designation}
+                                    </span>
                                   </div>
                                 </div>
-                                <div className="d-flex justify-content-between">
-                                  <span className="light-info-bg py-1 px-2 rounded-1 d-inline-block fw-bold small-11 mb-0 mt-1">
-                                    <i class="bi bi-calendar-check-fill text-primary fs-6 me-2" />
-                                    {date}/{month}/{year}
-                                  </span>
-                                  <span className="light-info-bg p-2 rounded-1 d-inline-block fw-bold small-11 mb-0 mt-1">
-                                    {employee.designation}
-                                  </span>
+                                <div className="video-setting-icon mt-2 pt-2 border-top">
+                                  <p>{employee.description}</p>
                                 </div>
-                              </div>
-                              <div className="video-setting-icon mt-2 pt-2 border-top">
-                                <p>{employee.description}</p>
-                              </div>
-                              <div className="d-flex justify-content-center">
-                                {/* <Link
+                                <div className="d-flex justify-content-center">
+                                  {/* <Link
                                   className="ms-link d-flex justify-content-center"
                                   to="/tasks"
                                 >
@@ -484,14 +490,15 @@ const Member = () => {
                                     Add Task
                                   </div>
                                 </Link> */}
+                                </div>
                               </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </div>
             {/* Modal Members*/}
@@ -917,7 +924,6 @@ const Member = () => {
                           </div>
                         </div>
                         <div className="row g-3 mb-3">
-                          
                           <div className="col">
                             <label
                               htmlFor="exampleFormControlInput777"

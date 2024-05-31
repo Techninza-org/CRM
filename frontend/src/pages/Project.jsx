@@ -4,11 +4,13 @@ import Header from "../components/Header";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { MultiSelect } from "react-multi-select-component";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "./Loading.css";
 
 const Project = () => {
   const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // CREATE PROJECT
   const [formData, setFormData] = useState({
@@ -80,10 +82,10 @@ const Project = () => {
       const modal = window.bootstrap.Modal.getInstance(modalElement);
       modal.hide();
 
-      toast.success('Project Created Successfully!', {
+      toast.success("Project Created Successfully!", {
         style: {
-          backgroundColor: '#4c3575',
-          color: 'white',
+          backgroundColor: "#4c3575",
+          color: "white",
         },
       });
 
@@ -100,6 +102,7 @@ const Project = () => {
   const [activeTab, setActiveTab] = useState("All");
   useEffect(() => {
     const fetchProjects = async () => {
+      setLoading(true);
       try {
         const response = await axios.get(
           `${import.meta.env.VITE_BASE_URL}api/projects`
@@ -115,6 +118,8 @@ const Project = () => {
         setFilteredProjects(sortedProjects);
       } catch (error) {
         console.error("Error fetching projects:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -156,13 +161,12 @@ const Project = () => {
       const modal = window.bootstrap.Modal.getInstance(modalElement);
       modal.hide();
 
-      toast.error('Project Deleted Successfully!', {
+      toast.error("Project Deleted Successfully!", {
         style: {
-          backgroundColor: '#4c3575',
-          color: 'white',
+          backgroundColor: "#4c3575",
+          color: "white",
         },
       });
-
     } catch (error) {
       console.error("Error:", error);
     }
@@ -264,22 +268,21 @@ const Project = () => {
       );
       // console.log(response.data);
       const updatedProject = response.data;
-    const updatedProjectData = projects.map((pro) => {
-      if (pro._id === toEdit) {
-        return {
-          ...pro,
-          projectName: updatedProject.projectName,
-          projectCategory: updatedProject.projectCategory,
-          projectImage: updatedProject.projectImage,
-          projectStartDate: updatedProject.projectStartDate,
-          projectEndDate: updatedProject.projectEndDate,
-          taskAssignPerson: updatedProject.taskAssignPerson,
-          description: updatedProject.description,
-        };
+      const updatedProjectData = projects.map((pro) => {
+        if (pro._id === toEdit) {
+          return {
+            ...pro,
+            projectName: updatedProject.projectName,
+            projectCategory: updatedProject.projectCategory,
+            projectImage: updatedProject.projectImage,
+            projectStartDate: updatedProject.projectStartDate,
+            projectEndDate: updatedProject.projectEndDate,
+            taskAssignPerson: updatedProject.taskAssignPerson,
+            description: updatedProject.description,
+          };
         } else {
           return pro;
         }
-
       });
       // console.log(updatedProjectData);
 
@@ -291,14 +294,12 @@ const Project = () => {
       const modal = window.bootstrap.Modal.getInstance(modalElement);
       modal.hide();
 
-      toast.success('Project Updated Successfully!', {
+      toast.success("Project Updated Successfully!", {
         style: {
-          backgroundColor: '#4c3575',
-          color: 'white',
+          backgroundColor: "#4c3575",
+          color: "white",
         },
       });
-
-      
     } catch (error) {
       console.error("Error:", error);
     }
@@ -511,143 +512,149 @@ const Project = () => {
                   </div>
                 </div>{" "}
                 {/* Row end  */}
-                <div className="row g-3 mb-3 row-deck">
-                  <div className="col-md-12">
-                    <div className="card mb-3">
-                      <div className="card-body">
-                        <table
-                          className="table table-hover align-middle mb-0"
-                          style={{ width: "100%" }}
-                        >
-                          <thead>
-                            <tr>
-                              <th>Project Name</th>
-                              {/* <th>Project Category</th> */}
-                              <th>Start Date</th>
-                              <th>End Date</th>
-                              <th>Members</th>
-                              <th>Progress</th>
-                              <th>Edit</th>
-                              <th>Delete</th>
-                              <th>Status</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {filteredProjects.map((project) => {
-                              const getFormattedDate = (date) => {
-                                const newDate = new Date(date);
-                                let day = newDate.getDate();
-                                let month = newDate.getMonth() + 1;
-                                const year = newDate.getFullYear();
-                                let hour = newDate.getHours();
-                                let min = newDate.getMinutes();
-                                let period = "AM";
+                {loading ? (
+                  <div className="custom-loader "></div>
+                ) : (
+                  <div className="row g-3 mb-3 row-deck">
+                    <div className="col-md-12">
+                      <div className="card mb-3">
+                        <div className="card-body">
+                          <table
+                            className="table table-hover align-middle mb-0"
+                            style={{ width: "100%" }}
+                          >
+                            <thead>
+                              <tr>
+                                <th>Project Name</th>
+                                {/* <th>Project Category</th> */}
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Members</th>
+                                <th>Progress</th>
+                                <th>Edit</th>
+                                <th>Delete</th>
+                                <th>Status</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {filteredProjects.map((project) => {
+                                const getFormattedDate = (date) => {
+                                  const newDate = new Date(date);
+                                  let day = newDate.getDate();
+                                  let month = newDate.getMonth() + 1;
+                                  const year = newDate.getFullYear();
+                                  let hour = newDate.getHours();
+                                  let min = newDate.getMinutes();
+                                  let period = "AM";
 
-                                // Convert hours to 12-hour format
-                                if (hour === 0) {
-                                  hour = 12;
-                                } else if (hour >= 12) {
-                                  period = "PM";
-                                  if (hour > 12) {
-                                    hour -= 12;
+                                  // Convert hours to 12-hour format
+                                  if (hour === 0) {
+                                    hour = 12;
+                                  } else if (hour >= 12) {
+                                    period = "PM";
+                                    if (hour > 12) {
+                                      hour -= 12;
+                                    }
                                   }
-                                }
 
-                                // Adding leading zero to minutes if necessary
-                                if (min < 10) {
-                                  min = "0" + min;
-                                }
+                                  // Adding leading zero to minutes if necessary
+                                  if (min < 10) {
+                                    min = "0" + min;
+                                  }
 
-                                // Adding leading zero to day and month if necessary
-                                if (day < 10) {
-                                  day = "0" + day;
-                                }
-                                if (month < 10) {
-                                  month = "0" + month;
-                                }
+                                  // Adding leading zero to day and month if necessary
+                                  if (day < 10) {
+                                    day = "0" + day;
+                                  }
+                                  if (month < 10) {
+                                    month = "0" + month;
+                                  }
 
-                                return `${day}/${month}/${year} --${hour}:${min} ${period}`;
-                              };
+                                  return `${day}/${month}/${year} --${hour}:${min} ${period}`;
+                                };
 
-                              return (
-                                <tr key={project.id}>
-                                  <td>
-                                    <div className="">
-                                      <Link to="/tasks">
-                                        {project.projectName}
-                                      </Link>
+                                return (
+                                  <tr key={project.id}>
+                                    <td>
+                                      <div className="">
+                                        <Link to="/tasks">
+                                          {project.projectName}
+                                        </Link>
 
-                                      <Link
-                                        to="/images"
-                                        state={{
-                                          images: project.projectImage,
-                                          projectName: project.projectName,
+                                        <Link
+                                          to="/images"
+                                          state={{
+                                            images: project.projectImage,
+                                            projectName: project.projectName,
+                                          }}
+                                          style={{ marginLeft: "33px" }}
+                                        >
+                                          <i className="bi-paperclip fs-6" />
+                                        </Link>
+                                      </div>
+                                      <div className="text-muted">
+                                        -{getFormattedDate(project.projectDate)}
+                                      </div>
+                                    </td>
+                                    <td>
+                                      {getFormattedDate(
+                                        project.projectStartDate
+                                      )}
+                                    </td>
+                                    <td>
+                                      {getFormattedDate(project.projectEndDate)}{" "}
+                                    </td>
+                                    <td>
+                                      {project.taskAssignPerson.map(
+                                        (name) => name.employeeName + ", "
+                                      )}
+                                    </td>
+                                    <td>
+                                      <div className="d-flex justify-content-center">
+                                        {project.progress}%
+                                      </div>
+                                    </td>
+                                    <td>
+                                      <button
+                                        type=""
+                                        onClick={() => setToEdit(project._id)}
+                                        className="btn icofont-edit text-success"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editproject"
+                                      ></button>
+                                    </td>
+                                    <td>
+                                      <button
+                                        type=""
+                                        className="btn outline-secondary icofont-ui-delete text-danger "
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#deleteproject"
+                                        onClick={() => {
+                                          setDeletableId(project._id);
                                         }}
-                                        style={{ marginLeft: "33px" }}
-                                      >
-                                        <i className="bi-paperclip fs-6" />
-                                      </Link>
-                                    </div>
-                                    <div className="text-muted">
-                                      -{getFormattedDate(project.projectDate)}
-                                    </div>
-                                  </td>
-                                  <td>
-                                    {getFormattedDate(project.projectStartDate)}
-                                  </td>
-                                  <td>
-                                    {getFormattedDate(project.projectEndDate)}{" "}
-                                  </td>
-                                  <td>
-                                    {project.taskAssignPerson.map(
-                                      (name) => name.employeeName + ", "
-                                    )}
-                                  </td>
-                                  <td>
-                                    <div className="d-flex justify-content-center">
-                                      {project.progress}%
-                                    </div>
-                                  </td>
-                                  <td>
-                                    <button
-                                      type=""
-                                      onClick={() => setToEdit(project._id)}
-                                      className="btn icofont-edit text-success"
-                                      data-bs-toggle="modal"
-                                      data-bs-target="#editproject"
-                                    ></button>
-                                  </td>
-                                  <td>
-                                    <button
-                                      type=""
-                                      className="btn outline-secondary icofont-ui-delete text-danger "
-                                      data-bs-toggle="modal"
-                                      data-bs-target="#deleteproject"
-                                      onClick={() => {
-                                        setDeletableId(project._id);
-                                      }}
-                                    ></button>
-                                  </td>
-                                  <td>
-                                    <button
-                                      className="d-flex justify-content-center bi bi-stopwatch btn outline-secondary text-primary"
-                                      data-bs-toggle="modal"
-                                      data-bs-target="#addUser"
-                                      onClick={() => {
-                                        setProjectId(project._id);
-                                        setSelectProject(project);
-                                      }}
-                                    ></button>
-                                  </td>
-                                </tr>
-                              );
-                            })}
-                          </tbody>
-                        </table>
+                                      ></button>
+                                    </td>
+                                    <td>
+                                      <button
+                                        className="d-flex justify-content-center bi bi-stopwatch btn outline-secondary text-primary"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#addUser"
+                                        onClick={() => {
+                                          setProjectId(project._id);
+                                          setSelectProject(project);
+                                        }}
+                                      ></button>
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
 
@@ -1136,7 +1143,10 @@ const Project = () => {
                       </div>
                     </div> */}
                     <div className="members_list">
-                      <ul className="list-unstyled list-group list-group-custom list-group-flush mb-0"style={{ maxHeight: '350px', overflowY: 'auto' }}>
+                      <ul
+                        className="list-unstyled list-group list-group-custom list-group-flush mb-0"
+                        style={{ maxHeight: "350px", overflowY: "auto" }}
+                      >
                         <li className="list-group-item py-3 text-center text-md-start">
                           {projectStatuses.map((status) => {
                             const getFormattedDate = (date) => {

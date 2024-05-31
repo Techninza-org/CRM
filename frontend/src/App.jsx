@@ -6,7 +6,7 @@ import Signin from './pages/Signin'
 import EmployeeSinin from './pages/EmployeeSinin'
 
 
-import {BrowserRouter, Routes, Route} from 'react-router-dom'
+import {HashRouter, Routes, Route} from 'react-router-dom'
 import ProjectDashboard from './pages/ProjectDashboard'
 import EmployeeDashboard from './pages/EmployeeDashboard'
 import Member from './pages/Member'
@@ -21,7 +21,7 @@ import Images from './pages/Image'
 function App() {
 
   return (
-    <BrowserRouter >
+    <HashRouter >
       <Routes >
         <Route path='/signup' element={<Signup />}></Route>
         <Route path='/employeesignup' element={<EmployeeSinup />}></Route>
@@ -42,7 +42,7 @@ function App() {
 
 
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   )
 }
 
