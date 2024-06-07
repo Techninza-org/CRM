@@ -192,7 +192,7 @@ const Sidebar = () => {
                                 </li> */}
                             </ul>
                         </li>
-                        {/* <li className="collapsed">
+                        <li className="collapsed">
                             <a
                                 className="m-link"
                                 data-bs-toggle="collapse"
@@ -203,7 +203,7 @@ const Sidebar = () => {
                                 <span className="arrow icofont-dotted-down ms-auto text-end fs-5" />
                             </a>
                             <ul className="sub-menu collapse" id="menu-Componentsone">
-                                <li>
+                                {/* <li>
                                     <a className="ms-link" href="invoices.html">
                                         <span>Invoices</span>{" "}
                                     </a>
@@ -217,15 +217,15 @@ const Sidebar = () => {
                                     <a className="ms-link" href="expenses.html">
                                         <span>Expenses</span>{" "}
                                     </a>
-                                </li>
+                                </li> */}
                                 <li>
-                                    <a className="ms-link" href="create-invoice.html">
+                                    <Link className="ms-link" to="/create-invoice">
                                         <span>Create Invoice</span>{" "}
-                                    </a>
+                                    </Link>
                                 </li>
                             </ul>
                         </li>
-                        <li className="collapsed">
+                        {/* <li className="collapsed">
                             <a
                                 className="m-link"
                                 data-bs-toggle="collapse"
@@ -242,8 +242,8 @@ const Sidebar = () => {
                                     </a>
                                 </li>
                             </ul>
-                        </li>
-                        <li className="collapsed">
+                        </li> */}
+                        {/* <li className="collapsed">
                             <a
                                 className="m-link"
                                 data-bs-toggle="collapse"
@@ -266,8 +266,8 @@ const Sidebar = () => {
                                     </a>
                                 </li>
                             </ul>
-                        </li>
-                        <li className="collapsed">
+                        </li> */}
+                        {/* <li className="collapsed">
                             <a
                                 className="m-link"
                                 data-bs-toggle="collapse"
@@ -321,8 +321,8 @@ const Sidebar = () => {
                                     </a>
                                 </li>
                             </ul>
-                        </li>
-                        <li>
+                        </li> */}
+                        {/* <li>
                             <a className="m-link" href="ui-elements/ui-alerts.html">
                                 <i className="icofont-paint" /> <span>UI Components</span>
                             </a>

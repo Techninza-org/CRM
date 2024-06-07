@@ -74,7 +74,7 @@ router.post("/employeelogin", async (req, res) => {
 router.get('/employees', async (req, res) => {
     try {
         const employees = await Employee.find();
-        console.log("testing");
+        // console.log("testing");
         res.json(employees);
     } catch (err) {
         res.status(500).json({ message: err.message });
