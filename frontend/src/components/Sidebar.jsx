@@ -104,7 +104,7 @@ const Sidebar = () => {
                                     </a>
                                 </li>
                             </ul>
-                        </li>
+                        </li> */}
                         <li className="collapsed">
                             <a
                                 className="m-link"
@@ -117,19 +117,19 @@ const Sidebar = () => {
                             </a>
                             <ul className="sub-menu collapse" id="client-Components">
                                 <li>
-                                    <a className="ms-link" href="ourclients.html">
-                                        {" "}
+                                <Link className="ms-link" to="/clients">
+                                        
                                         <span>Clients</span>
-                                    </a>
+                                    </Link>
                                 </li>
-                                <li>
+                                {/* <li>
                                     <a className="ms-link" href="profile.html">
                                         {" "}
                                         <span>Client Profile</span>
                                     </a>
-                                </li>
+                                </li> */}
                             </ul>
-                        </li> */}
+                        </li>
                         <li className="collapsed">
                             <a
                                 className="m-link"

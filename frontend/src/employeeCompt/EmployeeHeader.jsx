@@ -416,7 +416,7 @@ const Header = () => {
                               {employeeName}
                             </span>
                           </p>
-                          <small className="">{email}</small>
+                          <p style={{width:"210px", fontSize:"small"}}>{email}</p>
                         </div>
                       </div>
                       <div>
