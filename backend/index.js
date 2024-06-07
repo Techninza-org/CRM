@@ -10,15 +10,21 @@ const taskRoutes = require('./routes/taskRoutes');
 const statusController = require('./controller/statusAuth');
 const chatRoutes = require('./routes/chatRoutes');
 const cors = require('cors');
+const path = require('path');
 
 dotenv.config();
+
 
 //Middleware setup
 app.use(cors());
 app.use(express.json());
 app.use(express.static("./uploads"));
 
+app.use(express.static(path.join(__dirname, 'dist')));
 
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
 
 // MongoDB setup
 const url = process.env.MONGODB_URI;
