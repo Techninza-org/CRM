@@ -16,6 +16,7 @@ import Tasks from './pages/Tasks'
 import EmployeeTasks from './pages/EmployeeTask'
 import Images from './pages/Image'
 import CreateInvoice from './pages/CreateInvoice'
+import Client from './pages/Client'
 // import Test from './pages/test'
 
 
@@ -39,6 +40,8 @@ function App() {
         <Route path='/employee-tasks' element={<EmployeeTasks />}></Route>   
         <Route path='/images' element={<Images/>}></Route>   
         <Route path='/create-invoice' element={<CreateInvoice/>}></Route>   
+        <Route path='/clients' element={<Client/>}></Route>   
+
 
 
         {/* <Route path='/test' element={<Test/>}></Route>    */}

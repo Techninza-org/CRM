@@ -13,16 +13,13 @@ const CreateInvoice = () => {
   const [selectedState, setSelectedState] = useState('');
   const [invoiceNumber, setInvoiceNumber] = useState('0224');
 
-  useEffect(() => {
-    generateNextInvoiceNumber();
-  }, []);
+  
 
   const handleInvoiceNumberChange = (e) => {
     setInvoiceNumber(e.target.value);
   };
 
   const generateNextInvoiceNumber = () => {
-    // Increment the current invoice number
     const currentNumber = parseInt(invoiceNumber, 10);
     const nextNumber = (currentNumber + 1).toString().padStart(4, '0');
     setInvoiceNumber(nextNumber);
@@ -148,16 +145,14 @@ const CreateInvoice = () => {
     setSelectedState(event.target.value);
   };
 
-
-
-
-
   const handelPrint = () => {
     window.print();
     generateNextInvoiceNumber();
   };
 
-
+  useEffect(() => {
+    generateNextInvoiceNumber();
+  }, []);
 
   return (
     <>
