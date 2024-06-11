@@ -223,6 +223,11 @@ const Sidebar = () => {
                                         <span>Create Invoice</span>{" "}
                                     </Link>
                                 </li>
+                                <li>
+                                    <Link className="ms-link" to="/all-invoice">
+                                        <span>All Invoice</span>{" "}
+                                    </Link>
+                                </li>
                             </ul>
                         </li>
                         {/* <li className="collapsed">

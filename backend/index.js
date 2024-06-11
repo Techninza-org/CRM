@@ -9,8 +9,11 @@ const adminUserRoutes = require('./userRoute/adminUserRoutes');
 const taskRoutes = require('./routes/taskRoutes');
 const statusController = require('./controller/statusAuth');
 const chatRoutes = require('./routes/chatRoutes');
+const clientRoutes = require('./controller/clientAuth');
+const invoiceRoutes = require('./routes/invoiceRoutes');
+
 const cors = require('cors');
-const path = require('path');
+// const path = require('path');
 
 dotenv.config();
 
@@ -20,11 +23,11 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static("./uploads"));
 
-app.use(express.static(path.join(__dirname, 'dist')));
+// app.use(express.static(path.join(__dirname, 'dist')));
 
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
-});
+// app.get('*', (req, res) => {
+//   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+// });
 
 // MongoDB setup
 const url = process.env.MONGODB_URI;
@@ -38,6 +41,8 @@ connection.once('open', () => {
 
 
 //Route setup
+app.use('/api', invoiceRoutes);
+app.use('/api', clientRoutes);
 app.use('/api', employeeController);
 app.use('/api', projectRoutes);
 app.use('/api', statusController);
