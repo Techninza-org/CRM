@@ -13,7 +13,7 @@ const clientRoutes = require('./controller/clientAuth');
 const invoiceRoutes = require('./routes/invoiceRoutes');
 
 const cors = require('cors');
-// const path = require('path');
+const path = require('path');
 
 dotenv.config();
 
