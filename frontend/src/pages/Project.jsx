@@ -108,10 +108,10 @@ const Project = () => {
           `${import.meta.env.VITE_BASE_URL}api/projects`
         );
 
-        // console.log(response.data, 'projects');
+        console.log(response.data, 'projects');
         // setProjects(response.data);
         // setFilteredProjects(response.data); // Initialize with all projects
-        const sortedProjects = response.data.sort(
+        const sortedProjects = response?.data?.sort(
           (a, b) => new Date(b.projectDate) - new Date(a.projectDate)
         );
         setProjects(sortedProjects);
@@ -352,7 +352,7 @@ const Project = () => {
   const [employees, setEmployees] = useState([]);
   const [selectedEmployees, setSelectedEmployees] = useState([]);
   // console.log(selectedEmployees);
-  const assignEmployee = employees.map((emp) => {
+  const assignEmployee = employees?.map((emp) => {
     return {
       label: emp.employeeName,
       value: emp._id,

@@ -9,7 +9,7 @@ import "./Loading.css"
 
 const Member = () => {
   const [employees, setEmployees] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   //CREATE EMPLOYEE
   const [formData, setFormData] = useState({
@@ -109,23 +109,19 @@ const Member = () => {
           `${import.meta.env.VITE_BASE_URL}api/employees`
         );
 
-        let lastOldId = "1";
-        for (let d of response.data) {
-          // console.log(d);
-          const newId = Number(d.employeeId.slice(2));
-          if (!Number.isNaN(newId)) {
-            if (newId > Number(lastOldId)) {
-              lastOldId = newId.toString();
-            }
+        let lastOldId = 1;
+        response.data.forEach((d) => {
+          const newId = parseInt(d.employeeId.slice(2), 10);
+          if (!Number.isNaN(newId) && newId > lastOldId) {
+            lastOldId = newId;
           }
-        }
-        // console.log(lastOldId);
-        const newId = `TN00${++lastOldId}`;
-        // console.log(newId);
-        setFormData({
-          ...formData,
-          employeeId: newId,
         });
+
+        const newId = `TN00${lastOldId + 1}`;
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          employeeId: newId,
+        }));
         setEmployees(response.data);
       } catch (error) {
         console.error("Error:", error);
@@ -396,7 +392,7 @@ const Member = () => {
                     {employees.map((employee) => {
                       const newDate = new Date(employee?.joiningDate);
                       const date = newDate.getDate();
-                      const month = newDate.getMonth();
+                      const month = newDate.getMonth() + 1; // months are 0-indexed
                       const year = newDate.getFullYear();
                       return (
                         <div className="col" key={employee.employeeId}>
@@ -404,32 +400,25 @@ const Member = () => {
                             <div className="card-body d-flex">
                               <div className="profile-av pe-xl-4 pe-md-2 pe-sm-4 pe-4 text-center w220">
                                 <img
-                                  src={
-                                    `${import.meta.env.VITE_BASE_URL}` +
-                                    employee.employeeImage
-                                  }
+                                  src={`${import.meta.env.VITE_BASE_URL}${employee.employeeImage}`}
                                   alt=""
                                   className="avatar xl rounded-circle img-thumbnail shadow-sm"
                                 />
                                 <div className="about-info mt-3">
                                   <div className="followers me-2">
-                                    <i class="bi bi-person-vcard-fill text-danger fs-6 me-2" />
-                                    <span className="">
-                                      {employee.employeeId}
-                                    </span>
+                                    <i className="bi bi-person-vcard-fill text-danger fs-6 me-2" />
+                                    <span>{employee.employeeId}</span>
                                   </div>
                                   <div className="followers me-2">
-                                    {/* <i class="bi bi-person-fill text-primary fs-6 me-2" />
-                                  <span className="">{employee.username}</span> */}
+                                    {/* <i className="bi bi-person-fill text-primary fs-6 me-2" />
+                      <span>{employee.username}</span> */}
                                   </div>
-
                                   <div className="own-video">
-                                    {/* <i className="icofont-data color-light-orange fs-4" /> */}
-                                    <i class="bi bi-telephone-fill text-success fs-6 me-2" />
-                                    <span className="">{employee.phone}</span>
+                                    <i className="bi bi-telephone-fill text-success fs-6 me-2" />
+                                    <span>{employee.phone}</span>
                                   </div>
-                                  <p className=" rounded-1 d-inline-block fw-bold small-11 mb-1 d-flex">
-                                    <i class="bi bi-envelope-at-fill text-primary fs-6 me-1" />
+                                  <p className="rounded-1 d-inline-block fw-bold small-11 mb-1 d-flex">
+                                    <i className="bi bi-envelope-at-fill text-primary fs-6 me-1" />
                                     {employee.emailid}
                                   </p>
                                 </div>
@@ -437,7 +426,7 @@ const Member = () => {
                               <div className="teacher-info border-start ps-xl-4 ps-md-3 ps-sm-4 ps-4 w-100">
                                 <div>
                                   <div className="d-flex justify-content-between">
-                                    <h6 className="mb-0 mt-2  fw-bold d-block fs-6">
+                                    <h6 className="mb-0 mt-2 fw-bold d-block fs-6">
                                       {employee.employeeName}
                                     </h6>
                                     <div
@@ -469,7 +458,7 @@ const Member = () => {
                                   </div>
                                   <div className="d-flex justify-content-between">
                                     <span className="light-info-bg py-1 px-2 rounded-1 d-inline-block fw-bold small-11 mb-0 mt-1">
-                                      <i class="bi bi-calendar-check-fill text-primary fs-6 me-2" />
+                                      <i className="bi bi-calendar-check-fill text-primary fs-6 me-2" />
                                       {date}/{month}/{year}
                                     </span>
                                     <span className="light-info-bg p-2 rounded-1 d-inline-block fw-bold small-11 mb-0 mt-1">
@@ -482,14 +471,14 @@ const Member = () => {
                                 </div>
                                 <div className="d-flex justify-content-center">
                                   {/* <Link
-                                  className="ms-link d-flex justify-content-center"
-                                  to="/tasks"
-                                >
-                                  <div className="btn btn-dark btn-sm mt-1 ">
-                                    <i className="icofont-plus-circle me-2 fs-6" />
-                                    Add Task
-                                  </div>
-                                </Link> */}
+                    className="ms-link d-flex justify-content-center"
+                    to="/tasks"
+                  >
+                    <div className="btn btn-dark btn-sm mt-1 ">
+                      <i className="icofont-plus-circle me-2 fs-6" />
+                      Add Task
+                    </div>
+                  </Link> */}
                                 </div>
                               </div>
                             </div>

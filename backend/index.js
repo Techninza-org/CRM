@@ -25,9 +25,6 @@ app.use(express.static("./uploads"));
 
 app.use(express.static(path.join(__dirname, 'dist')));
 
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
-});
 
 // MongoDB setup
 const url = process.env.MONGODB_URI;
@@ -50,7 +47,9 @@ app.use('/api', taskRoutes);
 app.use('/api', chatRoutes);
 app.use('/api', adminUserRoutes);
 
-
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
 
 //Port setup
 const port = process.env.PORT || 8000;
