@@ -6,10 +6,12 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./Loading.css"
+import { useNavigate } from "react-router-dom";
 
 const Member = () => {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   //CREATE EMPLOYEE
   const [formData, setFormData] = useState({
@@ -94,6 +96,7 @@ const Member = () => {
         },
       });
       // Handle successful response
+
     } catch (error) {
       console.error("Error:", error);
       // Handle error
@@ -284,6 +287,10 @@ const Member = () => {
           color: "white",
         },
       });
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+      
     } catch (error) {
       console.error("Error:", error);
     }
