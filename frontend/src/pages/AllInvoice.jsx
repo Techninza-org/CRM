@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
-import "datatables.net";
-import "datatables.net-bs5";
-import "datatables.net-responsive";
+import { Link } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AllInvoice = () => {
   const [invoices, setInvoices] = useState([]);
@@ -24,7 +24,27 @@ const AllInvoice = () => {
 
   const formatDateToMonthYear = (dateString) => {
     const date = new Date(dateString);
-    return new Intl.DateTimeFormat('en-US', {day:'2-digit', month: 'long', year: 'numeric' }).format(date);
+    return new Intl.DateTimeFormat('en-US', { day: '2-digit', month: 'long', year: 'numeric' }).format(date);
+  };
+
+  const handleDeleteInvoice = async (invoiceId) => {
+    try {
+      const response = await axios.delete(`${import.meta.env.VITE_BASE_URL}api/invoices/${invoiceId}`);
+      if (response.status === 200) {
+        const remainingInvoice = invoices.filter((prevInvoice) => {
+          return prevInvoice._id !== invoiceId;
+        })
+        setInvoices(remainingInvoice);
+        toast.error("Invoices Deleted Successfully!", {
+          style: {
+            backgroundColor: "#4c3575",
+            color: "white",
+          },
+        });
+      }
+    } catch (error) {
+      console.error('Error deleting invoice:', error);
+    }
   };
 
   return (
@@ -55,39 +75,78 @@ const AllInvoice = () => {
                 >
                   <thead>
                     <tr>
-                    <th>Invoice No.</th>
+                      <th>Invoice No.</th>
                       <th>Invoice Date</th>
                       <th>Client Name</th>
-                      <th>Item</th>
-                      {/* <th>Description</th> */}
-                      <th>Rate</th>
-                      <th>Quantity</th>
                       <th>Total Amount</th>
-                      
+                      <th>View</th>
+                      <th>Delete Invoice</th>
                     </tr>
                   </thead>
                   <tbody>
-                  {invoices.map(invoice => (
-                      invoice.table.map((item, index) => (
-                        <tr key={`${invoice.id}-${index}`}>
-                          <td>{invoice.invoiceNumber}</td>
-                          <td>{formatDateToMonthYear(invoice.invoiceDate)}</td>
-                          <td>{invoice.clientDetail.clientName}</td>
-                          <td>{item.item}</td>
-                          {/* <td>{item.description}</td> */}
-                          <td>{item.rate}</td>
-                          <td>{item.quantity}</td>
-                          <td>{invoice.total}</td>
-                          
-                        </tr>
-                      ))
+                    {invoices.map((invoice) => (
+                      <tr key={invoice.id}>
+                        <td>{invoice.invoiceNumber}</td>
+                        <td>{formatDateToMonthYear(invoice.invoiceDate)}</td>
+                        <td>{invoice.clientDetail.clientName}</td>
+                        <td>{invoice.total}</td>
+                        <td>
+                          <Link to="/update-invoice" state={{ invoice }}>
+                            <i className="bi bi-eye-fill fs-6" />
+                          </Link>
+                        </td>
+                        <td>
+                          <button
+                            type="button"
+                            className="btn btn-outline-secondary"
+                            // data-bs-toggle="modal"
+                            // data-bs-target="#deleteInvoiceModal"
+                            onClick={() => handleDeleteInvoice(invoice._id)}
+                          >
+                            <i className="icofont-ui-delete text-danger" />
+                          </button>
+                        </td>
+                      </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
             </div>
           </div>
+
+          {/* Modal Delete Invoice */}
+          <div className="modal fade" id="deleteInvoiceModal" tabIndex={-1} aria-hidden="true">
+            <div className="modal-dialog modal-dialog-centered modal-md modal-dialog-scrollable">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title fw-bold" id="deleteInvoiceModalLabel">
+                    Delete Invoice Permanently?
+                  </h5>
+                  <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" />
+                </div>
+                <div className="modal-body justify-content-center flex-column d-flex">
+                  <i className="icofont-ui-delete text-danger display-2 text-center mt-2" />
+                  <p className="mt-4 fs-5 text-center">
+                    Are you sure you want to delete this invoice permanently?
+                  </p>
+                </div>
+                <div className="modal-footer">
+                  <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-danger"
+                    onClick={() => handleDeleteInvoice(invoices._id)} // Handle deletion
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+        <ToastContainer />
       </div>
     </>
   );

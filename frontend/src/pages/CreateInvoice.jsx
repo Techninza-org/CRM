@@ -354,12 +354,6 @@ const CreateInvoice = () => {
   useEffect(() => {
     updateTotal(rows);
   }, [rows]);
-  // useEffect(() => {
-  //   const newSubtotal = rows.reduce((acc, row) => acc + row.price, 0);
-  //   const newGstTotal = rows.reduce((acc, row) => acc + row.igst + row.cgst + row.sgst, 0);
-  //   const newGrandTotal = newSubtotal + newGstTotal;
-  //   setTotal({ subtotal: newSubtotal, gstTotal: newGstTotal, grandTotal: newGrandTotal });
-  // }, [rows]);
 
 
   //Bank Details
@@ -765,6 +759,7 @@ const CreateInvoice = () => {
                     />
                   </div>
                 </div>
+                  <div className="d-flex justify-content-center" style={{ borderTop: "1px solid #A9A9A9", color:"grey", marginTop:"8rem" }}>This invoice is system generated. No signature is required.</div>
               </div>
             </div>
             {/* </form> */}
