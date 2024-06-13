@@ -341,7 +341,7 @@ const Tasks = () => {
   const ccc = projects.filter((pro) => {
     return pro.projectName === formData.projectName;
   })[0];
-  console.log(ccc);
+  // console.log(ccc);
   const assignEmployee =
     ccc?.taskAssignPerson?.map((per) => {
       return {
@@ -488,13 +488,13 @@ const Tasks = () => {
                                         className="avatar rounded-circle small-avt"
                                         src={
                                           `${import.meta.env.VITE_BASE_URL}` +
-                                          task.taskAssignPerson.employeeImage
+                                          task.taskAssignPerson?.employeeImage
                                         }
                                         alt=""
                                       />
                                     </div>
 
-                                    <p>{task.taskAssignPerson.employeeName}</p>
+                                    <p>{task.taskAssignPerson?.employeeName}</p>
                                   </div>
                                   <span className="badge bg-danger text-end mt-2">
                                     {task.taskPriority}
@@ -510,7 +510,7 @@ const Tasks = () => {
                                   overflowY: "auto",
                                 }}
                               >
-                                {task.description}
+                                {task?.description}
                               </p>
                               <div className="tikit-info row g-3 align-items-center">
                                 <div className="col-sm ">
