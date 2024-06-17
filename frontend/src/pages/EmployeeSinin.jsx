@@ -1,16 +1,15 @@
-import React, {useEffect, useState } from "react";
-import { Link, Navigate, useNavigate  } from 'react-router-dom'; // Import Navigate
+import React, { useState } from "react";
+import { Link, useNavigate, Navigate } from 'react-router-dom';
 import axios from "axios";
 
 const Signin = () => {
-  const nav = useNavigate();
-
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-  // const [isSignIn, setIsSignIn] = useState(false);
-
+  const [error, setError] = useState("");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -20,15 +19,9 @@ const Signin = () => {
     });
   };
 
-  useEffect(() => {
-    const token = localStorage.getItem("emp_token");
-    if (token) {
-      nav("/employee-dashboard");
-    }
-  }, []);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BASE_URL}api/employeelogin`,
@@ -40,18 +33,33 @@ const Signin = () => {
         }
       );
       const { token, user } = response.data;
-      localStorage.setItem("emp_token", token);
-      localStorage.setItem("emp_user", JSON.stringify(user));
-      console.log(JSON.stringify(response.data));
-      alert("Login successful!");
-      nav("/employee-dashboard")
+
+      if (token) {
+        localStorage.setItem("emp_token", token);
+        localStorage.setItem("emp_user", JSON.stringify(user));
+        console.log(JSON.stringify(response.data));
+        alert("Login successful!");
+        setIsAuthenticated(true);
+        navigate("/employee-dashboard");
+      }
+      setError("Incorrect email or password");
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
     } catch (error) {
+      if (error.response && error.response.status === 401) {
+        setError("Incorrect email or password");
+      } else {
+        setError("An error occurred. Please try again.");
+      }
       console.log(error);
     }
   };
-  // if (isSignIn) {
-  //   return <Navigate to="/employee-dashboard" />; // Use Navigate component
-  // }
+
+  // Check authentication status and redirect if already authenticated
+  if (isAuthenticated) {
+    return <Navigate to="/employee-dashboard" />;
+  }
 
   return (
     <div id="mytask-layout">
@@ -98,8 +106,8 @@ const Signin = () => {
                         to="/"
                       >
                         <span className="d-flex justify-content-center align-items-center gap-2">
-                          <i class="bi bi-person-plus-fill"></i>
-                          Sign in as a Admin
+                          <i className="bi bi-person-plus-fill"></i>
+                          Sign in as an Admin
                         </span>
                       </Link>
                       <span className="dividers text-muted mt-4">OR</span>
@@ -149,21 +157,19 @@ const Signin = () => {
                         SIGN IN
                       </button>
                     </div>
-                    {/* {error && <p>{error}</p>} */}
+                    {error && <p className="text-danger mt-3 text-center">{error}</p>}
                   </form>
-                  {/* <div className="col-12 text-center mt-4">
+                  <div className="col-12 text-center mt-4">
                     <span className="text-muted">
                       Don't have an account yet?{" "}
                       <Link to="/employeesignup" className="text-secondary">
                         Sign up here
                       </Link>
                     </span>
-                  </div> */}
-                  {/* End Form */}
+                  </div>
                 </div>
               </div>
-            </div>{" "}
-            {/* End Row */}
+            </div>
           </div>
         </div>
       </div>

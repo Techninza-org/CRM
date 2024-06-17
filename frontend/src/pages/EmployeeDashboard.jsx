@@ -7,15 +7,15 @@ import { Link } from 'react-router-dom'
 
 const EmployeeDashboard = () => {
 
-    return (
-        <> 
-            <div id="mytask-layout">
-                <Sidebar />
-                {/* main body area */}
-                <div className="main px-lg-4 px-md-4">
-                    {/* Body: Header */}
-                    <Header />
-                    <div className="body d-flex py-lg-3 py-md-2">
+  return (
+    <>
+      <div id="mytask-layout">
+        <Sidebar />
+        {/* main body area */}
+        <div className="main px-lg-4 px-md-4">
+          {/* Body: Header */}
+          <Header />
+          <div className="body d-flex py-lg-3 py-md-2">
             <div className="container-xxl">
               <div className="col-12">
                 <div className="card mb-3">
@@ -45,14 +45,14 @@ const EmployeeDashboard = () => {
               </div>
             </div>
           </div>
-                    
-                </div>
-                
-            </div>
+
+        </div>
+
+      </div>
 
 
-        </>
-    )
+    </>
+  )
 }
 
 export default EmployeeDashboard
