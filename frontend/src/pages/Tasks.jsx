@@ -108,7 +108,7 @@ const Tasks = () => {
         // console.log(response.data);
       } catch (error) {
         console.error("Error:", error);
-      }finally {
+      } finally {
         setLoading(false);
       }
     };
@@ -123,29 +123,33 @@ const Tasks = () => {
       const response = await axios.delete(
         `${import.meta.env.VITE_BASE_URL}api/tasks/${deletableId}`
       );
-      // console.log(response.data);
-      // window.location.reload();
-      const remainingTasks = tasks.filter((prevTasks) => {
-        return prevTasks._id !== deletableId;
-      });
-      // console.log(remainingProjects);
+
+      // Filter out the deleted task
+      const remainingTasks = tasks.filter((task) => task._id !== deletableId);
       setTasks(remainingTasks);
+
       // Hide the modal
       const modalElement = document.getElementById("dremovetask");
       const modal = window.bootstrap.Modal.getInstance(modalElement);
       modal.hide();
 
+      // Display toast notification
       toast.error("Task Deleted Successfully!", {
         style: {
           backgroundColor: "#4c3575",
           color: "white",
         },
       });
+
+      // Reload the page after 5 seconds
+      setTimeout(() => {
+        window.location.reload();
+      }, 5000);
+      
     } catch (error) {
       console.error("Error:", error);
     }
   };
-
   // GET SINGLE TASK
   const [searchQuery, setSearchQuery] = useState("");
   const handleSearch = async (searchQuery) => {
@@ -453,120 +457,120 @@ const Tasks = () => {
                 {loading ? (
                   <div className="custom-loader "></div>
                 ) : (
-                <div className="row">
-                  {tasks.map((task) => {
-                    const getFormattedDate = (date) => {
-                      const newDate = new Date(date);
-                      const day = newDate.getDate();
-                      const month = newDate.getMonth() + 1;
-                      const year = newDate.getFullYear();
+                  <div className="row">
+                    {tasks.map((task) => {
+                      const getFormattedDate = (date) => {
+                        const newDate = new Date(date);
+                        const day = newDate.getDate();
+                        const month = newDate.getMonth() + 1;
+                        const year = newDate.getFullYear();
 
-                      return `${day}/${month}/${year}`;
-                    };
+                        return `${day}/${month}/${year}`;
+                      };
 
-                    return (
-                      <>
-                        <div className="col-md-4 mb-4" key={task._id}>
-                          <div className="card" style={{ width: "18rem" }}>
-                            <div className="card-body dd-handle">
-                              <div className="d-flex justify-content-between">
-                                <h6 className="fw-bold py-3 mb-0">
-                                  {task.projectName}
-                                </h6>
-                                {task.isCompleted && (
-                                  <i className="bi bi-check-circle-fill text-success h5" />
-                                )}
-                              </div>
-                              <div className="task-info d-flex align-items-center justify-content-between">
-                                <h6 className="light-success-bg py-1 px-1 rounded-1 d-inline-block fw-bold small-14 mb-0">
-                                  {task.taskCategory}
-                                </h6>
-                                <div className="task-priority d-flex flex-column align-items-center justify-content-center">
-                                  <div>
-                                    <div className="avatar-list avatar-list-stacked m-0 d-flex justify-content-center">
-                                      <img
-                                        className="avatar rounded-circle small-avt"
-                                        src={
-                                          `${import.meta.env.VITE_BASE_URL}` +
-                                          task.taskAssignPerson?.employeeImage
-                                        }
-                                        alt=""
-                                      />
+                      return (
+                        <>
+                          <div className="col-md-4 mb-4" key={task._id}>
+                            <div className="card" style={{ width: "18rem" }}>
+                              <div className="card-body dd-handle">
+                                <div className="d-flex justify-content-between">
+                                  <h6 className="fw-bold py-3 mb-0">
+                                    {task.projectName}
+                                  </h6>
+                                  {task.isCompleted && (
+                                    <i className="bi bi-check-circle-fill text-success h5" />
+                                  )}
+                                </div>
+                                <div className="task-info d-flex align-items-center justify-content-between">
+                                  <h6 className="light-success-bg py-1 px-1 rounded-1 d-inline-block fw-bold small-14 mb-0">
+                                    {task.taskCategory}
+                                  </h6>
+                                  <div className="task-priority d-flex flex-column align-items-center justify-content-center">
+                                    <div>
+                                      <div className="avatar-list avatar-list-stacked m-0 d-flex justify-content-center">
+                                        <img
+                                          className="avatar rounded-circle small-avt"
+                                          src={
+                                            `${import.meta.env.VITE_BASE_URL}` +
+                                            task.taskAssignPerson?.employeeImage
+                                          }
+                                          alt=""
+                                        />
+                                      </div>
+
+                                      <p>{task.taskAssignPerson?.employeeName}</p>
+                                    </div>
+                                    <span className="badge bg-danger text-end mt-2">
+                                      {task.taskPriority}
+                                    </span>
+                                  </div>
+                                </div>
+                                <p
+                                  className="py-2 mb-0 task-description"
+                                  style={{
+                                    maxHeight: showFullDescription
+                                      ? "none"
+                                      : "11em",
+                                    overflowY: "auto",
+                                  }}
+                                >
+                                  {task?.description}
+                                </p>
+                                <div className="tikit-info row g-3 align-items-center">
+                                  <div className="col-sm ">
+                                    <ul className="d-flex list-unstyled align-items-center justify-content-between mt-1 mb-1">
+                                      <li className="me-2">
+                                        <div className="d-flex align-items-center fw-bold">
+                                          Start:
+                                          <span className="ms-1">
+                                            {getFormattedDate(task.taskStartDate)}
+                                          </span>
+                                        </div>
+                                      </li>
+                                      <li className="me-2">
+                                        <div className="d-flex align-items-center fw-bold">
+                                          End:
+                                          <span className="ms-1">
+                                            {getFormattedDate(task.taskEndDate)}
+                                          </span>
+                                        </div>
+                                      </li>
+                                    </ul>
+                                  </div>
+                                  <div className="d-flex justify-content-between align-items-center">
+                                    <div
+                                      className="btn-group"
+                                      role="group"
+                                      aria-label="Basic outlined example"
+                                    >
+                                      <button
+                                        type="button"
+                                        className="btn btn-outline-secondary"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editemp"
+                                        onClick={() => setToEdit(task._id)}
+                                      >
+                                        <i className="icofont-edit text-success" />
+                                      </button>
+                                      <button
+                                        type="button"
+                                        className="btn btn-outline-secondary"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#dremovetask"
+                                        onClick={() => {
+                                          setDeletableId(task._id);
+                                        }}
+                                      >
+                                        <i className="icofont-ui-delete text-danger" />
+                                      </button>
                                     </div>
 
-                                    <p>{task.taskAssignPerson?.employeeName}</p>
-                                  </div>
-                                  <span className="badge bg-danger text-end mt-2">
-                                    {task.taskPriority}
-                                  </span>
-                                </div>
-                              </div>
-                              <p
-                                className="py-2 mb-0 task-description"
-                                style={{
-                                  maxHeight: showFullDescription
-                                    ? "none"
-                                    : "11em",
-                                  overflowY: "auto",
-                                }}
-                              >
-                                {task?.description}
-                              </p>
-                              <div className="tikit-info row g-3 align-items-center">
-                                <div className="col-sm ">
-                                  <ul className="d-flex list-unstyled align-items-center justify-content-between mt-1 mb-1">
-                                    <li className="me-2">
-                                      <div className="d-flex align-items-center fw-bold">
-                                        Start:
-                                        <span className="ms-1">
-                                          {getFormattedDate(task.taskStartDate)}
-                                        </span>
-                                      </div>
-                                    </li>
-                                    <li className="me-2">
-                                      <div className="d-flex align-items-center fw-bold">
-                                        End:
-                                        <span className="ms-1">
-                                          {getFormattedDate(task.taskEndDate)}
-                                        </span>
-                                      </div>
-                                    </li>
-                                  </ul>
-                                </div>
-                                <div className="d-flex justify-content-between align-items-center">
-                                  <div
-                                    className="btn-group"
-                                    role="group"
-                                    aria-label="Basic outlined example"
-                                  >
-                                    <button
-                                      type="button"
-                                      className="btn btn-outline-secondary"
-                                      data-bs-toggle="modal"
-                                      data-bs-target="#editemp"
-                                      onClick={() => setToEdit(task._id)}
+                                    <div
+                                      className="btn-group"
+                                      role="group"
+                                      aria-label="Basic outlined example"
                                     >
-                                      <i className="icofont-edit text-success" />
-                                    </button>
-                                    <button
-                                      type="button"
-                                      className="btn btn-outline-secondary"
-                                      data-bs-toggle="modal"
-                                      data-bs-target="#dremovetask"
-                                      onClick={() => {
-                                        setDeletableId(task._id);
-                                      }}
-                                    >
-                                      <i className="icofont-ui-delete text-danger" />
-                                    </button>
-                                  </div>
-
-                                  <div
-                                    className="btn-group"
-                                    role="group"
-                                    aria-label="Basic outlined example"
-                                  >
-                                    {/* <button
+                                      {/* <button
                                       type="button"
                                       className="btn btn-outline-secondary"
                                       data-bs-toggle="modal"
@@ -577,19 +581,19 @@ const Tasks = () => {
                                     >
                                       <i className="bi bi-chat-left-text-fill text-primary" />
                                     </button> */}
-                                    <Link
-                                      to="/images"
-                                      className="btn btn-outline-secondary"
-                                      state={{
-                                        images: task.taskImages,
-                                        projectName: task.projectName,
-                                      }}
-                                    >
-                                      <i className="bi-paperclip fs-6" />
-                                    </Link>
-                                  </div>
+                                      <Link
+                                        to="/images"
+                                        className="btn btn-outline-secondary"
+                                        state={{
+                                          images: task.taskImages,
+                                          projectName: task.projectName,
+                                        }}
+                                      >
+                                        <i className="bi-paperclip fs-6" />
+                                      </Link>
+                                    </div>
 
-                                  {/* <Link
+                                    {/* <Link
                                     to="/images"
                                     state={{
                                       images: task.taskImages,
@@ -598,16 +602,16 @@ const Tasks = () => {
                                   >
                                     <i className="bi-paperclip fs-6" />
                                   </Link> */}
+                                  </div>
                                 </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      </>
-                    );
-                  })}
-                </div>
-                 )}
+                        </>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </div>
             <>
