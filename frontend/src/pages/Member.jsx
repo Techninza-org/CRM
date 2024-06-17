@@ -95,6 +95,10 @@ const Member = () => {
           color: "white",
         },
       });
+        // Reload the page after 5 seconds
+        setTimeout(() => {
+          window.location.reload();
+        }, 5000);
       // Handle successful response
 
     } catch (error) {
@@ -160,6 +164,10 @@ const Member = () => {
           color: "white",
         },
       });
+        // Reload the page after 5 seconds
+        setTimeout(() => {
+          window.location.reload();
+        }, 5000);
     } catch (error) {
       console.error("Error:", error);
     }
@@ -287,9 +295,10 @@ const Member = () => {
           color: "white",
         },
       });
-      setTimeout(() => {
-        window.location.reload();
-      }, 2000);
+        // Reload the page after 5 seconds
+        setTimeout(() => {
+          window.location.reload();
+        }, 5000);
       
     } catch (error) {
       console.error("Error:", error);

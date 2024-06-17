@@ -72,6 +72,10 @@ const Client = () => {
                     color: "white",
                 },
             });
+            // Reload the page after 5 seconds
+            setTimeout(() => {
+                window.location.reload();
+            }, 5000);
 
             console.log('Client created:', response.data);
             // Optionally, you can redirect the user to another page or show a success message
@@ -211,6 +215,10 @@ const Client = () => {
                     color: "white",
                 },
             });
+            // Reload the page after 5 seconds
+            setTimeout(() => {
+                window.location.reload();
+            }, 5000);
         } catch (error) {
             console.error('Error deleting client:', error);
         }

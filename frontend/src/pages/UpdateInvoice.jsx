@@ -136,6 +136,10 @@ const UpdateInvoice = () => {
       } else {
         setError('Failed to update invoice');
       }
+        // Reload the page after 5 seconds
+        setTimeout(() => {
+          window.location.reload();
+        }, 5000);
     } catch (err) {
       console.error("Update Invoice Error:", err);
       setError('Failed to update invoice');

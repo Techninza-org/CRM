@@ -93,6 +93,10 @@ const Tasks = () => {
           color: "white",
         },
       });
+      // Reload the page after 5 seconds
+      setTimeout(() => {
+        window.location.reload();
+      }, 5000);
     } catch (error) {
       console.error("Error:", error);
     }
@@ -145,7 +149,7 @@ const Tasks = () => {
       setTimeout(() => {
         window.location.reload();
       }, 5000);
-      
+
     } catch (error) {
       console.error("Error:", error);
     }
@@ -322,6 +326,10 @@ const Tasks = () => {
           color: "white",
         },
       });
+      // Reload the page after 5 seconds
+      setTimeout(() => {
+        window.location.reload();
+      }, 5000);
     } catch (error) {
       console.error("Error:", error);
     }

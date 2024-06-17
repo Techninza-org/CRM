@@ -116,7 +116,11 @@ const CreateInvoice = () => {
           color: "white",
         },
       });
-  
+    // Reload the page after 5 seconds
+    setTimeout(() => {
+      window.location.reload();
+    }, 5000);
+    
     } catch (error) {
       if (error.response) {
         console.error('Server Error:', error.response.data);
