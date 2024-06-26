@@ -22,7 +22,7 @@ const Tasks = () => {
     taskEndDate: "",
     taskAssignPerson: "",
     taskPriority: "",
-    description: "",
+    task: [{}],
   });
 
   const handleChange = (e) => {
@@ -364,6 +364,8 @@ const Tasks = () => {
   // console.log(assignEmployee, 23423);
 
   const [showFullDescription, setShowFullDescription] = useState("");
+  const [currProj, setCurrProj] = useState({});
+
 
   // //CHAT Task
   // const [chatMessages, setChatMessages] = useState([]);
@@ -478,7 +480,11 @@ const Tasks = () => {
 
                       return (
                         <>
-                          <div className="col-md-4 mb-4" key={task._id}>
+                          <div className="col-md-4 mb-4"
+                            data-bs-toggle="modal"
+                            data-bs-target="#viewtask"
+                            onClick={() => setCurrProj(task)}
+                            key={task._id} >
                             <div className="card" style={{ width: "18rem" }}>
                               <div className="card-body dd-handle">
                                 <div className="d-flex justify-content-between">
@@ -812,6 +818,60 @@ const Tasks = () => {
                         onClick={handleSubmit}
                       >
                         Create
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                className="modal fade"
+                id="viewtask"
+                tabIndex={-1}
+                aria-hidden="true"
+              >
+                <div className="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+                  <div className="modal-content">
+                    <div className="modal-header">
+                      <h5
+                        className="modal-title  fw-bold"
+                        id="createprojectlLabel"
+                      >
+                        {currProj.projectName} - View Task 
+                      </h5>
+                      <button
+                        type="button"
+                        className="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                      />
+                    </div>
+                    <div className="modal-body">
+                      <table className="table table-bordered">
+                        <thead>
+                          <tr>
+                            <th scope="col">Task</th>
+                            <th scope="col">Project</th>
+                            <th scope="col">Task Visibility</th>
+                            <th scope="col">Coll</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <th scope="row">1</th>
+                            <td><input className="w-100" type="text" value={currProj?.description} style={{outline: "none", border: "none", textWrap: "wrap"}}/></td>
+                            <td>{currProj.taskAssignPerson?.employeeName}, Admin</td>
+                            <td>{currProj.taskAssignPerson?.employeeName}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div className="modal-footer">
+                      <button
+                        type="button"
+                        className="btn btn-primary"
+                        onClick={()=>{}}
+                      >
+                        Update
                       </button>
                     </div>
                   </div>
