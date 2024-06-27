@@ -11,6 +11,8 @@ import "./Loading.css";
 const Project = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currProj, setCurrProj] = useState({});
+
 
   // CREATE PROJECT
   const [formData, setFormData] = useState({
@@ -447,9 +449,8 @@ const Project = () => {
                         >
                           <li className="nav-item">
                             <a
-                              className={`nav-link ${
-                                activeTab === "All" ? "active" : ""
-                              }`}
+                              className={`nav-link ${activeTab === "All" ? "active" : ""
+                                }`}
                               onClick={() => setActiveTab("All")}
                               data-bs-toggle="tab"
                               href="#All-list"
@@ -460,9 +461,8 @@ const Project = () => {
                           </li>
                           <li className="nav-item">
                             <a
-                              className={`nav-link ${
-                                activeTab === "In Progress" ? "active" : ""
-                              }`}
+                              className={`nav-link ${activeTab === "In Progress" ? "active" : ""
+                                }`}
                               onClick={() => setActiveTab("In Progress")}
                               data-bs-toggle="tab"
                               href="#Started-list"
@@ -473,9 +473,8 @@ const Project = () => {
                           </li>
                           <li className="nav-item">
                             <a
-                              className={`nav-link ${
-                                activeTab === "Completed" ? "active" : ""
-                              }`}
+                              className={`nav-link ${activeTab === "Completed" ? "active" : ""
+                                }`}
                               onClick={() => setActiveTab("Completed")}
                               data-bs-toggle="tab"
                               href="#Completed-list"
@@ -586,7 +585,11 @@ const Project = () => {
                                 };
 
                                 return (
-                                  <tr key={project.id}>
+                                  <tr key={project.id}
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#viewtask"
+                                    onClick={() => setCurrProj(project)}
+                                  >
                                     <td>
                                       <div className="">
                                         <Link to="/tasks">
@@ -1219,6 +1222,67 @@ const Project = () => {
                 </div>
               </div>
             </div>
+
+            {/* vitew task Modal */}
+            <div
+              className="modal fade"
+              id="viewtask"
+              tabIndex={-1}
+              aria-hidden="true"
+            >
+              <div className="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+                <div className="modal-content">
+                  <div className="modal-header">
+                    <h5
+                      className="modal-title  fw-bold"
+                      id="createprojectlLabel"
+                    >
+                      {currProj.projectName} - View Task 
+                    </h5>
+                    <button
+                      type="button"
+                      className="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                    />
+                  </div>
+                  <div className="modal-body">
+                    <table className="table table-bordered">
+                      <thead>
+                        <tr>
+                          <th scope="col">Task name</th>
+                          <th scope="col">Assignee</th>
+                          <th scope="col">Due Date</th>
+                          <th scope="col">Priority</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td><input className="w-100" type="text"
+                            // value={currProj?.description} 
+                            style={{ outline: "none", border: "none", textWrap: "wrap" }} />fffffffffff   </td>
+                          {/* <td>{currProj.taskAssignPerson?.employeeName}, Admin</td>
+                            <td>{currProj.taskAssignPerson?.employeeName}</td> */}
+                            <td>ddd</td>
+                            <td> www </td>
+                            <td> ss </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className="modal-footer">
+                    <button
+                      type="button"
+                      className="btn btn-primary"
+                    // onClick={()=>{}}
+                    >
+                      Update
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </>
         </div>
         <ToastContainer />

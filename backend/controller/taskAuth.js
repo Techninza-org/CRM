@@ -14,7 +14,7 @@ exports.createTask = async (req, res) => {
 
     // Removing 'uploads\' from paths
     const newPaths = paths?.map(path => path.replace('uploads\\', ""));
-    
+
     // Filtering task assigners to remove empty strings
     const taskAssigner = req.body.taskAssignPerson?.filter(task => task !== "");
 

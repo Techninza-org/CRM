@@ -7,21 +7,21 @@ const taskSchema = new Schema({
         type: String,
         required: true
     },
-    taskCategory: {
-        type: String,
-        required: true
-    },
+    // taskCategory: {
+    //     type: String,
+    //     // required: true
+    // },
     taskImages: [{
         type: String,
         // required: true
     }],
-    taskStartDate: {
-        type: Date,
-        required: true
-    },
+    // taskStartDate: {
+    //     type: Date,
+    //     // required: true
+    // },
     taskEndDate: {
         type: Date,
-        required: true
+        // required: true
     },
     taskAssignPerson: {
         type: Schema.Types.ObjectId,
@@ -29,7 +29,7 @@ const taskSchema = new Schema({
     },
     taskPriority: {
         type: String,
-        required: true
+        // required: true
     },
     isCompleted: {
         type: Boolean,

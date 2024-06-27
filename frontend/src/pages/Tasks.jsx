@@ -16,13 +16,10 @@ const Tasks = () => {
   //CREATE TASK
   const [formData, setFormData] = useState({
     projectName: "",
-    taskCategory: "",
-    taskImages: null,
-    taskStartDate: "",
     taskEndDate: "",
     taskAssignPerson: "",
     taskPriority: "",
-    description: "",
+    task: [{}],
   });
 
   const handleChange = (e) => {
@@ -31,15 +28,6 @@ const Tasks = () => {
       ...prevState,
       [name]: files ? files[0] : value,
     }));
-  };
-
-  const handleFileChange = (e) => {
-    // console.log(e.target.files);
-    setFormData({
-      ...formData,
-      taskImages: e.target.files,
-      // taskImages: e.target.files[0],
-    });
   };
 
   const handleSubmit = async (e) => {
@@ -73,9 +61,9 @@ const Tasks = () => {
       // Clear the form data after successful submission
       setFormData({
         projectName: "",
-        taskCategory: "",
+        // taskCategory: "",
         taskImages: null,
-        taskStartDate: "",
+        // taskStartDate: "",
         taskEndDate: "",
         taskAssignPerson: "",
         taskPriority: "",
@@ -120,81 +108,7 @@ const Tasks = () => {
     fetchTasks();
   }, []);
 
-  //DELETE TASK
-  const [deletableId, setDeletableId] = useState("");
-  const handleDeleteProject = async () => {
-    try {
-      const response = await axios.delete(
-        `${import.meta.env.VITE_BASE_URL}api/tasks/${deletableId}`
-      );
-
-      // Filter out the deleted task
-      const remainingTasks = tasks.filter((task) => task._id !== deletableId);
-      setTasks(remainingTasks);
-
-      // Hide the modal
-      const modalElement = document.getElementById("dremovetask");
-      const modal = window.bootstrap.Modal.getInstance(modalElement);
-      modal.hide();
-
-      // Display toast notification
-      toast.error("Task Deleted Successfully!", {
-        style: {
-          backgroundColor: "#4c3575",
-          color: "white",
-        },
-      });
-
-      // Reload the page after 5 seconds
-      setTimeout(() => {
-        window.location.reload();
-      }, 5000);
-
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
-  // GET SINGLE TASK
-  const [searchQuery, setSearchQuery] = useState("");
-  const handleSearch = async (searchQuery) => {
-    if (searchQuery !== "") {
-      try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}api/pros/search?id=${searchQuery}`
-        );
-        setTasks(response.data);
-      } catch (error) {
-        console.error("Error:", error);
-        setTasks(null);
-      }
-    } else {
-      const fetchData = async () => {
-        try {
-          const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/tasks`);
-          setTasks(response.data);
-        } catch (error) {
-          console.error("Error:", error);
-        }
-      };
-
-      fetchData();
-    }
-  };
-
-  const [employees, setEmployees] = useState([]);
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/employees`);
-        setEmployees(response.data);
-        // console.log(response.data);
-      } catch (error) {
-        console.error("Error:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
+ 
 
   const [selectedEmployees, setSelectedEmployees] = useState([]);
   // console.log(selectedEmployees);
@@ -202,9 +116,6 @@ const Tasks = () => {
   //UPDATE PROJECT
   const [taskFormData, setTaskFormData] = useState({
     projectName: "",
-    taskCategory: "",
-    taskImages: null,
-    taskStartDate: "",
     taskEndDate: "",
     taskAssignPerson: "",
     taskPriority: "",
@@ -237,9 +148,9 @@ const Tasks = () => {
         // console.log(fStartDate);
         setTaskFormData({
           projectName: data.projectName,
-          taskCategory: data.taskCategory,
+          // taskCategory: data.taskCategory,
           taskImages: data.taskImages, // Assuming this is a URL or a reference to the image
-          taskStartDate: fStartDate,
+          // taskStartDate: fStartDate,
           taskEndDate: fEndDate,
           taskAssignPerson: data.taskAssignPerson,
           description: data.description,
@@ -335,6 +246,85 @@ const Tasks = () => {
     }
   };
 
+
+
+   //DELETE TASK
+   const [deletableId, setDeletableId] = useState("");
+   const handleDeleteProject = async () => {
+     try {
+       const response = await axios.delete(
+         `${import.meta.env.VITE_BASE_URL}api/tasks/${deletableId}`
+       );
+ 
+       // Filter out the deleted task
+       const remainingTasks = tasks.filter((task) => task._id !== deletableId);
+       setTasks(remainingTasks);
+ 
+       // Hide the modal
+       const modalElement = document.getElementById("dremovetask");
+       const modal = window.bootstrap.Modal.getInstance(modalElement);
+       modal.hide();
+ 
+       // Display toast notification
+       toast.error("Task Deleted Successfully!", {
+         style: {
+           backgroundColor: "#4c3575",
+           color: "white",
+         },
+       });
+ 
+       // Reload the page after 5 seconds
+       setTimeout(() => {
+         window.location.reload();
+       }, 5000);
+ 
+     } catch (error) {
+       console.error("Error:", error);
+     }
+   };
+   // GET SINGLE TASK
+   const [searchQuery, setSearchQuery] = useState("");
+   const handleSearch = async (searchQuery) => {
+     if (searchQuery !== "") {
+       try {
+         const response = await axios.get(
+           `${import.meta.env.VITE_BASE_URL}api/pros/search?id=${searchQuery}`
+         );
+         setTasks(response.data);
+       } catch (error) {
+         console.error("Error:", error);
+         setTasks(null);
+       }
+     } else {
+       const fetchData = async () => {
+         try {
+           const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/tasks`);
+           setTasks(response.data);
+         } catch (error) {
+           console.error("Error:", error);
+         }
+       };
+ 
+       fetchData();
+     }
+   };
+ 
+   const [employees, setEmployees] = useState([]);
+   useEffect(() => {
+     const fetchData = async () => {
+       try {
+         const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/employees`);
+         setEmployees(response.data);
+         // console.log(response.data);
+       } catch (error) {
+         console.error("Error:", error);
+       }
+     };
+ 
+     fetchData();
+   }, []);
+
+
   // GET ALL PROJECTS IN INPUT
   const [projects, setProjects] = useState([]);
   useEffect(() => {
@@ -364,6 +354,8 @@ const Tasks = () => {
   // console.log(assignEmployee, 23423);
 
   const [showFullDescription, setShowFullDescription] = useState("");
+  const [currProj, setCurrProj] = useState({});
+
 
   // //CHAT Task
   // const [chatMessages, setChatMessages] = useState([]);
@@ -462,10 +454,91 @@ const Tasks = () => {
                   </div>
                 </div>{" "}
                 {/* Row end  */}
-                {loading ? (
+
+                <div className="modal-body">
+                  
+                    <table className="table table-bordered">
+                      <thead>
+                        <tr>
+                          <th scope="col" style={{width:"7.5rem"}}>Project name</th>
+                          <th scope="col">Task name</th>
+                          <th scope="col"style={{width:"8rem"}}>Assignee</th>
+                          <th scope="col"style={{width:"5rem"}}>Task End Date</th>
+                          <th scope="col"style={{width:"8.5rem"}}>Priority</th>
+                          <th scope="col"style={{width:"6rem"}}></th>
+                        </tr>
+                      </thead>
+                      {loading ? (
+                  
                   <div className="custom-loader "></div>
                 ) : (
-                  <div className="row">
+                      <tbody>
+                      {tasks.map((task) => {
+                      const getFormattedDate = (date) => {
+                        const newDate = new Date(date);
+                        const day = newDate.getDate();
+                        const month = newDate.getMonth() + 1;
+                        const year = newDate.getFullYear();
+
+                        return `${day}-${month}-${year}`;
+                      };
+
+                      return (
+                        <>
+                        <tr key={task._id} >
+                          <td>{task?.projectName}</td>
+                          <td>
+                            <input className="w-100" type="text"
+                            value={task?.description} 
+                            onChange={handleChange}
+                            style={{ outline: "none", border: "none", textWrap: "wrap" }} />
+                            </td>
+
+                            <td> 
+
+                            <MultiSelect
+                              options={assignEmployee}
+                              value={selectedEmployees}
+                              onChange={setSelectedEmployees}
+                              labelledBy="Select Employees"
+                            />
+                            </td>
+
+                            <td><input type="date" value={getFormattedDate(task.taskEndDate)} onChange={handleChange}/> </td>
+                           
+                            <td>
+                               <select
+                            className="form-select"
+                            aria-label="Default select Priority"
+                            name="taskPriority"
+                            value={task.taskPriority}
+                            onChange={handleChange}
+                          >
+                            <option placeholder="set priority">
+                              Set Priority
+                            </option>
+                            <option value={"Heighest"}>Highest</option>
+                            <option value={"Medium"}>Medium</option>
+                            <option value={"Lowest"}>Lowest</option>
+                          </select> 
+                          </td>
+
+                            <td style={{display:'flex', justifyContent:'center', gap:'2vh'}}> <button onClick={taskHandleSubmit} className="bi bi-check2 bg-primary text-white border-0 rounded"></button> <button data-bs-toggle="modal" data-bs-target="#dremovetask"onClick={() => {setDeletableId(task._id);}} className="bi bi-trash bg-danger text-white border-0 rounded"></button></td>
+                        </tr>
+                          
+                        </>
+                        
+                      );
+                    })}
+                      </tbody>
+                      )}
+                    </table>
+                  </div>
+                
+
+
+                  
+                  {/* <div className="row">
                     {tasks.map((task) => {
                       const getFormattedDate = (date) => {
                         const newDate = new Date(date);
@@ -478,7 +551,11 @@ const Tasks = () => {
 
                       return (
                         <>
-                          <div className="col-md-4 mb-4" key={task._id}>
+                          <div className="col-md-4 mb-4"
+                            data-bs-toggle="modal"
+                            data-bs-target="#viewtask"
+                            onClick={() => setCurrProj(task)}
+                            key={task._id} >
                             <div className="card" style={{ width: "18rem" }}>
                               <div className="card-body dd-handle">
                                 <div className="d-flex justify-content-between">
@@ -578,17 +655,7 @@ const Tasks = () => {
                                       role="group"
                                       aria-label="Basic outlined example"
                                     >
-                                      {/* <button
-                                      type="button"
-                                      className="btn btn-outline-secondary"
-                                      data-bs-toggle="modal"
-                                      data-bs-target="#chatUser"
-                                      onClick={() =>
-                                        handleChatModalOpen(task._id)
-                                      }
-                                    >
-                                      <i className="bi bi-chat-left-text-fill text-primary" />
-                                    </button> */}
+                                      
                                       <Link
                                         to="/images"
                                         className="btn btn-outline-secondary"
@@ -601,25 +668,24 @@ const Tasks = () => {
                                       </Link>
                                     </div>
 
-                                    {/* <Link
-                                    to="/images"
-                                    state={{
-                                      images: task.taskImages,
-                                      projectName: task.projectName,
-                                    }}
-                                  >
-                                    <i className="bi-paperclip fs-6" />
-                                  </Link> */}
+                                    
                                   </div>
                                 </div>
                               </div>
                             </div>
+
+
+                            
                           </div>
+
+
+                          
                         </>
+                        
                       );
                     })}
-                  </div>
-                )}
+                  </div> */}
+                
               </div>
             </div>
             <>
@@ -669,7 +735,7 @@ const Tasks = () => {
                           ))}
                         </select>
                       </div>
-                      <div className="mb-3">
+                      {/* <div className="mb-3">
                         <label className="form-label">Task Category</label>
                         <select
                           className="form-select"
@@ -691,8 +757,8 @@ const Tasks = () => {
                             Digital Marketing
                           </option>
                         </select>
-                      </div>
-                      <div className="mb-3">
+                      </div> */}
+                      {/* <div className="mb-3">
                         <label
                           htmlFor="formFileMultipleone"
                           className="form-label"
@@ -707,11 +773,11 @@ const Tasks = () => {
                           name="taskImages"
                           onChange={handleFileChange}
                         />
-                      </div>
+                      </div> */}
                       <div className="deadline-form mb-3">
                         <form>
                           <div className="row">
-                            <div className="col">
+                            {/* <div className="col">
                               <label
                                 htmlFor="datepickerded"
                                 className="form-label"
@@ -726,7 +792,7 @@ const Tasks = () => {
                                 value={formData.taskStartDate}
                                 onChange={handleChange}
                               />
-                            </div>
+                            </div> */}
                             <div className="col">
                               <label
                                 htmlFor="datepickerdedone"
@@ -785,7 +851,7 @@ const Tasks = () => {
                           htmlFor="exampleFormControlTextarea786"
                           className="form-label"
                         >
-                          Description (optional)
+                          Task Name
                         </label>
                         <textarea
                           className="form-control"
@@ -812,6 +878,61 @@ const Tasks = () => {
                         onClick={handleSubmit}
                       >
                         Create
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                className="modal fade"
+                id="viewtask"
+                tabIndex={-1}
+                aria-hidden="true"
+              >
+                <div className="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+                  <div className="modal-content">
+                    <div className="modal-header">
+                      <h5
+                        className="modal-title  fw-bold"
+                        id="createprojectlLabel"
+                      >
+                        {currProj.projectName} - View Task 
+                      </h5>
+                      <button
+                        type="button"
+                        className="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                      />
+                    </div>
+                    <div className="modal-body">
+                      <table className="table table-bordered">
+                        <thead>
+                          <tr>
+                            <th scope="col">Task</th>
+                            <th scope="col">Project</th>
+                            <th scope="col">Task Visibility</th>
+                            <th scope="col">Coll</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <th scope="row">1</th>
+                            <td><input className="w-100" type="text" value={currProj?.description} style={{outline: "none", border: "none", textWrap: "wrap"}}/></td>
+                            <td>{currProj.taskAssignPerson?.employeeName}, Admin</td>
+                            <td>{currProj.taskAssignPerson?.employeeName}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div className="modal-footer">
+                      <button
+                        type="button"
+                        className="btn btn-primary"
+                        onClick={()=>{}}
+                      >
+                        Update
                       </button>
                     </div>
                   </div>
