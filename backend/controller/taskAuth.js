@@ -1,6 +1,5 @@
 const express = require('express');
 const nodemailer = require('nodemailer');
-// import Project from './../../frontend/src/pages/Project';
 const Project = require('../model/projectModel');
 const Task = require('../model/taskModel');
 const jwt = require('jsonwebtoken');
@@ -70,6 +69,7 @@ exports.createTask = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 // Get all tasks
 exports.getAllTasks = async (req, res) => {
   try {
@@ -167,14 +167,13 @@ exports.getTask = async (req, res) => {
   }
 }
 
-// Update task status to "done"
+// Update task status
 exports.updateTaskStatus = async (req, res) => {
-  const body = req.body;
-  const { isCompleted } = body;
+  const { isCompleted, taskStatus } = req.body;
   try {
     const updatedTask = await Task.findByIdAndUpdate(
       req.params.id,
-      { isCompleted },
+      { isCompleted, taskStatus },
       { new: true }
     );
     if (!updatedTask) {

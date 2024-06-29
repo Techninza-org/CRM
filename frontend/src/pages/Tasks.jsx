@@ -90,14 +90,34 @@ const Tasks = () => {
     }
   };
 
-  //GET TASK
+
+
+  const [selectedEmployees, setSelectedEmployees] = useState([]);
+  const [taskFormData, setTaskFormData] = useState({
+    projectName: "",
+    taskEndDate: "",
+    taskAssignPerson: "",
+    taskPriority: "",
+    description: "",
+  });
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toISOString().split('T')[0]; // Formats date to 'YYYY-MM-DD'
+  };
+
+  // Fetch tasks
   useEffect(() => {
     const fetchTasks = async () => {
       setLoading(true);
       try {
         const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/tasks`);
-        setTasks(response.data);
-        // console.log(response.data);
+        const formattedTasks = response.data.map(task => ({
+          ...task,
+          taskEndDate: formatDate(task.taskEndDate),
+        }));
+        setTasks(formattedTasks);
+        console.log(response.data);
       } catch (error) {
         console.error("Error:", error);
       } finally {
@@ -108,95 +128,41 @@ const Tasks = () => {
     fetchTasks();
   }, []);
 
- 
+  const [taskStatuses, setTaskStatuses] = useState({});
 
-  const [selectedEmployees, setSelectedEmployees] = useState([]);
-  // console.log(selectedEmployees);
-
-  //UPDATE PROJECT
-  const [taskFormData, setTaskFormData] = useState({
-    projectName: "",
-    taskEndDate: "",
-    taskAssignPerson: "",
-    taskPriority: "",
-    description: "",
-  });
-  const [toEdit, setToEdit] = useState("");
-  // console.log(projectFormData);
   useEffect(() => {
-    // Assuming fetchData() fetches the data of the item to edit based on its ID
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}api/tasks/${toEdit}`
-        );
-        const { data } = response;
-        let formattedDate = "";
-        const fDate = (data) => {
-          const sd = new Date(data);
-          const sy = sd.getFullYear();
-          const sm =
-            sd.getMonth() + 1 < 10
-              ? "0" + (Number(sd.getMonth()) + 1)
-              : sd.getMonth();
-          const sdd = sd.getDate() < 10 ? "0" + sd.getDate() : sd.getDate();
-          formattedDate = `${sy}-${sm}-${sdd}`;
-          return formattedDate;
-        };
-        const fStartDate = fDate(data.taskStartDate);
-        const fEndDate = fDate(data.taskEndDate);
-        // console.log(fStartDate);
-        setTaskFormData({
-          projectName: data.projectName,
-          // taskCategory: data.taskCategory,
-          taskImages: data.taskImages, // Assuming this is a URL or a reference to the image
-          // taskStartDate: fStartDate,
-          taskEndDate: fEndDate,
-          taskAssignPerson: data.taskAssignPerson,
-          description: data.description,
-        });
+    // Initialize taskStatuses with existing task statuses
+    const statuses = {};
+    tasks.forEach(task => {
+      statuses[task._id] = task.taskStatus;
+    });
+    setTaskStatuses(statuses);
+  }, [tasks]);
 
-        // console.log();
-
-        // startDateEdit = formattedDate;
-
-        const selectedEmp = data.taskAssignPerson?.map((o) => {
-          return {
-            label: o.employeeName,
-            value: o._id,
-          };
-        });
-        setSelectedEmployees(selectedEmp);
-        // console.log(selectedEmp);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    if (toEdit) {
-      fetchData();
-    }
-  }, [toEdit]);
-  const taskHandleChange = (e) => {
+  const taskHandleChange = (e, taskId) => {
     const { name, value, files } = e.target;
-    // console.log(value);
-    setTaskFormData((prevState) => ({
-      ...prevState,
-      [name]: files ? files[0] : value,
-    }));
+    setTasks((prevState) =>
+      prevState.map((task) =>
+        task._id === taskId
+          ? { ...task, [name]: files ? files[0] : value }
+          : task
+      )
+    );
   };
-  const taskHandleSubmit = async (e) => {
-    e.preventDefault();
+
+  const taskHandleSubmit = async (taskId) => {
     try {
+      const taskToUpdate = tasks.find((task) => task._id === taskId);
       const formDataToSend = new FormData();
-      delete taskFormData?.taskAssignPerson;
-      for (const key in taskFormData) {
-        formDataToSend.append(key, taskFormData[key]);
+      delete taskToUpdate.taskAssignPerson;
+      for (const key in taskToUpdate) {
+        formDataToSend.append(key, taskToUpdate[key]);
       }
-      for (let obj of selectedEmployees) {
+      selectedEmployees.forEach((obj) => {
         formDataToSend.append("taskAssignPerson", obj.value);
-      }
+      });
       const response = await axios.put(
-        `${import.meta.env.VITE_BASE_URL}api/tasks/${toEdit}`, // Change to your update API endpoint
+        `${import.meta.env.VITE_BASE_URL}api/tasks/${taskId}`,
         formDataToSend,
         {
           headers: {
@@ -205,39 +171,16 @@ const Tasks = () => {
         }
       );
       const updatedTask = response.data;
-      const updatedTaskData = tasks.map((pro) => {
-        if (pro._id === toEdit) {
-          return {
-            ...pro,
-            projectName: updatedTask.projectName,
-            taskCategory: updatedTask.taskCategory,
-            taskImages: updatedTask.taskImages,
-            taskStartDate: updatedTask.taskStartDate,
-            taskEndDate: updatedTask.taskEndDate,
-            taskAssignPerson: updatedTask.taskAssignPerson,
-            taskPriority: updatedTask.taskPriority,
-            description: updatedTask.description,
-          };
-        } else {
-          return pro;
-        }
-      });
-
-      setTasks(updatedTaskData);
-
-      // Close the modal programmatically
-      const modalElement = document.getElementById("editemp");
-      const modal = window.bootstrap.Modal.getInstance(modalElement);
-      modal.hide();
-      // window.location.reload();
-
+      console.log(updatedTask);
+      setTasks((prevState) =>
+        prevState.map((task) => (task._id === taskId ? updatedTask : task))
+      );
       toast.success("Task Updated Successfully!", {
         style: {
           backgroundColor: "#4c3575",
           color: "white",
         },
       });
-      // Reload the page after 5 seconds
       setTimeout(() => {
         window.location.reload();
       }, 5000);
@@ -248,81 +191,81 @@ const Tasks = () => {
 
 
 
-   //DELETE TASK
-   const [deletableId, setDeletableId] = useState("");
-   const handleDeleteProject = async () => {
-     try {
-       const response = await axios.delete(
-         `${import.meta.env.VITE_BASE_URL}api/tasks/${deletableId}`
-       );
- 
-       // Filter out the deleted task
-       const remainingTasks = tasks.filter((task) => task._id !== deletableId);
-       setTasks(remainingTasks);
- 
-       // Hide the modal
-       const modalElement = document.getElementById("dremovetask");
-       const modal = window.bootstrap.Modal.getInstance(modalElement);
-       modal.hide();
- 
-       // Display toast notification
-       toast.error("Task Deleted Successfully!", {
-         style: {
-           backgroundColor: "#4c3575",
-           color: "white",
-         },
-       });
- 
-       // Reload the page after 5 seconds
-       setTimeout(() => {
-         window.location.reload();
-       }, 5000);
- 
-     } catch (error) {
-       console.error("Error:", error);
-     }
-   };
-   // GET SINGLE TASK
-   const [searchQuery, setSearchQuery] = useState("");
-   const handleSearch = async (searchQuery) => {
-     if (searchQuery !== "") {
-       try {
-         const response = await axios.get(
-           `${import.meta.env.VITE_BASE_URL}api/pros/search?id=${searchQuery}`
-         );
-         setTasks(response.data);
-       } catch (error) {
-         console.error("Error:", error);
-         setTasks(null);
-       }
-     } else {
-       const fetchData = async () => {
-         try {
-           const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/tasks`);
-           setTasks(response.data);
-         } catch (error) {
-           console.error("Error:", error);
-         }
-       };
- 
-       fetchData();
-     }
-   };
- 
-   const [employees, setEmployees] = useState([]);
-   useEffect(() => {
-     const fetchData = async () => {
-       try {
-         const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/employees`);
-         setEmployees(response.data);
-         // console.log(response.data);
-       } catch (error) {
-         console.error("Error:", error);
-       }
-     };
- 
-     fetchData();
-   }, []);
+  //DELETE TASK
+  const [deletableId, setDeletableId] = useState("");
+  const handleDeleteProject = async () => {
+    try {
+      const response = await axios.delete(
+        `${import.meta.env.VITE_BASE_URL}api/tasks/${deletableId}`
+      );
+
+      // Filter out the deleted task
+      const remainingTasks = tasks.filter((task) => task._id !== deletableId);
+      setTasks(remainingTasks);
+
+      // Hide the modal
+      const modalElement = document.getElementById("dremovetask");
+      const modal = window.bootstrap.Modal.getInstance(modalElement);
+      modal.hide();
+
+      // Display toast notification
+      toast.error("Task Deleted Successfully!", {
+        style: {
+          backgroundColor: "#4c3575",
+          color: "white",
+        },
+      });
+
+      // Reload the page after 5 seconds
+      setTimeout(() => {
+        window.location.reload();
+      }, 5000);
+
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+  // GET SINGLE TASK
+  const [searchQuery, setSearchQuery] = useState("");
+  const handleSearch = async (searchQuery) => {
+    if (searchQuery !== "") {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}api/pros/search?id=${searchQuery}`
+        );
+        setTasks(response.data);
+      } catch (error) {
+        console.error("Error:", error);
+        setTasks(null);
+      }
+    } else {
+      const fetchData = async () => {
+        try {
+          const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/tasks`);
+          setTasks(response.data);
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      };
+
+      fetchData();
+    }
+  };
+
+  const [employees, setEmployees] = useState([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/employees`);
+        setEmployees(response.data);
+        // console.log(response.data);
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
 
   // GET ALL PROJECTS IN INPUT
@@ -456,89 +399,102 @@ const Tasks = () => {
                 {/* Row end  */}
 
                 <div className="modal-body">
-                  
-                    <table className="table table-bordered">
-                      <thead>
-                        <tr>
-                          <th scope="col" style={{width:"7.5rem"}}>Project name</th>
-                          <th scope="col">Task name</th>
-                          <th scope="col"style={{width:"8rem"}}>Assignee</th>
-                          <th scope="col"style={{width:"5rem"}}>Task End Date</th>
-                          <th scope="col"style={{width:"8.5rem"}}>Priority</th>
-                          <th scope="col"style={{width:"6rem"}}></th>
-                        </tr>
-                      </thead>
-                      {loading ? (
-                  
-                  <div className="custom-loader "></div>
-                ) : (
+                  <table className="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th scope="col" style={{ width: "7.5rem" }}>Project name</th>
+                        <th scope="col">Task name</th>
+                        <th scope="col" style={{ width: "8rem" }}>Assignee</th>
+                        <th scope="col" style={{ width: "" }}>Due Date</th>
+                        <th scope="col" style={{ width: "9rem" }}>Priority</th>
+                        <th scope="col" style={{ width: "" }}>U/D</th>
+                        <th scope="col" style={{ width: "" }}>Status</th>
+                      </tr>
+                    </thead>
+                    {loading ? (
+                      <div className="custom-loader"></div>
+                    ) : (
                       <tbody>
-                      {tasks.map((task) => {
-                      const getFormattedDate = (date) => {
-                        const newDate = new Date(date);
-                        const day = newDate.getDate();
-                        const month = newDate.getMonth() + 1;
-                        const year = newDate.getFullYear();
+                        {tasks.map((task) => {
 
-                        return `${day}-${month}-${year}`;
-                      };
-
-                      return (
-                        <>
-                        <tr key={task._id} >
-                          <td>{task?.projectName}</td>
-                          <td>
-                            <input className="w-100" type="text"
-                            value={task?.description} 
-                            onChange={handleChange}
-                            style={{ outline: "none", border: "none", textWrap: "wrap" }} />
-                            </td>
-
-                            <td> 
-
-                            <MultiSelect
-                              options={assignEmployee}
-                              value={selectedEmployees}
-                              onChange={setSelectedEmployees}
-                              labelledBy="Select Employees"
-                            />
-                            </td>
-
-                            <td><input type="date" value={getFormattedDate(task.taskEndDate)} onChange={handleChange}/> </td>
-                           
-                            <td>
-                               <select
-                            className="form-select"
-                            aria-label="Default select Priority"
-                            name="taskPriority"
-                            value={task.taskPriority}
-                            onChange={handleChange}
-                          >
-                            <option placeholder="set priority">
-                              Set Priority
-                            </option>
-                            <option value={"Heighest"}>Highest</option>
-                            <option value={"Medium"}>Medium</option>
-                            <option value={"Lowest"}>Lowest</option>
-                          </select> 
-                          </td>
-
-                            <td style={{display:'flex', justifyContent:'center', gap:'2vh'}}> <button onClick={taskHandleSubmit} className="bi bi-check2 bg-primary text-white border-0 rounded"></button> <button data-bs-toggle="modal" data-bs-target="#dremovetask"onClick={() => {setDeletableId(task._id);}} className="bi bi-trash bg-danger text-white border-0 rounded"></button></td>
-                        </tr>
-                          
-                        </>
-                        
-                      );
-                    })}
+                          return (
+                            <tr key={task._id}>
+                              <td>{task.projectName}</td>
+                              <td>
+                                <input
+                                  className="w-100 form-control"
+                                  type="text"
+                                  placeholder="Explain The Task What To Do & How To Do"
+                                  name="description"
+                                  value={task.description}
+                                  onChange={(e) => taskHandleChange(e, task._id)}
+                                  style={{ outline: "none", border: "none", textWrap: "wrap" }}
+                                />
+                              </td>
+                              <td>
+                                {/* <MultiSelect
+                                  options={assignEmployee}
+                                  value={selectedEmployees}
+                                  onChange={setSelectedEmployees}
+                                  labelledBy="Select Employees"
+                                /> */}{task.taskAssignPerson.employeeName}
+                              </td>
+                              <td>
+                                <input
+                                  type="date"
+                                  className="form-control"
+                                  name="taskEndDate"
+                                  value={task.taskEndDate}
+                                  onChange={(e) => taskHandleChange(e, task._id)}
+                                />
+                              </td>
+                              <td>
+                                <select
+                                  className="form-select"
+                                  aria-label="Default select Priority"
+                                  name="taskPriority"
+                                  value={task.taskPriority}
+                                  onChange={(e) => taskHandleChange(e, task._id)}
+                                >
+                                  <option value="">Set Priority</option>
+                                  <option value="Highest">Highest</option>
+                                  <option value="Medium">Medium</option>
+                                  <option value="Lowest">Lowest</option>
+                                </select>
+                              </td>
+                              <td style={{ display: 'flex', justifyContent: 'center', gap: '2vh' }}>
+                                <button
+                                  onClick={() => taskHandleSubmit(task._id)}
+                                  className="bi bi-check2 bg-primary text-white border-0 rounded"
+                                />
+                                <button
+                                  data-bs-toggle="modal"
+                                  data-bs-target="#dremovetask"
+                                  onClick={() => setDeletableId(task._id)}
+                                  className="bi bi-trash bg-danger text-white border-0 rounded"
+                                />
+                              </td>
+                              <td>{task.taskStatus === "Not Started" && (
+                                <span className="badge bg-warning text-dark">Not Started</span>
+                              )}
+                                {task.taskStatus === "In Progress" && (
+                                  <span className="badge bg-info text-dark">In Progress</span>
+                                )}
+                                {task.taskStatus === "Completed" && (
+                                  <span className="badge bg-success">Completed</span>
+                                )}</td>
+                            </tr>
+                          );
+                        })}
                       </tbody>
-                      )}
-                    </table>
-                  </div>
-                
+                    )}
+                  </table>
+                </div>
 
 
-                  
-                  {/* <div className="row">
+
+
+                {/* <div className="row">
                     {tasks.map((task) => {
                       const getFormattedDate = (date) => {
                         const newDate = new Date(date);
@@ -685,7 +641,7 @@ const Tasks = () => {
                       );
                     })}
                   </div> */}
-                
+
               </div>
             </div>
             <>
@@ -883,62 +839,6 @@ const Tasks = () => {
                   </div>
                 </div>
               </div>
-
-              <div
-                className="modal fade"
-                id="viewtask"
-                tabIndex={-1}
-                aria-hidden="true"
-              >
-                <div className="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
-                  <div className="modal-content">
-                    <div className="modal-header">
-                      <h5
-                        className="modal-title  fw-bold"
-                        id="createprojectlLabel"
-                      >
-                        {currProj.projectName} - View Task 
-                      </h5>
-                      <button
-                        type="button"
-                        className="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
-                      />
-                    </div>
-                    <div className="modal-body">
-                      <table className="table table-bordered">
-                        <thead>
-                          <tr>
-                            <th scope="col">Task</th>
-                            <th scope="col">Project</th>
-                            <th scope="col">Task Visibility</th>
-                            <th scope="col">Coll</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <th scope="row">1</th>
-                            <td><input className="w-100" type="text" value={currProj?.description} style={{outline: "none", border: "none", textWrap: "wrap"}}/></td>
-                            <td>{currProj.taskAssignPerson?.employeeName}, Admin</td>
-                            <td>{currProj.taskAssignPerson?.employeeName}</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                    <div className="modal-footer">
-                      <button
-                        type="button"
-                        className="btn btn-primary"
-                        onClick={()=>{}}
-                      >
-                        Update
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
               {/* Modal  Delete Task */}
               <div
                 className="modal fade"
@@ -1205,75 +1105,11 @@ const Tasks = () => {
                   </div>
                 </div>
               </div>
-
-              {/* Chat Modal */}
-              {/* <div
-                className="modal fade"
-                id="chatUser"
-                tabIndex={-1}
-                aria-labelledby="chatUserLabel"
-                aria-hidden="true"
-              >
-                <div className="modal-dialog modal-dialog-centered modal-lg">
-                  <div className="modal-content">
-                    <div className="modal-header">
-                      <h5
-                        className="modal-title fs-4 fw-bold"
-                        id="addUserLabel"
-                      >
-                        {tasks.projectName}
-                      </h5>
-                      <button
-                        type="button"
-                        className="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
-                      />
-                    </div>
-                    <div className="modal-body">
-                      <div className="members_list">
-                        <ul className="list-unstyled list-group list-group-custom list-group-flush mb-0">
-                          <li className="list-group-item py-3 text-center text-md-start">
-                            {chatMessages.map((msg, index) => (
-                              <div key={index} className="chat-message">
-                                <p>{msg.message}</p>
-                                <small className="text-muted">
-                                  {new Date(msg.createdAt).toLocaleString()}
-                                </small>
-                              </div>
-                            ))}
-                          </li>
-                        </ul>
-
-                        <div className="row g-3 mb-3">
-                        </div>
-                        <div className="d-flex" style={{ gap: "6px" }}>
-                          <textarea
-                            rows="1"
-                            cols=""
-                            type="text"
-                            className="form-control"
-                            value={newMessage}
-                            onChange={(e) => setNewMessage(e.target.value)}
-                          />
-                          <button
-                            type="submit"
-                            className="btn btn-dark"
-                            onClick={handleSendMessage}
-                          >
-                            Submit
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div> */}
             </>
           </>
         </div>
         <ToastContainer />
-      </div>
+      </div >
     </>
   );
 };

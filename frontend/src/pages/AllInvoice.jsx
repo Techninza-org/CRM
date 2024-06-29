@@ -41,6 +41,9 @@ const AllInvoice = () => {
             color: "white",
           },
         });
+        setTimeout(() => {
+          window.location.reload();
+        }, 5000);
       }
     } catch (error) {
       console.error('Error deleting invoice:', error);

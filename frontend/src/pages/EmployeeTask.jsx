@@ -111,39 +111,72 @@ const Tasks = () => {
     fetchTasks();
   }, []);
 
-  //done task
+  //Progress task
   // const [taskId, setTaskId] = useState("");
-  const handleTaskUpdate = async (id) => {
+  const [taskStatuses, setTaskStatuses] = useState({});
+
+  useEffect(() => {
+    // Initialize taskStatuses with existing task statuses
+    const statuses = {};
+    tasks.forEach(task => {
+      statuses[task._id] = task.taskStatus;
+    });
+    setTaskStatuses(statuses);
+  }, [tasks]);
+
+  const handleTaskUpdate = async (event, id) => {
+    const { value } = event.target;
+    let isCompleted = false;
+
+    // Determine the completion status based on the selected value
+    if (value === "Completed") {
+      isCompleted = true;
+    } else if (value === "Not Started" || value === "In Progress") {
+      isCompleted = false;
+    }
+
     try {
       const response = await axios.put(
         `${import.meta.env.VITE_BASE_URL}api/update/${id}`,
-        { isCompleted: true }
+        { taskStatus: value, isCompleted }
       );
+
       setTasks(
         tasks.map((task) =>
-          task._id === id ? { ...task, isCompleted: true } : task
+          task._id === id ? { ...task, taskStatus: value, isCompleted } : task
         )
       );
+
+      // Update task status in local state for refreshing purpose
+      setTaskStatuses({
+        ...taskStatuses,
+        [id]: value
+      });
     } catch (error) {
       setError(error.message);
     }
   };
-  const clearTask = async (id) => {
-    try {
-      const response = await axios.put(
-        `${import.meta.env.VITE_BASE_URL}api/update/${id}`,
-        { isCompleted: false }
-      );
-      setTasks(
-        tasks.map((task) =>
-          task._id === id ? { ...task, isCompleted: false } : task
-        )
-      );
-      // window.location.reload();
-    } catch (error) {
-      setError("Error clearing task");
-    }
-  };
+
+  // const clearTask = async (id) => {
+  //   try {
+  //     const response = await axios.put(
+  //       `${import.meta.env.VITE_BASE_URL}api/update/${id}`,
+  //       { isCompleted: false }
+  //     );
+  //     setTasks(
+  //       tasks.map((task) =>
+  //         task._id === id ? { ...task, isCompleted: false } : task
+  //       )
+  //     );
+  //     // Update task status in local state for refreshing purpose
+  //     setTaskStatuses({
+  //       ...taskStatuses,
+  //       [id]: "Not Started" // Assuming "Not Started" is default if cleared
+  //     });
+  //   } catch (error) {
+  //     setError("Error clearing task");
+  //   }
+  // };
 
   // //Task Chat
   // const [formData, setFormData] = useState({
@@ -267,22 +300,19 @@ const Tasks = () => {
                           <div className="card-body dd-handle">
                             <div className="d-flex justify-content-between">
                               <h5 className="fw-bold">{task.projectName}</h5>
-                              {task.isCompleted && (
-                                <i className="bi bi-check-circle-fill text-success h5" />
-                              )}
+                             
                             </div>
                             <div className="task-info d-flex align-items-center justify-content-between">
-                              <h6 className="light-success-bg py-1 px-2 rounded-1 d-inline-block fw-bold small-14 mb-0">
-                                {task.taskCategory}
+                              <h6 className="py-1 px-2 rounded-1 d-inline-block fw-bold small-14 mb-0">
+                              <span className={`badge ${taskStatuses[task._id] === "Not Started" ? "bg-warning text-dark" : taskStatuses[task._id] === "In Progress" ? "bg-info text-dark" : "bg-success"}`}>
+                                {taskStatuses[task._id]}
+                              </span>
                               </h6>
                               <div className="task-priority d-flex flex-column align-items-center justify-content-center">
                                 <div className="avatar-list avatar-list-stacked m-0">
                                   <img
                                     className="avatar rounded-circle small-avt"
-                                    src={
-                                      `${import.meta.env.VITE_BASE_URL}` +
-                                      task.taskAssignPerson.employeeImage
-                                    }
+                                    src={`${import.meta.env.VITE_BASE_URL}${task.taskAssignPerson.employeeImage}`}
                                     alt=""
                                   />
                                 </div>
@@ -295,9 +325,7 @@ const Tasks = () => {
                             <p
                               className="py-2 mb-0 task-description"
                               style={{
-                                maxHeight: showFullDescription
-                                  ? "none"
-                                  : "11em",
+                                maxHeight: showFullDescription ? "none" : "11em",
                                 overflowY: "auto",
                               }}
                             >
@@ -306,14 +334,6 @@ const Tasks = () => {
                             <div className="tikit-info row g-3 align-items-center">
                               <div className="col-sm">
                                 <ul className="d-flex list-unstyled align-items-center justify-content-between">
-                                  <li className="me-2">
-                                    <div className="d-flex align-items-center fw-bold">
-                                      Start:
-                                      <span className="ms-1">
-                                        {getFormattedDate(task.taskStartDate)}
-                                      </span>
-                                    </div>
-                                  </li>
                                   <li className="me-2">
                                     <div className="d-flex align-items-center fw-bold">
                                       End:
@@ -325,39 +345,20 @@ const Tasks = () => {
                                 </ul>
                               </div>
                               <div className="d-flex justify-content-between align-items-center">
-                                {task.isCompleted ? (
-                                  <div>
-                                    <button
-                                      type="button"
-                                      className="btn light-danger-bg text-end small text-truncate py-1 px-2 rounded-1 d-inline-block fw-bold small"
-                                      onClick={() => clearTask(task._id)}
-                                    >
-                                      Clear
-                                    </button>
-                                  </div>
-                                ) : (
-                                  <button
-                                    type="button"
-                                    className="btn bg-info text-end small text-truncate py-1 px-2 rounded-1 d-inline-block fw-bold small"
-                                    onClick={() => handleTaskUpdate(task._id)}
+                                
+                                  <select
+                                    className="form-select"
+                                    aria-label="Default select Status"
+                                    name="taskStatus"
+                                    onChange={(e) => handleTaskUpdate(e, task._id)}
+                                    value={taskStatuses[task._id]}
                                   >
-                                    Done
-                                  </button>
-                                )}
-
-                                <div
-                                  className="btn-group"
-                                  role="group"
-                                  aria-label="Basic outlined example"
-                                >
-                                  {/* <button
-                                    type="button"
-                                    className="btn btn-outline-secondary"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#chatUser"
-                                  >
-                                    <i className="bi bi-chat-left-text-fill text-primary" />
-                                  </button> */}
+                                    <option value="Not Started">Not Started</option>
+                                    <option value="In Progress">In Progress</option>
+                                    <option value="Completed">Completed</option>
+                                  </select>
+                                
+                                <div className="btn-group" role="group" aria-label="Basic outlined example">
                                   <Link
                                     to="/images"
                                     className="btn btn-outline-secondary"
@@ -369,18 +370,7 @@ const Tasks = () => {
                                     <i className="bi-paperclip fs-6" />
                                   </Link>
                                 </div>
-
-                                {/* <a
-                                  href={
-                                    "${import.meta.env.VITE_BASE_URL}" +
-                                    task.taskImages
-                                  }
-                                  target="_blank"
-                                >
-                                  <i className=" bi-paperclip fs-5" />
-                                </a> */}
                               </div>
-                              {/* <div></div> */}
                             </div>
                           </div>
                         </div>
@@ -388,6 +378,7 @@ const Tasks = () => {
                     );
                   })}
                 </div>
+
               </div>
 
               {/* Chat Modal */}
