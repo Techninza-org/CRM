@@ -54,7 +54,11 @@ exports.createTask = async (req, res) => {
         from: 'ravipoddar0712@gmail.com', // sender address
         to: email, // list of receivers
         subject: 'TechNinza CRM Task', // subject line
-        text: `You have been assigned a new task for the project: ${req.body.projectName}` // plain text body
+        text: `You have been assigned a new task for the project: ${req.body.projectName}
+              Please review the task details and start working on it at your earliest convenience. 
+              You can view and manage this task by logging into our project management tool http://103.119.171.173:8000/#/employee-tasks
+        
+        ` // plain text body
       };
 
       return transporter.sendMail(mailOptions);
