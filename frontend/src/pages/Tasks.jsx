@@ -106,7 +106,9 @@ const Tasks = () => {
     return date.toISOString().split('T')[0]; // Formats date to 'YYYY-MM-DD'
   };
 
-  // Fetch tasks
+  const [taskStatuses, setTaskStatuses] = useState({});
+  const [activeTab, setActiveTab] = useState('All'); // State for active tab filter
+
   useEffect(() => {
     const fetchTasks = async () => {
       setLoading(true);
@@ -127,8 +129,6 @@ const Tasks = () => {
 
     fetchTasks();
   }, []);
-
-  const [taskStatuses, setTaskStatuses] = useState({});
 
   useEffect(() => {
     // Initialize taskStatuses with existing task statuses
@@ -189,6 +189,17 @@ const Tasks = () => {
     }
   };
 
+
+  // Filter tasks based on activeTab state
+  const filteredTasks = tasks.filter(task => {
+    if (activeTab === 'All') {
+      return true; // Show all tasks
+    } else if (activeTab === 'Not Started') {
+      return task.taskStatus === 'Not Started'; // Filter tasks by Not Started status
+    } else {
+      return task.taskStatus === activeTab; // Filter tasks by other statuses
+    }
+  });
 
 
   //DELETE TASK
@@ -359,7 +370,7 @@ const Tasks = () => {
                           <i className="icofont-plus-circle me-2 fs-6" />
                           Create Task
                         </button>
-                        <div className="order-0">
+                        {/* <div className="order-0">
                           <div className="input-group">
                             <input
                               type="search"
@@ -391,7 +402,55 @@ const Tasks = () => {
                               <i className="fa fa-search" />
                             </button>
                           </div>
-                        </div>
+                        </div> */}
+
+                        <ul className="nav nav-tabs tab-body-header rounded ms-1 prtab-set w-sm-100" role="tablist">
+                          <li className="nav-item">
+                            <a
+                              className={`nav-link ${activeTab === 'All' ? 'active' : ''}`}
+                              onClick={() => setActiveTab('All')}
+                              data-bs-toggle="tab"
+                              href="#All-list"
+                              role="tab"
+                            >
+                              All
+                            </a>
+                          </li>
+                          <li className="nav-item">
+                            <a
+                              className={`nav-link ${activeTab === 'Not Started' ? 'active' : ''}`}
+                              onClick={() => setActiveTab('Not Started')}
+                              data-bs-toggle="tab"
+                              href="#NotStarted-list"
+                              role="tab"
+                            >
+                              Not Started
+                            </a>
+                          </li>
+                          <li className="nav-item">
+                            <a
+                              className={`nav-link ${activeTab === 'In Progress' ? 'active' : ''}`}
+                              onClick={() => setActiveTab('In Progress')}
+                              data-bs-toggle="tab"
+                              href="#Started-list"
+                              role="tab"
+                            >
+                              In Progress
+                            </a>
+                          </li>
+                          <li className="nav-item">
+                            <a
+                              className={`nav-link ${activeTab === 'Completed' ? 'active' : ''}`}
+                              onClick={() => setActiveTab('Completed')}
+                              data-bs-toggle="tab"
+                              href="#Completed-list"
+                              role="tab"
+                            >
+                              Completed
+                            </a>
+                          </li>
+                        </ul>
+
                       </div>
                     </div>
                   </div>
@@ -402,92 +461,88 @@ const Tasks = () => {
                   <table className="table table-bordered">
                     <thead>
                       <tr>
-                        <th scope="col" style={{ width: "7.5rem" }}>Project name</th>
+                        <th scope="col" style={{ width: '7.5rem' }}>Project name</th>
                         <th scope="col">Task name</th>
-                        <th scope="col" style={{ width: "8rem" }}>Assignee</th>
-                        <th scope="col" style={{ width: "" }}>Due Date</th>
-                        <th scope="col" style={{ width: "9rem" }}>Priority</th>
-                        <th scope="col" style={{ width: "" }}>U/D</th>
-                        <th scope="col" style={{ width: "" }}>Status</th>
+                        <th scope="col" style={{ width: '8rem' }}>Assignee</th>
+                        <th scope="col" style={{ width: '' }}>Due Date</th>
+                        <th scope="col" style={{ width: '9rem' }}>Priority</th>
+                        <th scope="col" style={{ width: '' }}>U/D</th>
+                        <th scope="col" style={{ width: '' }}>Status</th>
                       </tr>
                     </thead>
-                    {loading ? (
-                      <div className="custom-loader"></div>
-                    ) : (
-                      <tbody>
-                        {tasks.map((task) => {
-
-                          return (
-                            <tr key={task._id}>
-                              <td>{task.projectName}</td>
-                              <td>
-                                <input
-                                  className="w-100 form-control"
-                                  type="text"
-                                  placeholder="Explain The Task What To Do & How To Do"
-                                  name="description"
-                                  value={task.description}
-                                  onChange={(e) => taskHandleChange(e, task._id)}
-                                  style={{ outline: "none", border: "none", textWrap: "wrap" }}
-                                />
-                              </td>
-                              <td>
-                                {/* <MultiSelect
-                                  options={assignEmployee}
-                                  value={selectedEmployees}
-                                  onChange={setSelectedEmployees}
-                                  labelledBy="Select Employees"
-                                /> */}{task.taskAssignPerson.employeeName}
-                              </td>
-                              <td>
-                                <input
-                                  type="date"
-                                  className="form-control"
-                                  name="taskEndDate"
-                                  value={task.taskEndDate}
-                                  onChange={(e) => taskHandleChange(e, task._id)}
-                                />
-                              </td>
-                              <td>
-                                <select
-                                  className="form-select"
-                                  aria-label="Default select Priority"
-                                  name="taskPriority"
-                                  value={task.taskPriority}
-                                  onChange={(e) => taskHandleChange(e, task._id)}
-                                >
-                                  <option value="">Set Priority</option>
-                                  <option value="Highest">Highest</option>
-                                  <option value="Medium">Medium</option>
-                                  <option value="Lowest">Lowest</option>
-                                </select>
-                              </td>
-                              <td style={{ display: 'flex', justifyContent: 'center', gap: '2vh' }}>
-                                <button
-                                  onClick={() => taskHandleSubmit(task._id)}
-                                  className="bi bi-check2 bg-primary text-white border-0 rounded"
-                                />
-                                <button
-                                  data-bs-toggle="modal"
-                                  data-bs-target="#dremovetask"
-                                  onClick={() => setDeletableId(task._id)}
-                                  className="bi bi-trash bg-danger text-white border-0 rounded"
-                                />
-                              </td>
-                              <td>{task.taskStatus === "Not Started" && (
+                    <tbody>
+                      {loading ? (
+                        <div className="custom-loader"></div>
+                      ) : (
+                        filteredTasks.map((task) => (
+                          <tr key={task._id}>
+                            <td>{task.projectName}</td>
+                            <td>
+                              <input
+                                className="w-100 form-control"
+                                type="text"
+                                placeholder="Explain The Task What To Do & How To Do"
+                                name="description"
+                                value={task.description}
+                                onChange={(e) => taskHandleChange(e, task._id)}
+                                style={{ outline: 'none', border: 'none', textWrap: 'wrap' }}
+                              />
+                            </td>
+                            <td>{task.taskAssignPerson.employeeName}</td>
+                            <td>
+                              <input
+                                type="date"
+                                className="form-control"
+                                name="taskEndDate"
+                                value={task.taskEndDate}
+                                onChange={(e) => taskHandleChange(e, task._id)}
+                              />
+                            </td>
+                            <td>
+                              <select
+                                className="form-select"
+                                aria-label="Default select Priority"
+                                name="taskPriority"
+                                value={task.taskPriority}
+                                onChange={(e) => taskHandleChange(e, task._id)}
+                              >
+                                <option value="">Set Priority</option>
+                                <option value="Highest">Highest</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Lowest">Lowest</option>
+                              </select>
+                            </td>
+                            <td style={{ display: 'flex', justifyContent: 'center', gap: '2vh' }}>
+                              <button
+                                onClick={() => taskHandleSubmit(task._id)}
+                                className="bi bi-check2 bg-primary text-white border-0 rounded"
+                              >
+                                {/* Add icon or text for task completion */}
+                              </button>
+                              <button
+                                data-bs-toggle="modal"
+                                data-bs-target="#dremovetask"
+                                onClick={() => setDeletableId(task._id)}
+                                className="bi bi-trash bg-danger text-white border-0 rounded"
+                              >
+                                {/* Add icon or text for task deletion */}
+                              </button>
+                            </td>
+                            <td>
+                              {task.taskStatus === 'Not Started' && (
                                 <span className="badge bg-warning text-dark">Not Started</span>
                               )}
-                                {task.taskStatus === "In Progress" && (
-                                  <span className="badge bg-info text-dark">In Progress</span>
-                                )}
-                                {task.taskStatus === "Completed" && (
-                                  <span className="badge bg-success">Completed</span>
-                                )}</td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    )}
+                              {task.taskStatus === 'In Progress' && (
+                                <span className="badge bg-info text-dark">In Progress</span>
+                              )}
+                              {task.taskStatus === 'Completed' && (
+                                <span className="badge bg-success">Completed</span>
+                              )}
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
                   </table>
                 </div>
 
