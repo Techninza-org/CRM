@@ -3,9 +3,18 @@ const Schema = mongoose.Schema;
 
 
 const taskSchema = new Schema({
+
+    assignedBy: {
+        type: String,
+        required: true
+    },
     projectName: {
         type: String,
         required: true
+    },
+    taskDate: {
+        type: Date,
+        default: Date.now
     },
     // taskCategory: {
     //     type: String,
@@ -40,7 +49,7 @@ const taskSchema = new Schema({
         type: String,
         enum: ['Not Started', 'In Progress', 'Complete'],
         default: 'Not Started'
-      },
+    },
     description: {
         type: String,
     }

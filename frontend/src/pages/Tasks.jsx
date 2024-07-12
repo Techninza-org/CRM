@@ -14,37 +14,50 @@ const Tasks = () => {
   const [loading, setLoading] = useState(true);
 
   //CREATE TASK
+
+  const User = JSON.parse(localStorage.getItem('user'));
+
   const [formData, setFormData] = useState({
+    assignedBy: User.username || "",
     projectName: "",
     taskEndDate: "",
     taskAssignPerson: "",
     taskPriority: "",
-    task: [{}],
+    taskImages: null,
+    description: "",
   });
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     setFormData((prevState) => ({
       ...prevState,
-      [name]: files ? files[0] : value,
+      [name]: files ? files : value,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
       const formDataToSend = new FormData();
-      for (let i = 0; i < formData.taskImages?.length; i++) {
-        formDataToSend.append("taskImages", formData.taskImages[i]);
+
+      if (formData.taskImages) {
+        for (let i = 0; i < formData.taskImages.length; i++) {
+          formDataToSend.append("taskImages", formData.taskImages[i]);
+        }
       }
+
       for (let key in formData) {
-        formDataToSend.append(key, formData[key]);
+        if (key !== "taskImages") {
+          formDataToSend.append(key, formData[key]);
+        }
       }
-      // console.log(selectedEmployees);
-      for (let obj of selectedEmployees) {
-        // console.log(obj);
-        formDataToSend.append("taskAssignPerson", obj.value);
-      }
+
+      // Append multiple assignees if selected
+      selectedEmployees.forEach((employee) => {
+        formDataToSend.append("taskAssignPerson", employee.value);
+      });
+
       const response = await axios.post(
         `${import.meta.env.VITE_BASE_URL}api/tasks`,
         formDataToSend,
@@ -54,25 +67,24 @@ const Tasks = () => {
           },
         }
       );
-      // console.log(response.data);
-      // window.location.reload();
+
       const newTask = response.data;
       setTasks((prevTasks) => [newTask, ...prevTasks]);
+
       // Clear the form data after successful submission
       setFormData({
+        assignedBy: User.username || "",
         projectName: "",
-        // taskCategory: "",
-        taskImages: null,
-        // taskStartDate: "",
         taskEndDate: "",
         taskAssignPerson: "",
         taskPriority: "",
+        taskImages: null,
         description: "",
       });
 
       // Close the modal programmatically
       const modalElement = document.getElementById("createtask");
-      const modal = window.bootstrap.Modal.getInstance(modalElement);
+      const modal = new bootstrap.Modal(modalElement);
       modal.hide();
 
       toast.success("Task Created Successfully!", {
@@ -81,6 +93,7 @@ const Tasks = () => {
           color: "white",
         },
       });
+
       // Reload the page after 5 seconds
       setTimeout(() => {
         window.location.reload();
@@ -90,8 +103,7 @@ const Tasks = () => {
     }
   };
 
-
-
+  //Fetch Task
   const [selectedEmployees, setSelectedEmployees] = useState([]);
   const [taskFormData, setTaskFormData] = useState({
     projectName: "",
@@ -108,6 +120,9 @@ const Tasks = () => {
 
   const [taskStatuses, setTaskStatuses] = useState({});
   const [activeTab, setActiveTab] = useState('All'); // State for active tab filter
+  const [filterDate, setFilterDate] = useState(''); // Date for date filter
+  const [currentPage, setCurrentPage] = useState(1); // State for current page
+  const tasksPerPage = 10; // Number of tasks per page
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -117,9 +132,10 @@ const Tasks = () => {
         const formattedTasks = response.data.map(task => ({
           ...task,
           taskEndDate: formatDate(task.taskEndDate),
+          taskDate: formatDate(task.taskDate),
         }));
         setTasks(formattedTasks);
-        console.log(response.data);
+        // console.log(response.data);
       } catch (error) {
         console.error("Error:", error);
       } finally {
@@ -189,17 +205,34 @@ const Tasks = () => {
     }
   };
 
-
-  // Filter tasks based on activeTab state
+  // Filter tasks based on activeTab state and filterDate
   const filteredTasks = tasks.filter(task => {
+    const taskDate = new Date(task.taskDate);
+    const selectedDate = new Date(filterDate);
+    const isSameDate = filterDate === '' || taskDate.toISOString().split('T')[0] === selectedDate.toISOString().split('T')[0];
+
     if (activeTab === 'All') {
-      return true; // Show all tasks
+      return isSameDate; // Show all tasks for the selected date
     } else if (activeTab === 'Not Started') {
-      return task.taskStatus === 'Not Started'; // Filter tasks by Not Started status
+      return task.taskStatus === 'Not Started' && isSameDate; // Filter tasks by Not Started status for the selected date
     } else {
-      return task.taskStatus === activeTab; // Filter tasks by other statuses
+      return task.taskStatus === activeTab && isSameDate; // Filter tasks by other statuses for the selected date
     }
   });
+
+  // Pagination logic
+  const indexOfLastTask = currentPage * tasksPerPage;
+  const indexOfFirstTask = indexOfLastTask - tasksPerPage;
+  const currentTasks = filteredTasks.slice(indexOfFirstTask, indexOfLastTask);
+
+  // Change page
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  // Next page
+  const nextPage = () => setCurrentPage((prevPage) => Math.min(prevPage + 1, Math.ceil(filteredTasks.length / tasksPerPage)));
+
+  // Previous page
+  const prevPage = () => setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
 
 
   //DELETE TASK
@@ -404,6 +437,7 @@ const Tasks = () => {
                           </div>
                         </div> */}
 
+
                         <ul className="nav nav-tabs tab-body-header rounded ms-1 prtab-set w-sm-100" role="tablist">
                           <li className="nav-item">
                             <a
@@ -455,6 +489,16 @@ const Tasks = () => {
                     </div>
                   </div>
                 </div>{" "}
+                <div className="d-flex text-end mb-3" style={{ marginLeft: '43rem' }}>
+                  <p className="mt-3 fw-bold">Filter by Date:</p>
+
+                  <input
+                    className="form-control"
+                    type="date"
+                    value={filterDate}
+                    onChange={(e) => setFilterDate(e.target.value)}
+                    style={{ width: '10rem' }}
+                  /></div>
                 {/* Row end  */}
 
                 <div className="modal-body">
@@ -463,7 +507,7 @@ const Tasks = () => {
                       <tr>
                         <th scope="col" style={{ width: '7.5rem' }}>Project name</th>
                         <th scope="col">Task name</th>
-                        <th scope="col" style={{ width: '8rem' }}>Assignee</th>
+                        <th scope="col" style={{ width: '9rem' }}>Assignee</th>
                         <th scope="col" style={{ width: '' }}>Due Date</th>
                         <th scope="col" style={{ width: '9rem' }}>Priority</th>
                         <th scope="col" style={{ width: '' }}>U/D</th>
@@ -474,9 +518,9 @@ const Tasks = () => {
                       {loading ? (
                         <div className="custom-loader"></div>
                       ) : (
-                        filteredTasks.map((task) => (
+                        currentTasks.map((task) => (
                           <tr key={task._id}>
-                            <td>{task.projectName}</td>
+                            <td>{task.projectName}<p>{task.taskDate}</p></td>
                             <td>
                               <input
                                 className="w-100 form-control"
@@ -488,7 +532,7 @@ const Tasks = () => {
                                 style={{ outline: 'none', border: 'none', textWrap: 'wrap' }}
                               />
                             </td>
-                            <td>{task.taskAssignPerson.employeeName}</td>
+                            <td>{task.taskAssignPerson.employeeName}<p className="text-muted">By:-{task.assignedBy}</p></td>
                             <td>
                               <input
                                 type="date"
@@ -512,7 +556,7 @@ const Tasks = () => {
                                 <option value="Lowest">Lowest</option>
                               </select>
                             </td>
-                            <td style={{ display: 'flex', justifyContent: 'center', gap: '2vh' }}>
+                            <td style={{ display: 'flex', justifyContent: 'center', gap: '2vh', marginTop: '1.1rem' }}>
                               <button
                                 onClick={() => taskHandleSubmit(task._id)}
                                 className="bi bi-check2 bg-primary text-white border-0 rounded"
@@ -544,6 +588,27 @@ const Tasks = () => {
                       )}
                     </tbody>
                   </table>
+                  <nav className="d-flex justify-content-center">
+                    <ul className="pagination">
+                      <li className="page-item">
+                        <button onClick={prevPage} className="page-link" disabled={currentPage === 1}>
+                          &laquo;
+                        </button>
+                      </li>
+                      {Array.from({ length: Math.ceil(filteredTasks.length / tasksPerPage) }, (_, i) => (
+                        <li key={i + 1} className="page-item">
+                          <button onClick={() => paginate(i + 1)} className="page-link">
+                            {i + 1}
+                          </button>
+                        </li>
+                      ))}
+                      <li className="page-item">
+                        <button onClick={nextPage} className="page-link" disabled={currentPage === Math.ceil(filteredTasks.length / tasksPerPage)}>
+                          &raquo;
+                        </button>
+                      </li>
+                    </ul>
+                  </nav>
                 </div>
 
 
@@ -886,6 +951,7 @@ const Tasks = () => {
                       <button
                         type="button"
                         className="btn btn-primary"
+                        data-bs-dismiss="modal"
                         onClick={handleSubmit}
                       >
                         Create
@@ -894,6 +960,7 @@ const Tasks = () => {
                   </div>
                 </div>
               </div>
+              
               {/* Modal  Delete Task */}
               <div
                 className="modal fade"

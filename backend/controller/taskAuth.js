@@ -4,6 +4,7 @@ const Project = require('../model/projectModel');
 const Task = require('../model/taskModel');
 const jwt = require('jsonwebtoken');
 const Employee = require('../model/employeeModel');
+const User = require('../userModel/adminUserModel');
 
 // Create Task
 exports.createTask = async (req, res) => {
@@ -38,6 +39,7 @@ exports.createTask = async (req, res) => {
 
     // Saving the task to the database
     const savedTask = await task.save();
+    // console.log(savedTask);
 
     // Email configuration
     const transporter = nodemailer.createTransport({
@@ -55,7 +57,8 @@ exports.createTask = async (req, res) => {
         to: email, // list of receivers
         subject: 'TechNinza CRM Task', // subject line
         text: `You have been assigned a new task for the project :- ${req.body.projectName}.
-Assigned By :- Ravi Poddar
+
+Assigned By :- ${req.body.assignedBy}
 
 Due Date :- ${req.body.taskEndDate}
 
@@ -71,6 +74,7 @@ Please review the task details and start working on it at your earliest convenie
 
     await Promise.all(sendEmailPromises);
 
+    // console.log(savedTask);
     // Sending the saved task as response
     res.status(201).json(savedTask);
   } catch (error) {
