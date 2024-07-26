@@ -403,39 +403,6 @@ const Tasks = () => {
                           <i className="icofont-plus-circle me-2 fs-6" />
                           Create Task
                         </button>
-                        {/* <div className="order-0">
-                          <div className="input-group">
-                            <input
-                              type="search"
-                              className="form-control"
-                              aria-label="search"
-                              aria-describedby="addon-wrapping"
-                              value={searchQuery}
-                              onChange={(e) => {
-                                setSearchQuery(e.target.value);
-                                handleSearch(e.target.value);
-                              }}
-                              placeholder="Enter Project Name"
-                            />
-                            <button
-                              type="button"
-                              className="input-group-text add-member-top"
-                              id="addon-wrappingone"
-                              data-bs-toggle="modal"
-                              data-bs-target="#addUser"
-                            >
-                              <i className="fa fa-plus" />
-                            </button>
-                            <button
-                              type="button"
-                              className="input-group-text"
-                              id="addon-wrapping"
-                              onClick={handleSearch}
-                            >
-                              <i className="fa fa-search" />
-                            </button>
-                          </div>
-                        </div> */}
 
 
                         <ul className="nav nav-tabs tab-body-header rounded ms-1 prtab-set w-sm-100" role="tablist">
@@ -489,16 +456,52 @@ const Tasks = () => {
                     </div>
                   </div>
                 </div>{" "}
-                <div className="d-flex text-end mb-3" style={{ marginLeft: '43rem' }}>
-                  <p className="mt-3 fw-bold">Filter by Date:</p>
+                <div className="d-flex justify-content-between">
+                  <div className="order-0">
+                    <div className="input-group">
+                      <input
+                        type="search"
+                        className="form-control"
+                        aria-label="search"
+                        aria-describedby="addon-wrapping"
+                        value={searchQuery}
+                        onChange={(e) => {
+                          setSearchQuery(e.target.value);
+                          handleSearch(e.target.value);
+                        }}
+                        placeholder="Enter Project Name"
+                      />
+                      <button
+                        type="button"
+                        className="input-group-text add-member-top"
+                        id="addon-wrappingone"
+                        data-bs-toggle="modal"
+                        data-bs-target="#addUser"
+                      >
+                        <i className="fa fa-plus" />
+                      </button>
+                      <button
+                        type="button"
+                        className="input-group-text"
+                        id="addon-wrapping"
+                        onClick={handleSearch}
+                      >
+                        <i className="fa fa-search" />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="d-flex text-end mb-3" >
+                    <p className="mt-3 fw-bold">Filter by Date:</p>
 
-                  <input
-                    className="form-control"
-                    type="date"
-                    value={filterDate}
-                    onChange={(e) => setFilterDate(e.target.value)}
-                    style={{ width: '10rem' }}
-                  /></div>
+                    <input
+                      className="form-control"
+                      type="date"
+                      value={filterDate}
+                      onChange={(e) => setFilterDate(e.target.value)}
+                      style={{ width: '10rem' }}
+                    /></div>
+                </div>
+
                 {/* Row end  */}
 
                 <div className="modal-body">
@@ -960,7 +963,7 @@ const Tasks = () => {
                   </div>
                 </div>
               </div>
-              
+
               {/* Modal  Delete Task */}
               <div
                 className="modal fade"

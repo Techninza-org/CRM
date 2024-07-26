@@ -80,32 +80,32 @@ const Project = () => {
 
   // Status
   const [currentStatus, setCurrentStatus] = useState("");
-const [user_id, setUser_id] = useState("");
-const [project_id, setProject_id] = useState("");
+  const [user_id, setUser_id] = useState("");
+  const [project_id, setProject_id] = useState("");
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/project-status`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        currentStatus,
-        user_id: loginUserId,
-        project_id: selectProject._id,
-      }),
-    });
-    // console.log(response.json);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/project-status`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          currentStatus,
+          user_id: loginUserId,
+          project_id: selectProject._id,
+        }),
+      });
+      // console.log(response.json);
 
-    if (!response.ok) {
-      throw new Error("Failed to add project status");
-    }
+      if (!response.ok) {
+        throw new Error("Failed to add project status");
+      }
 
-    // console.log(response.data);
+      // console.log(response.data);
 
-    // const newStatus = await response.json(); // Assuming the response contains the new status
+      // const newStatus = await response.json(); // Assuming the response contains the new status
 
       // // Update the state of the project to include the new status
       // setProjects(prevProjects => prevProjects.map(project => 
@@ -116,57 +116,57 @@ const handleSubmit = async (e) => {
       // setProjects((prevProjects) => [newStatus, ...prevProjects]);
 
 
-    setCurrentStatus("");
-    setUser_id("");
-    setProject_id("");
+      setCurrentStatus("");
+      setUser_id("");
+      setProject_id("");
 
-    // Close the modal programmatically
-    const modalElement = document.getElementById("addUser");
-    const modal = window.bootstrap.Modal.getInstance(modalElement);
-    modal.hide();
+      // Close the modal programmatically
+      const modalElement = document.getElementById("addUser");
+      const modal = window.bootstrap.Modal.getInstance(modalElement);
+      modal.hide();
 
-    
 
-    toast.success('Status Added Successfully!', {
-      style: {
-        backgroundColor: '#4c3575',
-        color: 'white',
-      },
-    });
 
-    window.location.reload()
-    
-    
-  } catch (error) {
-    console.error(error.message);
-  }
-};
+      toast.success('Status Added Successfully!', {
+        style: {
+          backgroundColor: '#4c3575',
+          color: 'white',
+        },
+      });
 
-const [projectStatuses, setProjectStatuses] = useState([]);
-const [projectId, setProjectId] = useState("");
+      window.location.reload()
 
-useEffect(() => {
-  const fetchProjectStatuses = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}api/project-status/${projectId}`
-      );
-      
-      if (!response.ok) {
-        throw new Error("Failed to fetch project statuses");
-      }
-      
-      const data = await response.json();
-      setProjectStatuses(data);
+
     } catch (error) {
       console.error(error.message);
     }
   };
-  
-  if (projectId) {
-    fetchProjectStatuses();
-  }
-}, [projectId]);
+
+  const [projectStatuses, setProjectStatuses] = useState([]);
+  const [projectId, setProjectId] = useState("");
+
+  useEffect(() => {
+    const fetchProjectStatuses = async () => {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_BASE_URL}api/project-status/${projectId}`
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch project statuses");
+        }
+
+        const data = await response.json();
+        setProjectStatuses(data);
+      } catch (error) {
+        console.error(error.message);
+      }
+    };
+
+    if (projectId) {
+      fetchProjectStatuses();
+    }
+  }, [projectId]);
 
 
   // Delete Status
@@ -190,6 +190,7 @@ useEffect(() => {
       console.error("Error deleting project status:", error.message);
     }
   };
+
 
   return (
     <>
@@ -379,7 +380,7 @@ useEffect(() => {
                       </div>
                     </div> */}
                     <div className="members_list" >
-                      
+
                       <ul className="list-unstyled list-group list-group-custom list-group-flush mb-0">
                         <li className="list-group-item py-3 text-center text-md-start" style={{ maxHeight: '300px', overflowY: 'auto' }}>
                           {projectStatuses.map((status) => {

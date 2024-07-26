@@ -16,6 +16,11 @@ const statusSchema = new Schema({
         required: true,
         ref: "Project"
     },
+    task_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: "Task"
+    },
 
 }, { timestamps: true });
 

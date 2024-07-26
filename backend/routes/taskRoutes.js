@@ -13,6 +13,7 @@ router.put('/tasks/:id', task_upload.array("taskImages", 5), taskController.upda
 router.delete('/tasks/:id', taskController.deleteTaskById);
 
 router.get('/author', taskController.getTask)
+// router.put('/author/:id', taskController.addTaskDescription);
 
 router.put('/update/:id', taskController.updateTaskStatus)
 

@@ -430,8 +430,8 @@ const Project = () => {
             <div className="body d-flex py-lg-3 py-md-2">
               <div className="container-xxl">
                 <div className="row align-items-center">
-                  <div className="border-0 mb-4">
-                    <div className="card-header py-3 px-0 d-sm-flex align-items-center  justify-content-between border-bottom">
+                  <div className="border-bottom mb-4">
+                    <div className="card-header py-3 px-0 d-sm-flex align-items-center justify-content-between ">
                       <h3 className="fw-bold py-3 mb-0">Projects</h3>
                       <div className="d-flex me-2">
                         <button
@@ -485,41 +485,47 @@ const Project = () => {
                           </li>
                         </ul>
 
-                        {/* <div className="order-0 ms-1">
-                          <div className="input-group">
-                            <input
-                              type="search"
-                              className="form-control"
-                              aria-label="search"
-                              aria-describedby="addon-wrapping"
-                              value={searchQuery}
-                              onChange={(e) => {
-                                setSearchQuery(e.target.value);
-                                handleSearch(e.target.value);
-                              }}
-                              placeholder="Enter Project Name"
-                            />
-                            <button
-                              type="button"
-                              className="input-group-text add-member-top"
-                              id="addon-wrappingone"
-                              data-bs-toggle="modal"
-                              data-bs-target="#addUser"
-                            >
-                              <i className="fa fa-plus" />
-                            </button>
-                            <button
-                              type="button"
-                              className="input-group-text"
-                              id="addon-wrapping"
-                              onClick={handleSearch}
-                            >
-                              <i className="fa fa-search" />
-                            </button>
-                          </div>
-                        </div> */}
+                      </div>
+
+                    </div>
+                    <div className="d-flex justify-content-between mb-4">
+                      <div></div>
+
+                      <div className="order-0 ms-1">
+                        <div className="input-group">
+                          <input
+                            type="search"
+                            className="form-control"
+                            aria-label="search"
+                            aria-describedby="addon-wrapping"
+                            value={searchQuery}
+                            onChange={(e) => {
+                              setSearchQuery(e.target.value);
+                              handleSearch(e.target.value);
+                            }}
+                            placeholder="Enter Project Name"
+                          />
+                          <button
+                            type="button"
+                            className="input-group-text add-member-top"
+                            id="addon-wrappingone"
+                            data-bs-toggle="modal"
+                            data-bs-target="#addUser"
+                          >
+                            <i className="fa fa-plus" />
+                          </button>
+                          <button
+                            type="button"
+                            className="input-group-text"
+                            id="addon-wrapping"
+                            onClick={handleSearch}
+                          >
+                            <i className="fa fa-search" />
+                          </button>
+                        </div>
                       </div>
                     </div>
+
                   </div>
                 </div>{" "}
                 {/* Row end  */}
@@ -1237,7 +1243,7 @@ const Project = () => {
                       className="modal-title  fw-bold"
                       id="createprojectlLabel"
                     >
-                      {currProj.projectName} - View Task 
+                      {currProj.projectName} - View Task
                     </h5>
                     <button
                       type="button"
@@ -1263,9 +1269,9 @@ const Project = () => {
                             style={{ outline: "none", border: "none", textWrap: "wrap" }} />fffffffffff   </td>
                           {/* <td>{currProj.taskAssignPerson?.employeeName}, Admin</td>
                             <td>{currProj.taskAssignPerson?.employeeName}</td> */}
-                            <td>ddd</td>
-                            <td> www </td>
-                            <td> ss </td>
+                          <td>ddd</td>
+                          <td> www </td>
+                          <td> ss </td>
                         </tr>
                       </tbody>
                     </table>

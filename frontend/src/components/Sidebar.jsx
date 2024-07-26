@@ -148,13 +148,14 @@ const Sidebar = () => {
                                         <span>Members</span>
                                     </Link>
                                 </li>
-                                {/* <li>
-                                    <a className="ms-link" href="employee-profile.html">
-                                        {" "}
-                                        <span>Members Profile</span>
-                                    </a>
-                                </li>
                                 <li>
+                                    <Link className="ms-link" to="/members-report">
+                                        {" "}
+                                        <span>Members Report</span>
+                                    </Link>
+                                </li>
+                                
+                                {/* <li>
                                     <a className="ms-link" href="holidays.html">
                                         {" "}
                                         <span>Holidays</span>

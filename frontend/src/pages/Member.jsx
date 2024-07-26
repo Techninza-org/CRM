@@ -351,7 +351,7 @@ const Member = () => {
                     <div className="card border-0 mb-4 no-bg">
                       <div className="card-header py-3 px-0 d-sm-flex align-items-center  justify-content-between border-bottom">
                         <h3 className=" fw-bold flex-fill mb-0 mt-sm-0">
-                          Employee
+                          Employees
                         </h3>
                         <button
                           type="button"

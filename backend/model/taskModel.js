@@ -52,7 +52,7 @@ const taskSchema = new Schema({
     },
     description: {
         type: String,
-    }
+    },
 });
 
 const Task = mongoose.model('Task', taskSchema);

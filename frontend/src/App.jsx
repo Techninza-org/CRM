@@ -10,6 +10,7 @@ import {HashRouter, Routes, Route} from 'react-router-dom'
 import ProjectDashboard from './pages/ProjectDashboard'
 import EmployeeDashboard from './pages/EmployeeDashboard'
 import Member from './pages/Member'
+import Reports from './pages/Reports'
 import Project from './pages/Project'
 import EmployeeProject from './pages/EmployeeProject'
 import Tasks from './pages/Tasks'
@@ -36,6 +37,7 @@ function App() {
         <Route path='/project-dashboard' element={<ProjectDashboard />}></Route>
         <Route path='/employee-dashboard' element={<EmployeeDashboard />}></Route>
         <Route path='/members' element={<Member />}></Route>
+        <Route path='/members-report' element={<Reports />}></Route>
         <Route path='/projects' element={<Project />}></Route>
         <Route path='/employee-projects' element={<EmployeeProject />}></Route>
         <Route path='/tasks' element={<Tasks />}></Route>        
@@ -44,7 +46,7 @@ function App() {
         <Route path='/create-invoice' element={<CreateInvoice/>}></Route>   
         <Route path='/all-invoice' element={<AllInvoice/>}></Route>   
         <Route path='/clients' element={<Client/>}></Route>   
-        <Route path='/update-invoice' element={<UpdateInvoice/>}></Route>   
+        <Route path='/update-invoice' element={<UpdateInvoice/>}></Route> 
 
 
 
