@@ -12,4 +12,6 @@ router.put('/clients/:id', clientController.updateClientById);
 
 router.delete('/clients/:id', clientController.deleteClientById);
 
+router.get('/totalClients', clientController.getTotalClients);
+
 module.exports = router;

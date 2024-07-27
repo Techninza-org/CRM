@@ -4,6 +4,17 @@ const Employee = require('../model/employeeModel');
 const { upload } = require('../utils/multerConfig');
 const jwt = require('jsonwebtoken');
 
+//Total Employee
+router.get('/totalEmployees', async (req, res) => {
+    try {
+        const totalEmployees = await Employee.countDocuments();
+        res.json({ totalEmployees });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+
 // Create a new employee
 router.post('/employees', upload.single("employeeImage"), async (req, res) => {
     try {

@@ -592,9 +592,9 @@ const Project = () => {
 
                                 return (
                                   <tr key={project.id}
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#viewtask"
-                                    onClick={() => setCurrProj(project)}
+                                    // data-bs-toggle="modal"
+                                    // data-bs-target="#viewtask"
+                                    // onClick={() => setCurrProj(project)}
                                   >
                                     <td>
                                       <div className="">
@@ -1230,7 +1230,7 @@ const Project = () => {
             </div>
 
             {/* vitew task Modal */}
-            <div
+            {/* <div
               className="modal fade"
               id="viewtask"
               tabIndex={-1}
@@ -1265,10 +1265,10 @@ const Project = () => {
                       <tbody>
                         <tr>
                           <td><input className="w-100" type="text"
-                            // value={currProj?.description} 
+                            value={currProj?.description} 
                             style={{ outline: "none", border: "none", textWrap: "wrap" }} />fffffffffff   </td>
-                          {/* <td>{currProj.taskAssignPerson?.employeeName}, Admin</td>
-                            <td>{currProj.taskAssignPerson?.employeeName}</td> */}
+                          <td>{currProj.taskAssignPerson?.employeeName}, Admin</td>
+                            <td>{currProj.taskAssignPerson?.employeeName}</td>
                           <td>ddd</td>
                           <td> www </td>
                           <td> ss </td>
@@ -1287,7 +1287,7 @@ const Project = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
 
           </>
         </div>

@@ -3,6 +3,16 @@ const router = express.Router();
 const Client = require('../model/clientModel');
 const { upload } = require('../utils/multerConfig');
 
+// Total Clients
+router.get('/totalClients', async (req, res) => {
+  try {
+    const totalClients = await Client.countDocuments();
+    res.json({ totalClients });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 
 // Create a new client
 router.post('/clients', upload.single("clientImage"), async (req, res) => {
@@ -10,12 +20,10 @@ router.post('/clients', upload.single("clientImage"), async (req, res) => {
     const path = req.file?.path;
     let newPath = path?.replace('uploads\\', "");
     if (newPath === undefined || newPath === null) {
-      newPath = "default.jpeg"
+      newPath = "default.jpeg";
     }
-    // console.log(newPath);
     req.body.clientImage = newPath;
     const client = new Client(req.body);
-    // console.log(client);
     await client.save();
     res.status(201).send(client);
   } catch (error) {
@@ -54,6 +62,7 @@ router.get('/clients/:id', async (req, res) => {
     res.status(500).send(error);
   }
 });
+
 // Search clients by name
 router.get("/search", async (req, res) => {
   const query = req.query.name;
@@ -76,7 +85,6 @@ router.get("/search", async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
-
 
 // Update a client by ID
 router.put('/clients/:id', async (req, res) => {
@@ -109,7 +117,6 @@ router.put('/clients/:id', async (req, res) => {
     }
   }
 });
-
 
 // Delete a client by ID
 router.delete('/clients/:id', async (req, res) => {

@@ -59,130 +59,112 @@ const MembersReport = () => {
     fetchData();
   }, []);
 
-  // GET SINGLE EMPLOYEE
+  // Fetch tasks summary
+  useEffect(() => {
+    const fetchTasksSummary = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/tasks-summary`);
+        setEmployees(response.data);
+      } catch (error) {
+        console.error("Error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTasksSummary();
+  }, []);
+
+  // Search employee
   const handleSearch = async (searchQuery) => {
     if (searchQuery !== "") {
       try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}api/search?id=${searchQuery}`
-        );
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/search?id=${searchQuery}`);
         setEmployees(response.data);
       } catch (error) {
         console.error("Error:", error);
         setEmployees(null);
       }
     } else {
-      const fetchData = async () => {
+      const fetchTasksSummary = async () => {
         try {
-          const response = await axios.get(
-            `${import.meta.env.VITE_BASE_URL}api/employees`
-          );
+          const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/tasks-summary`);
           setEmployees(response.data);
         } catch (error) {
           console.error("Error:", error);
         }
       };
 
-      fetchData();
+      fetchTasksSummary();
     }
+  };
+
+
+  // Calculate performance percentage
+  const calculatePerformance = (totalTasks, completedTasks) => {
+    if (totalTasks > 0) {
+      return ((completedTasks / totalTasks) * 100).toFixed(2); // Rounds to 2 decimal places
+    }
+    return '0.00'; // No tasks available
   };
 
   return (
     <>
       <div id="mytask-layout">
         <Sidebar />
-        {/* main body area */}
         <div className="main px-lg-4 px-md-4">
-          {/* Body: Header */}
           <Header />
-          <>
-            {/* Body: Body */}
-            <div className="body d-flex py-lg-3 py-md-2">
-              <div className="container-xxl">
-                <div className="row clearfix">
-                  <div className="col-md-12">
-                    <div className="card border-0 mb-4 no-bg">
-                      <div className="card-header py-3 px-0 d-sm-flex align-items-center  justify-content-between border-bottom">
-                        <h3 className=" fw-bold flex-fill mb-0 mt-sm-0">
-                          Employees Report
-                        </h3>
-                        <button
-                          type="button"
-                          className="btn btn-dark me-1 mt-1 w-sm-100"
-                          data-bs-toggle="modal"
-                          data-bs-target="#createemp"
-                        >
-                          <i className="icofont-plus-circle me-2 fs-6" />
-                          Add Employee
-                        </button>
-                        <div className="order-0 col-lg-4 col-md-4 col-sm-12 col-12 mb-3 mb-md-0 ">
-                          <div className="input-group">
-                            <input
-                              type="search"
-                              className="form-control"
-                              aria-label="search"
-                              aria-describedby="addon-wrapping"
-                              value={searchQuery}
-                              onChange={(e) => {
-                                setSearchQuery(e.target.value);
-                                handleSearch(e.target.value);
-                              }}
-                              placeholder="Enter Employee Name"
-                            />
-                            <button
-                              type="button"
-                              className="input-group-text"
-                              id="addon-wrapping"
-                              onClick={() => handleSearch(searchQuery)}
-                            >
-                              <i className="fa fa-search" />
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="card-body">
-                        {loading ? (
-                          <div>Loading...</div>
-                        ) : (
-                          <table className="table table-striped">
-                            <thead>
-                              <tr>
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>Position</th>
-                                <th>Department</th>
-                                <th>Total Task</th>
-                                <th>Performance</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {employees.length > 0 ? (
-                                employees.map((employee) => (
-                                  <tr key={employee.employeeId}>
-                                    <td>{employee.employeeId}</td>
-                                    <td>{employee.employeeName}</td>
-                                    <td>{employee.designation}</td>
-                                    <td>{employee.description}</td>
-                                    <td>{}</td>
-                                    <td>{}</td>
-                                  </tr>
-                                ))
-                              ) : (
-                                <tr>
-                                  <td colSpan="4">No employees found.</td>
+          <div className="body d-flex py-lg-3 py-md-2">
+            <div className="container-xxl">
+              <div className="row clearfix">
+                <div className="col-md-12">
+                  <div className="card border-0 mb-4 no-bg">
+                    <div className="card-header py-3 px-0 d-sm-flex align-items-center justify-content-between border-bottom">
+                      <h3 className="fw-bold flex-fill mb-0 mt-sm-0">Employees Report</h3>
+                    </div>
+                    <div className="card-body">
+                      {loading ? (
+                        <div>Loading...</div>
+                      ) : (
+                        <table className="table table-striped">
+                          <thead>
+                            <tr>
+                              <th className="text-center">Company ID</th>
+                              <th className="text-center">Name</th>
+                              <th className="text-center">Total Task</th>
+                              <th className="text-center">Completed Task</th>
+                              <th className="text-center">Remaining Task</th>
+                              <th className="text-center">Performance</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {employees.length > 0 ? (
+                              employees.map((employee) => (
+                                <tr key={employee.employeeId}>
+                                  <td className="text-center">{employee.employeeId}</td>
+                                  <td className="text-center">{employee.employeeName}</td>
+                                  <td className="text-center">{employee.totalTasks}</td>
+                                  <td className="text-center">{employee.completedTasks}</td>
+                                  <td className="text-center">{employee.remainingTasks}</td>
+                                  <td className="text-center">{calculatePerformance(employee.totalTasks, employee.completedTasks)}%</td>
                                 </tr>
-                              )}
-                            </tbody>
-                          </table>
-                        )}
-                      </div>
+                              ))
+                            ) : (
+                              <tr>
+                                <td colSpan="6">No employees found.</td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </table>
+                      )}
                     </div>
                   </div>
                 </div>
-                {/* Row End */}
               </div>
+              {/* Row End */}
             </div>
-          </>
+          </div>
         </div>
         <ToastContainer />
       </div>

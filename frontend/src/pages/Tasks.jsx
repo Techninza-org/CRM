@@ -521,75 +521,98 @@ const Tasks = () => {
                       {loading ? (
                         <div className="custom-loader"></div>
                       ) : (
-                        currentTasks.map((task) => (
-                          <tr key={task._id}>
-                            <td>{task.projectName}<p>{task.taskDate}</p></td>
-                            <td>
-                              <input
-                                className="w-100 form-control"
-                                type="text"
-                                placeholder="Explain The Task What To Do & How To Do"
-                                name="description"
-                                value={task.description}
-                                onChange={(e) => taskHandleChange(e, task._id)}
-                                style={{ outline: 'none', border: 'none', textWrap: 'wrap' }}
-                              />
-                            </td>
-                            <td>{task.taskAssignPerson.employeeName}<p className="text-muted">By:-{task.assignedBy}</p></td>
-                            <td>
-                              <input
-                                type="date"
-                                className="form-control"
-                                name="taskEndDate"
-                                value={task.taskEndDate}
-                                onChange={(e) => taskHandleChange(e, task._id)}
-                              />
-                            </td>
-                            <td>
-                              <select
-                                className="form-select"
-                                aria-label="Default select Priority"
-                                name="taskPriority"
-                                value={task.taskPriority}
-                                onChange={(e) => taskHandleChange(e, task._id)}
-                              >
-                                <option value="">Set Priority</option>
-                                <option value="Highest">Highest</option>
-                                <option value="Medium">Medium</option>
-                                <option value="Lowest">Lowest</option>
-                              </select>
-                            </td>
-                            <td style={{ display: 'flex', justifyContent: 'center', gap: '2vh', marginTop: '1.1rem' }}>
-                              <button
-                                onClick={() => taskHandleSubmit(task._id)}
-                                className="bi bi-check2 bg-primary text-white border-0 rounded"
-                              >
-                                {/* Add icon or text for task completion */}
-                              </button>
-                              <button
-                                data-bs-toggle="modal"
-                                data-bs-target="#dremovetask"
-                                onClick={() => setDeletableId(task._id)}
-                                className="bi bi-trash bg-danger text-white border-0 rounded"
-                              >
-                                {/* Add icon or text for task deletion */}
-                              </button>
-                            </td>
-                            <td>
-                              {task.taskStatus === 'Not Started' && (
-                                <span className="badge bg-warning text-dark">Not Started</span>
-                              )}
-                              {task.taskStatus === 'In Progress' && (
-                                <span className="badge bg-info text-dark">In Progress</span>
-                              )}
-                              {task.taskStatus === 'Completed' && (
-                                <span className="badge bg-success">Completed</span>
-                              )}
-                            </td>
-                          </tr>
-                        ))
+                        currentTasks.map((task) => {
+                          const currentDate = new Date();
+                          const taskEndDate = new Date(task.taskEndDate);
+                          const taskStartDate = new Date(task.taskDate);
+                          const isOverdue = taskEndDate < currentDate && task.taskStatus !== 'Completed';
+                          const isCompletedAfterDue = task.taskStatus === 'Completed' && taskEndDate < currentDate && taskEndDate.getTime() !== taskStartDate.getTime();
+
+                          let backgroundColor = '';
+                          if (isOverdue) {
+                            backgroundColor = '#ebbcc0';
+                          } else if (isCompletedAfterDue) {
+                            backgroundColor = '#c6f2c1';
+                          }
+
+                          return (
+                            <tr
+                              key={task._id}
+                              style={{ backgroundColor }}
+                            >
+                              <td style={{ backgroundColor }}>
+                                {task.projectName}
+                                <p>{task.taskDate}</p>
+                              </td>
+                              <td style={{ backgroundColor }}>
+                                <input
+                                  className="w-100 form-control"
+                                  type="text"
+                                  placeholder="Explain The Task What To Do & How To Do"
+                                  name="description"
+                                  value={task.description}
+                                  onChange={(e) => taskHandleChange(e, task._id)}
+                                  style={{ outline: 'none', border: 'none', textWrap: 'wrap' }}
+                                />
+                              </td>
+                              <td style={{ backgroundColor }}>
+                                {task.taskAssignPerson.employeeName}
+                                <p className="text-muted">By:-{task.assignedBy}</p>
+                              </td>
+                              <td style={{ backgroundColor }}>
+                                <input
+                                  type="date"
+                                  className="form-control"
+                                  name="taskEndDate"
+                                  value={task.taskEndDate}
+                                  onChange={(e) => taskHandleChange(e, task._id)}
+                                />
+                              </td>
+                              <td style={{ backgroundColor }}>
+                                <select
+                                  className="form-select"
+                                  aria-label="Default select Priority"
+                                  name="taskPriority"
+                                  value={task.taskPriority}
+                                  onChange={(e) => taskHandleChange(e, task._id)}
+                                >
+                                  <option value="">Set Priority</option>
+                                  <option value="Highest">Highest</option>
+                                  <option value="Medium">Medium</option>
+                                  <option value="Lowest">Lowest</option>
+                                </select>
+                              </td>
+                              <td style={{ display: 'flex', justifyContent: 'center', gap: '2vh', marginTop: '1.1rem', backgroundColor }}>
+                                <button
+                                  onClick={() => taskHandleSubmit(task._id)}
+                                  className="bi bi-check2 bg-primary text-white border-0 rounded"
+                                />
+                                <button
+                                  data-bs-toggle="modal"
+                                  data-bs-target="#dremovetask"
+                                  onClick={() => setDeletableId(task._id)}
+                                  className="bi bi-trash bg-danger text-white border-0 rounded"
+                                />
+                              </td>
+                              <td style={{ backgroundColor }}>
+                                {task.taskStatus === 'Not Started' && (
+                                  <span className="badge bg-warning text-dark">Not Started</span>
+                                )}
+                                {task.taskStatus === 'In Progress' && (
+                                  <span className="badge bg-info text-dark">In Progress</span>
+                                )}
+                                {task.taskStatus === 'Completed' && (
+                                  <span className="badge bg-success">Completed</span>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })
                       )}
                     </tbody>
+
+
+
                   </table>
                   <nav className="d-flex justify-content-center">
                     <ul className="pagination">

@@ -4,6 +4,17 @@ const Project = require('../model/projectModel');
 const jwt = require('jsonwebtoken');
 const Task = require('../model/taskModel');
 
+
+// Total projects
+exports.getTotalProjects = async (req, res) => {
+    try {
+        const totalProjects = await Project.countDocuments();
+        res.json({ totalProjects });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
 // Create a new project
 exports.createProject = async (req, res) => {
     try {

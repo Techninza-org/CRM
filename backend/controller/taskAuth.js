@@ -87,23 +87,31 @@ Please review the task details and start working on it at your earliest convenie
 exports.getAllTasks = async (req, res) => {
   try {
     const tasks = await Task.find().populate('taskAssignPerson');
-    // console.log(tasks[0]);
     const tasks_with_person = [];
+
     for (let i = 0; i < tasks.length; i++) {
       const project_persons = await Project.find({ projectName: tasks[i].projectName }).populate({
         path: 'taskAssignPerson',
         select: 'employeeName'
-      })
+      });
 
       tasks[i] = tasks[i].toObject();
-      tasks[i].projectMembers = project_persons
-      // console.log(project_persons);
+      tasks[i].projectMembers = project_persons;
+
+      // Performance calculation logic
+      if (tasks[i].totalPoints && tasks[i].achievedPoints) {
+        tasks[i].performancePercentage = (tasks[i].achievedPoints / tasks[i].totalPoints) * 100;
+      } else {
+        tasks[i].performancePercentage = 0;
+      }
     }
+
     res.json(tasks);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 // Get a single task
 exports.getTaskById = async (req, res) => {
@@ -246,5 +254,27 @@ exports.updateTaskStatus = async (req, res) => {
 // };
 
 
+// Get tasks summary by employee
+exports.getTasksSummaryByEmployee = async (req, res) => {
+  try {
+    const employees = await Employee.find();
+    const tasksSummary = await Promise.all(
+      employees.map(async (employee) => {
+        const totalTasks = await Task.countDocuments({ taskAssignPerson: employee._id });
+        const completedTasks = await Task.countDocuments({ taskAssignPerson: employee._id, taskStatus: 'Completed' });
+        const remainingTasks = totalTasks - completedTasks;
 
-
+        return {
+          employeeId: employee.employeeId,
+          employeeName: employee.employeeName,
+          totalTasks,
+          completedTasks,
+          remainingTasks,
+        };
+      })
+    );
+    res.json(tasksSummary);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};

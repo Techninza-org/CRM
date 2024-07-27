@@ -17,5 +17,7 @@ router.get('/author', taskController.getTask)
 
 router.put('/update/:id', taskController.updateTaskStatus)
 
+router.get('/tasks-summary', taskController.getTasksSummaryByEmployee);
+
 
 module.exports = router;
