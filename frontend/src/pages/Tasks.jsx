@@ -123,6 +123,8 @@ const Tasks = () => {
   const [filterDate, setFilterDate] = useState(''); // Date for date filter
   const [currentPage, setCurrentPage] = useState(1); // State for current page
   const tasksPerPage = 10; // Number of tasks per page
+  const [taskMessages, setTaskMessages] = useState([]);
+  const [selectedTaskId, setSelectedTaskId] = useState(null);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -149,6 +151,24 @@ const Tasks = () => {
 
     fetchTasks();
   }, []);
+
+  const fetchTaskMessages = async (taskId) => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/task-messages/${taskId}`);
+      console.log("gg", response.data);
+      setTaskMessages(response.data);
+    } catch (error) {
+      console.error("Error fetching task messages:", error);
+      setTaskMessages([]);
+    }
+  };
+
+  const handleViewMessages = (taskId) => {
+    setSelectedTaskId(taskId);
+    fetchTaskMessages(taskId);
+  };
+
+
 
   useEffect(() => {
     // Initialize taskStatuses with existing task statuses
@@ -343,9 +363,6 @@ const Tasks = () => {
       };
     }) || [];
   // console.log(assignEmployee, 23423);
-
-  const [showFullDescription, setShowFullDescription] = useState("");
-  const [currProj, setCurrProj] = useState({});
 
 
 
@@ -581,6 +598,7 @@ const Tasks = () => {
                                   className="d-flex justify-content-center bi bi-stopwatch btn outline-secondary text-primary"
                                   data-bs-toggle="modal"
                                   data-bs-target="#taskMessage"
+                                  onClick={() => handleViewMessages(task._id)}
                                 ></button>
                               </td>
                             </tr>
@@ -1103,31 +1121,37 @@ const Tasks = () => {
                         aria-label="Close"
                       />
                     </div>
-                    <div className="mt-3">
 
-                      <div className="d-flex justify-content-between container mt-2 border-bottom">
-                        <div className="d-flex gap-5">
-                          <div>
-                            <img
-                              className="avatar md rounded-circle"
-                              src=""
-                              alt="employeeImage"
-                            />
-                            <p className="fw-bold">
-                              {/* employeename */}
-                            </p>
+                    <div className="mt-3">
+                      {taskMessages.length === 0 ? (
+                        <p className="p-2">No messages found for this task.</p>
+                      ) : (
+                        taskMessages?.map((message) => (
+                          <div key={message._id} className="d-flex justify-content-between container mt-2 border-bottom">
+                            <div className="d-flex gap-5">
+                              <div>
+                                <div className="d-flex justify-content-center">
+                                  <img
+                                    className="avatar md rounded-circle"
+                                    src={
+                                      `${import.meta.env.VITE_BASE_URL}` +
+                                      message.user_id.employeeImage
+                                    }
+                                    alt="employeeImage"
+                                  />
+                                </div>
+                                <p className="fw-bold">{message.user_id.employeeName}</p>
+                              </div>
+                              <div>
+                                <p className="fw-bold">{message.currentMessage}</p>
+                                <small className="text-muted">{new Date(message.createdAt).toLocaleString()}</small>
+                              </div>
+                            </div>
                           </div>
-                          <div>
-                            <p className="fw-bold">
-                              {/* message */}
-                            </p>
-                            <small className="text-muted">
-                              {/* date */}
-                            </small>
-                          </div>
-                        </div>
-                      </div>
+                        ))
+                      )}
                     </div>
+
                   </div>
                 </div>
               </div>
