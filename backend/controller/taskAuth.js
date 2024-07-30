@@ -86,7 +86,7 @@ Please review the task details and start working on it at your earliest convenie
 // Get all tasks
 exports.getAllTasks = async (req, res) => {
   try {
-    const tasks = await Task.find().populate('taskAssignPerson');
+    const tasks = await Task.find().sort({ createdAt: -1 }).populate('taskAssignPerson');
     const tasks_with_person = [];
 
     for (let i = 0; i < tasks.length; i++) {
@@ -206,53 +206,6 @@ exports.updateTaskStatus = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
-// // Add task descriptionByEmployee by Task Assignee Person (token)
-// exports.addTaskDescription = async (req, res) => {
-//   const author = req.headers.authorization;
-  
-//   if (!author || !author.startsWith('Bearer ')) {
-//     return res.status(401).json({ message: 'Authorization header missing or incorrect format' });
-//   }
-  
-//   const token = author.split(' ')[1];
-  
-//   if (!token) {
-//     return res.status(401).json({ message: 'JWT must be provided' });
-//   }
-
-//   try {
-//     const decodedToken = jwt.verify(token, "uwhdihdidjijddjwq"); // Use the provided JWT_SECRET
-//     console.log("Decoded Token:", decodedToken);
-
-//     if (!decodedToken._id) {
-//       return res.status(400).json({ message: 'Token does not contain user ID (_id)' });
-//     }
-    
-//     const task = await Task.findById(req.params.id);
-//     if (!task) {
-//       return res.status(404).json({ message: 'Task not found' });
-//     }
-
-//     console.log("Task found:", task);
-//     console.log("Task assigned to:", task.taskAssignPerson);
-//     console.log("Request made by:", decodedToken._id);
-
-//     // Ensure the task is assigned to the employee making the request
-//     if (!task.taskAssignPerson.equals(decodedToken._id)) {
-//       return res.status(403).json({ message: 'You are not authorized to update this task' });
-//     }
-
-//     task.descriptionByEmployee = req.body.descriptionByEmployee;
-//     await task.save();
-
-//     res.json(task);
-//   } catch (err) {
-//     console.error(err);
-//     return res.status(500).json({ message: 'Internal server error' });
-//   }
-// };
-
 
 // Get tasks summary by employee
 exports.getTasksSummaryByEmployee = async (req, res) => {

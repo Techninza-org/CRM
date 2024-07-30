@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const statusSchema = new Schema({
+const projectStatusSchema = new Schema({
     currentStatus: {
         type: String,
         required: true
@@ -13,17 +13,11 @@ const statusSchema = new Schema({
     },
     project_id: {
         type: mongoose.Schema.Types.ObjectId,
-        required: true,
         ref: "Project"
-    },
-    task_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        ref: "Task"
     },
 
 }, { timestamps: true });
 
-const ProjectStatus = mongoose.model('ProjectStatus', statusSchema);
+const ProjectStatus = mongoose.model('ProjectStatus', projectStatusSchema);
 
 module.exports = ProjectStatus;

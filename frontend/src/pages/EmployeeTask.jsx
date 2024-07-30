@@ -132,111 +132,61 @@ const Tasks = () => {
   const [showFullDescription, setShowFullDescription] = useState("");
 
 
+  const [taskMessages, setTaskMessages] = useState([]);
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [taskMessage, setTaskMessage] = useState("");
+  const [error, setError] = useState("");
 
-  // Status
-  const [currentStatus, setCurrentStatus] = useState("");
-  const [user_id, setUser_id] = useState("");
-  const [task_id, setTask_id] = useState("");
-  const [selectTask, setSelectTask] = useState([]);
+  const user_id = JSON.parse(localStorage.getItem("emp_user"))._id;
 
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // Fetch task messages when a task is selected
+  const fetchTaskMessages = async (task_id) => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/task-status`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          currentStatus,
-          user_id: loginUserId,
-          task_id: selectTask._id,
-        }),
-      });
-      // console.log(response.json);
-
-      if (!response.ok) {
-        throw new Error("Failed to add project status");
-      }
-
-
-      setCurrentStatus("");
-      setUser_id("");
-      setTask_id("");
-
-      // Close the modal programmatically
-      const modalElement = document.getElementById("addUser");
-      const modal = window.bootstrap.Modal.getInstance(modalElement);
-      modal.hide();
-
-
-
-      toast.success('Status Added Successfully!', {
-        style: {
-          backgroundColor: '#4c3575',
-          color: 'white',
-        },
-      });
-
-      window.location.reload()
-
-
+      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/task-messages/${task_id}`);
+      console.log(response.data);
+      setTaskMessages(response.data);
     } catch (error) {
-      console.error(error.message);
+      console.error('Failed to fetch task messages:', error);
     }
   };
-
-  const [taskStatus, setTaskStatus] = useState([]);
-  const [taskId, setTaskId] = useState("");
 
   useEffect(() => {
-    const fetchProjectStatuses = async () => {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_BASE_URL}api/project-status/${taskId}`
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch project statuses");
-        }
-
-        const data = await response.json();
-        setTaskStatus(data);
-      } catch (error) {
-        console.error(error.message);
-      }
-    };
-
-    if (taskId) {
-      fetchProjectStatuses();
+    if (selectedTask) {
+      fetchTaskMessages(selectedTask);
     }
-  }, [taskId]);
+  }, [selectedTask]);
 
-
-  // Delete Status
-  const handleDelete = async () => {
+  const handleTaskMessageSubmit = async () => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}api/project-status/${taskId}`,
+      await axios.post(
+        `${import.meta.env.VITE_BASE_URL}api/task-message`,
         {
-          method: "DELETE",
+          currentMessage: taskMessage,
+          user_id: user_id,
+          task_id: selectedTask,
         }
       );
+      setTaskMessage("");
+      setSelectedTask(null);
+      fetchTaskMessages(selectedTask); // Refresh messages after submission
 
-      if (!response.ok) {
-        const errorMessage = await response.json();
-        throw new Error(errorMessage.message);
-      }
-
-      console.log("Project status deleted successfully");
-      window.location.reload();
+      const modal = document.getElementById('taskMessage');
+      const modalInstance = bootstrap.Modal.getInstance(modal);
+      modalInstance.hide();
     } catch (error) {
-      console.error("Error deleting project status:", error.message);
+      setError(error.message);
     }
   };
 
 
+  const deleteTaskMessage = async (id) => {
+    try {
+      await axios.delete(`${import.meta.env.VITE_BASE_URL}api/task-message/${id}`);
+      setTaskMessages(taskMessages.filter(msg => msg._id !== id));
+    } catch (error) {
+      console.error('Failed to delete task message:', error);
+    }
+  };
 
 
 
@@ -354,12 +304,8 @@ const Tasks = () => {
                               <button
                                 className="d-flex justify-content-center bi bi-stopwatch btn outline-secondary text-primary"
                                 data-bs-toggle="modal"
-                                data-bs-target="#addUser"
-                                onClick={() => {
-                                  // console.log("abc: " + project._id);
-                                  setTaskId(project._id);
-                                  setSelectTask(project);
-                                }}
+                                data-bs-target="#taskMessage"
+                                onClick={() => setSelectedTask(task._id)}
                               ></button>
                             </p>
                             <div className="tikit-info row g-3 align-items-center">
@@ -411,80 +357,21 @@ const Tasks = () => {
                 </div>
 
               </div>
-
-              {/* Chat Modal */}
-              {/* <div
-                className="modal fade"
-                id="chatUser"
-                tabIndex={-1}
-                aria-labelledby="chatUserLabel"
-                aria-hidden="true"
-              >
-                <div className="modal-dialog modal-dialog-centered modal-lg">
-                  <div className="modal-content">
-                    <div className="modal-header">
-                      <h5
-                        className="modal-title fs-4 fw-bold"
-                        id="addUserLabel"
-                      >
-                        {tasks.projectName}
-                      </h5>
-                      <button
-                        type="button"
-                        className="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
-                      />
-                    </div>
-                    <div className="modal-body">
-                      <div className="members_list">
-                        <ul className="list-unstyled list-group list-group-custom list-group-flush mb-0">
-                          <li className="list-group-item py-3 text-center text-md-start">
-                            {chats.map((chat) => (
-                              <li key={chat._id}>{chat.message}</li>
-                            ))}
-                          </li>
-                        </ul>
-
-                        <div className="row g-3 mb-3">
-                        </div>
-                        <div className="d-flex" style={{ gap: "6px" }}>
-                          <textarea
-                            rows="1"
-                            cols=""
-                            type="text"
-                            className="form-control"
-                            name="taskId"
-                            value={formData.taskId}
-                            onChange={handleChange}
-                          />
-                          <button
-                            type="button"
-                            className="btn btn-dark"
-                            onClick={handleSubmit}
-                          >
-                            Send
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div> */}
             </div>
-            {/* Status Modal */}
+
+            {/* Task Message Modal */}
             <div
               className="modal fade"
-              id="addUser"
+              id="taskMessage"
               tabIndex={-1}
-              aria-labelledby="addUserLabel"
+              aria-labelledby="taskMessageLabel"
               aria-hidden="true"
             >
               <div className="modal-dialog modal-dialog-centered modal-lg">
                 <div className="modal-content">
                   <div className="modal-header">
-                    <h5 className="modal-title fs-4 fw-bold" id="addUserLabel">
-                      {selectTask.projectName}
+                    <h5 className="modal-title fs-4 fw-bold" id="taskMessageLabel">
+                      Task Message
                     </h5>
                     <button
                       type="button"
@@ -493,151 +380,66 @@ const Tasks = () => {
                       aria-label="Close"
                     />
                   </div>
+                  <div className="mt-3">
+                    {taskMessages.map((msg) => (
+                      <div key={msg._id} className="d-flex justify-content-between container mt-2 border-bottom">
+                        <div className="d-flex gap-5">
+                          <div>
+                            <img
+                              className="avatar md rounded-circle"
+                              src={
+                                `${import.meta.env.VITE_BASE_URL}` +
+                                msg.user_id.employeeImage
+                              }
+                              alt="employeeImage"
+                            />
+                            <p className="fw-bold">{msg.user_id.employeeName}</p>
+                          </div>
+                          <div>
+                            <p className="fw-bold">{msg.currentMessage}</p>
+                            <small className="text-muted">{new Date(msg.createdAt).toLocaleString()}</small>
+                          </div>
+                        </div>
+                        <div className=" mt-3">
+                          <button
+                            onClick={() => deleteTaskMessage(msg._id)}
+                            className="bi bi-trash bg-danger text-white border-0 rounded p-2"
+                          >
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                   <div className="modal-body">
-                    {/* <div className="inviteby_email">
-                      <div className="input-group mb-3">
-                        <input
-                          type="text"
+                    <form>
+                      <div className="mb-3">
+                        <label htmlFor="taskMessage" className="form-label">
+                          Add Message
+                        </label>
+                        <textarea
+                          id="taskMessage"
+                          rows="4"
                           className="form-control"
-                          placeholder=""
-                          id=""
-                          aria-describedby="exampleInputEmail1"
+                          value={taskMessage}
+                          onChange={(e) => setTaskMessage(e.target.value)}
                         />
+                        {error && <div className="text-danger mt-2">{error}</div>}
+                      </div>
+                      <div className="d-flex justify-content-end">
                         <button
-                          className="btn btn-dark"
                           type="button"
-                          id="button-addon2"
+                          className="btn btn-dark"
+                          onClick={handleTaskMessageSubmit}
                         >
-                          Search
+                          Submit
                         </button>
                       </div>
-                    </div> */}
-                    <div className="members_list" >
-
-                      <ul className="list-unstyled list-group list-group-custom list-group-flush mb-0">
-                        <li className="list-group-item py-3 text-center text-md-start" style={{ maxHeight: '300px', overflowY: 'auto' }}>
-                          {taskStatus.map((status) => {
-                            const getFormattedDate = (date) => {
-                              const newDate = new Date(date);
-                              const day = newDate.getDate();
-                              const month = newDate.getMonth() + 1;
-                              const year = newDate.getFullYear();
-                              let hours = newDate.getHours();
-                              const minutes = newDate.getMinutes();
-
-                              const meridiem = hours >= 12 ? "PM" : "AM";
-                              hours = hours % 12 || 12;
-
-                              return `${day}/${month}/${year} ${hours}:${minutes} ${meridiem}`;
-                            };
-
-                            return (
-                              <div
-                                key={status._id}
-                                className="d-flex align-items-center flex-column flex-sm-column flex-md-column flex-lg-row"
-                              >
-                                <div className="no-thumbnail mb-2 mb-md-0">
-                                  <img
-                                    className="avatar md rounded-circle"
-                                    src={
-                                      `${import.meta.env.VITE_BASE_URL}` +
-                                      status.user_id.employeeImage
-                                    }
-                                    alt=""
-                                  />
-                                  <p
-                                    className="fw-bold text-uppercase"
-                                    style={{ width: "6rem" }}
-                                  >
-                                    {status.user_id.employeeName}
-                                  </p>
-                                </div>
-                                <div className="flex-fill ms-3 text-truncate">
-                                  <p className="mb-0  fw-bold">
-                                    {status.currentStatus}
-                                  </p>
-                                  <span className="text-muted">
-                                    {getFormattedDate(status.createdAt)}
-                                  </span>
-                                </div>
-                                <div className="members-action">
-                                  {/* <div className="btn-group">
-                                    <div className="btn-group">
-                                      <button
-                                        type=""
-                                        className="btn outline-secondary icofont-ui-delete text-danger "
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#deleteproject"
-                                        onClick={() => {
-                                          setProjectId(status._id);
-                                        }}
-                                      ></button>
-                                    </div>
-                                  </div> */}
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </li>
-                      </ul>
-
-                      <form onSubmit={handleSubmit}>
-                        <div className="row g-3 mb-3">
-                          <div className="col">
-                            <label className="form-label" hidden>
-                              Employee Name
-                            </label>
-                            <select
-                              className="form-select"
-                              aria-label="Default select Project Category"
-                              id="user_id"
-                              value={user_id}
-                              onChange={(e) => setUser_id(e.target.value)}
-                              hidden
-                            >
-                              {selectTask.taskAssignPerson?.map((item) => {
-                                return (
-                                  <option key={item}>
-                                    {item.employeeName}
-                                  </option>
-                                );
-                              })}
-                            </select>
-                          </div>
-                        </div>
-                        <div className="container">
-                          <div className="row">
-                            <div className="col-12">
-                              <label htmlFor="currentStatus" className="fw-bold fs-5">
-                                Add Status
-                              </label>
-                              <textarea
-                                rows=""
-                                cols="50"
-                                type="text"
-                                id="currentStatus"
-                                value={currentStatus}
-                                onChange={(e) =>
-                                  setCurrentStatus(e.target.value)
-                                }
-                                className="form-control"
-                              />
-                            </div>
-                          </div>
-                          <div className="row mt-3">
-                            <div className="col-12 d-flex justify-content-end">
-                              <button type="submit" className="btn btn-dark">
-                                Submit
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </form>
-                    </div>
+                    </form>
                   </div>
                 </div>
               </div>
             </div>
+
           </>
         </div>
       </div>

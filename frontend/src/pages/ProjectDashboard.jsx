@@ -74,30 +74,36 @@ const ProjectDashboard = () => {
                   alt="No Data"
                 />
 
-                <div className="row justify-content-center">
+                <div className="row justify-content-center mt-3">
                   <div className="col-12 col-md-4 mb-4">
-                    <div className="card shadow-lg">
-                      <div className="card-body text-center">
-                        <h5 className="card-title">Total Projects</h5>
-                        <p className="card-text display-4 font-weight-bold">{totalProjects}</p>
+                    <Link to="/projects">
+                      <div className="card shadow-lg">
+                        <div className="card-body text-center">
+                          <h5 className="card-title">Total Projects</h5>
+                          <p className="card-text display-4 font-weight-bold">{totalProjects}</p>
+                        </div>
                       </div>
-                    </div>
+                    </Link>
                   </div>
                   <div className="col-12 col-md-4 mb-4">
-                    <div className="card shadow-lg">
-                      <div className="card-body text-center">
-                        <h5 className="card-title">Total Clients</h5>
-                        <p className="card-text display-4 font-weight-bold">{totalClients}</p>
+                    <Link to="/clients">
+                      <div className="card shadow-lg">
+                        <div className="card-body text-center">
+                          <h5 className="card-title">Total Clients</h5>
+                          <p className="card-text display-4 font-weight-bold">{totalClients}</p>
+                        </div>
                       </div>
-                    </div>
+                    </Link>
                   </div>
                   <div className="col-12 col-md-4 mb-4">
-                    <div className="card shadow-lg">
-                      <div className="card-body text-center">
-                        <h5 className="card-title">Total Employees</h5>
-                        <p className="card-text display-4 font-weight-bold">{totalEmployees}</p>
+                    <Link to="/members">
+                      <div className="card shadow-lg">
+                        <div className="card-body text-center">
+                          <h5 className="card-title">Total Employees</h5>
+                          <p className="card-text display-4 font-weight-bold">{totalEmployees}</p>
+                        </div>
                       </div>
-                    </div>
+                    </Link>
                   </div>
                 </div>
                 <div className="mt-4 mb-2">
