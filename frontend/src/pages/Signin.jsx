@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Link, Navigate, useNavigate } from "react-router-dom"; // Import Navigate
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const Signin = () => {
   const nav = useNavigate();
-  
+
   const [form, setForm] = useState({
+    role: "",
     email: "",
     password: "",
   });
   const [error, setError] = useState("");
-  // const [isSignIn, setIsSignIn] = useState(false);
 
   const handleChange = (e) => {
     setForm({
@@ -30,7 +30,7 @@ const Signin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.email || !form.password) {
+    if (!form.email || !form.password || !form.role) {
       setError("Please fill out all fields");
       return;
     }
@@ -42,11 +42,8 @@ const Signin = () => {
       );
       const { token, user } = response.data;
       localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user)); // Storing user info in localStorage
-      // alert("Login successful!");
+      localStorage.setItem("user", JSON.stringify(user));
       nav("/project-dashboard");
-
-      // setIsSignIn(true);
     } catch (error) {
       if (error.response && error.response.status === 401) {
         setError("Invalid email or password");
@@ -56,18 +53,6 @@ const Signin = () => {
       }
     }
   };
-
-  // useEffect(() => {
-  //   const token = localStorage.getItem("token");
-  //   if (!token) {
-  //     toast.error('Sign out Successfully!', {
-  //       style: {
-  //         backgroundColor: '#4c3575',
-  //         color: 'white',
-  //       },
-  //     });
-  //   }
-  // }, []);
 
 
   return (
@@ -123,6 +108,20 @@ const Signin = () => {
                     </div>
                     <div className="col-12">
                       <div className="mb-2">
+                        <label className="form-label">Role</label>
+                        <select className="form-control form-control-lg"
+                          name="role"
+                          value={form.role}
+                          onChange={handleChange}
+                        >
+                          <option value="">Select Role</option>
+                          <option value="superadmin">Super Admin</option>
+                          <option value="admin">Admin</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div className="col-12">
+                      <div className="mb-2">
                         <label className="form-label">Email address</label>
                         <input
                           type="email"
@@ -157,14 +156,6 @@ const Signin = () => {
                         />
                       </div>
                     </div>
-                    {/* <div className="col-12">
-                      <div className="form-check">
-                        <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
-                        <label className="form-check-label" htmlFor="flexCheckDefault">
-                          Remember me
-                        </label>
-                      </div>
-                    </div> */}
                     <div className="col-12 text-center mt-4">
                       <button
                         type="submit"
@@ -176,14 +167,6 @@ const Signin = () => {
                     </div>
                     {error && <p>{error}</p>}
                   </form>
-                  {/* <div className="col-12 text-center mt-4">
-                    <span className="text-muted">
-                      Don't have an account yet?{" "}
-                      <Link to="/signup" className="text-secondary">
-                        Sign up here
-                      </Link>
-                    </span>
-                  </div> */}
                   {/* End Form */}
                 </div>
               </div>

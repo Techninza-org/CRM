@@ -6,10 +6,10 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 exports.signupUser = async (req, res) => {
-  const { username, email, password} = req.body;
+  const { username, email, password, role } = req.body;
 
   try {
-    if (!username || !email || !password ) {
+    if (!username || !email || !password || !role) {
       throw new Error('Missing required fields');
     }
 
@@ -20,7 +20,7 @@ exports.signupUser = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ username, email, password: hashedPassword });
+    const newUser = new User({ username, email, role, password: hashedPassword });
     await newUser.save();
     res.json({ message: 'User registered successfully', user: newUser });
   } catch (error) {
@@ -28,22 +28,20 @@ exports.signupUser = async (req, res) => {
   }
 };
 
-exports.loginUser = async (req, res,next) => {
-  const { email, password } = req.body;
+exports.loginUser = async (req, res) => {
+  const { role, email, password } = req.body;
   const userIp = req.userIp;
 
   try {
     const user = await User.findOne({ email });
-    
+
     if (user) {
       const match = await bcrypt.compare(password, user.password);
-      if (match) {
-
-        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
-        
+      if (match && user.role === role) {
+        const token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
         res.json({ token, user, userIp });
       } else {
-        res.status(401).json('Incorrect email or password');
+        res.status(401).json('Incorrect email, password, or role');
       }
     } else {
       res.status(401).json('User not found');
@@ -57,28 +55,21 @@ exports.changePassword = async (req, res) => {
   const { email, oldPassword, newPassword } = req.body;
 
   try {
-    // Check if all required fields are provided
     if (!email || !oldPassword || !newPassword) {
       throw new Error('Missing required fields');
     }
 
-    // Validate new password length
     if (newPassword.length < 8) {
       throw new Error('New password must be at least 8 characters long');
     }
 
-    // Find the user by email
     const user = await User.findOne({ email });
 
     if (user) {
-      // Verify the old password
       const match = await bcrypt.compare(oldPassword, user.password);
 
       if (match) {
-        // Hash the new password
         const hashedNewPassword = await bcrypt.hash(newPassword, 10);
-
-        // Update the user's password in the database
         user.password = hashedNewPassword;
         await user.save();
 
@@ -94,11 +85,6 @@ exports.changePassword = async (req, res) => {
   }
 };
 
-
-
-
-
-// Get user profile
 exports.getUserProfile = async (req, res) => {
   try {
     const user = await User.find();

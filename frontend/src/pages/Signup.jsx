@@ -7,6 +7,7 @@ const Signup = () => {
     username: "",
     email: "",
     password: "",
+    role: "",
   });
 
   const [error, setError] = useState("");
@@ -21,7 +22,7 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.username || !form.email || !form.password) {
+    if (!form.username || !form.email || !form.password || !form.role) {
       setError("Please fill out all fields");
       return;
     }
@@ -96,11 +97,11 @@ const Signup = () => {
                       </div>
                       <div className="col-12 text-center ">
                         <Link
-                          className="btn btn-lg btn-outline-secondary btn-block"style={{marginTop: "-40px"}}
+                          className="btn btn-lg btn-outline-secondary btn-block" style={{ marginTop: "-40px" }}
                           to="/employeesignup"
                         >
                           <span className="d-flex justify-content-center align-items-center gap-2">
-                          <i class="bi bi-person-plus-fill"></i>
+                            <i class="bi bi-person-plus-fill"></i>
                             Sign up as a Employee
                           </span>
                         </Link>
@@ -143,6 +144,20 @@ const Signup = () => {
                             className="form-control form-control-lg"
                             placeholder="8+ characters required"
                           />
+                        </div>
+                      </div>
+                      <div className="col-12">
+                        <div className="mb-2">
+                          <label className="form-label">Role</label>
+                          <select className="form-control form-control-lg"
+                            name="role"
+                            value={form.role}
+                            onChange={handleChange}
+                          >
+                            <option value="">Add Role</option>
+                            <option value="superadmin">Super Admin</option>
+                            <option value="admin">Admin</option>
+                          </select>
                         </div>
                       </div>
                       <div className="col-12 text-center mt-4">

@@ -416,6 +416,17 @@ const Project = () => {
   }, []);
   // console.log(tasks);
 
+
+
+  const [role, setRole] = useState('');
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user) {
+      setRole(user.role);
+    }
+  }, []);
+
   return (
     <>
       <div id="mytask-layout">
@@ -434,15 +445,17 @@ const Project = () => {
                     <div className="card-header py-3 px-0 d-sm-flex align-items-center justify-content-between ">
                       <h3 className="fw-bold py-3 mb-0">Projects</h3>
                       <div className="d-flex me-2">
-                        <button
-                          type="button"
-                          className="btn btn-dark w-sm-100"
-                          data-bs-toggle="modal"
-                          data-bs-target="#createproject"
-                        >
-                          <i className="icofont-plus-circle me-1" />
-                          Create Project
-                        </button>
+                        {role === 'superadmin' && (
+                          <button
+                            type="button"
+                            className="btn btn-dark w-sm-100"
+                            data-bs-toggle="modal"
+                            data-bs-target="#createproject"
+                          >
+                            <i className="icofont-plus-circle me-1" />
+                            Create Project
+                          </button>
+                        )}
                         <ul
                           className="nav nav-tabs tab-body-header rounded ms-1 prtab-set w-sm-100"
                           role="tablist"
@@ -592,9 +605,9 @@ const Project = () => {
 
                                 return (
                                   <tr key={project.id}
-                                    // data-bs-toggle="modal"
-                                    // data-bs-target="#viewtask"
-                                    // onClick={() => setCurrProj(project)}
+                                  // data-bs-toggle="modal"
+                                  // data-bs-target="#viewtask"
+                                  // onClick={() => setCurrProj(project)}
                                   >
                                     <td>
                                       <div className="">
