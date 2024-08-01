@@ -61,8 +61,12 @@ const Header = () => {
           color: "white",
         },
       });
-
       
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      navigation("/");
+
+
     } catch (error) {
       alert("Incorrect Old Password");
     }
@@ -116,7 +120,7 @@ const Header = () => {
                       </div>
                     </div>
                     <div className="list-group m-2 ">
-                    <button
+                      <button
                         className="list-group-item list-group-item-action border-0 "
                         data-bs-toggle="modal"
                         data-bs-target="#passwordModal"
@@ -131,7 +135,7 @@ const Header = () => {
                         <i className="icofont-logout fs-6 me-3" />
                         Signout
                       </button>
-                      
+
                       <div>
                         <hr className="dropdown-divider border-dark" />
                       </div>

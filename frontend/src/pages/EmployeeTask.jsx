@@ -74,6 +74,7 @@ const Tasks = () => {
             Authorization: Token,
           },
         });
+        // console.log(response.data);
         setTasks(response.data);
       } catch (error) {
         console.error("Error fetching tasks:", error);
@@ -301,26 +302,31 @@ const Tasks = () => {
                               }}
                             >
                               {task.description}
-                              <button
-                                className="d-flex justify-content-center bi bi-stopwatch btn outline-secondary text-primary"
-                                data-bs-toggle="modal"
-                                data-bs-target="#taskMessage"
-                                onClick={() => setSelectedTask(task._id)}
-                              ></button>
+
                             </p>
                             <div className="tikit-info row g-3 align-items-center">
                               <div className="col-sm">
                                 <ul className="d-flex list-unstyled align-items-center justify-content-between">
                                   <li className="me-2">
-                                    <div className="d-flex align-items-center fw-bold">
-                                      End:
-                                      <span className="ms-1">
-                                        {getFormattedDate(task.taskEndDate)}
-                                      </span>
+                                    <div className="d-flex gap-5">
+                                      <div className="d-flex align-items-center fw-bold">
+                                        Due Date:
+                                        <span className="ms-1">
+                                          {getFormattedDate(task.taskEndDate)}
+                                        </span>
+                                      </div>
+                                      <button
+                                        className="d-flex justify-content-center bi bi-stopwatch btn outline-secondary text-primary"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#taskMessage"
+                                        onClick={() => setSelectedTask(task._id)}
+                                      ></button>
                                     </div>
                                   </li>
                                 </ul>
+                                <div className="fw-bold">Task Given By - {task.assignedBy}</div>
                               </div>
+
                               <div className="d-flex justify-content-between align-items-center">
 
                                 <select
