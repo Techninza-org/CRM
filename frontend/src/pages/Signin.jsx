@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const Signin = () => {
-  const nav = useNavigate();
-
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     role: "",
     email: "",
     password: "",
   });
   const [error, setError] = useState("");
+  const [roles, setRoles] = useState([]);
 
   const handleChange = (e) => {
     setForm({
@@ -22,11 +22,24 @@ const Signin = () => {
   };
 
   useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/crm-access`);
+        console.log(response.data);
+        setRoles(response.data);
+      } catch (error) {
+        console.error("Error fetching roles:", error);
+      }
+    };
+
     const token = localStorage.getItem("token");
     if (token) {
-      nav("/project-dashboard");
+      navigate("/project-dashboard");
+    } else {
+      fetchRoles();
     }
-  }, []);
+  }, [navigate]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -43,7 +56,7 @@ const Signin = () => {
       const { token, user } = response.data;
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
-      nav("/project-dashboard");
+      navigate("/project-dashboard");
     } catch (error) {
       if (error.response && error.response.status === 401) {
         setError("Invalid email or password");
@@ -54,12 +67,9 @@ const Signin = () => {
     }
   };
 
-
   return (
     <div id="mytask-layout">
-      {/* main body area */}
-      <div className="main p-2 py-3 p-xl-5 ">
-        {/* Body: Body */}
+      <div className="main p-2 py-3 p-xl-5">
         <div className="body d-flex p-0 p-xl-5">
           <div className="container-xxl">
             <div className="row g-0">
@@ -69,17 +79,18 @@ const Signin = () => {
                     src="../Images/techninza-logo.png"
                     className="mb-4"
                     style={{ width: "-webkit-fill-available" }}
+                    alt="Logo"
                   />
                   <div className="d-flex justify-content-center ">
                     <img
                       src="../Images/crm.jpeg"
                       className="text-center"
                       style={{ height: "30px" }}
+                      alt="CRM"
                     />
                   </div>
-                  {/* Image block */}
                   <div>
-                    <img src="../assets/images/login-img.svg" alt="login-img" />
+                    <img src="../assets/images/login-img.svg" alt="Login" />
                   </div>
                 </div>
               </div>
@@ -88,7 +99,6 @@ const Signin = () => {
                   className="w-100 p-3 p-md-5 card border-0 bg-dark text-light"
                   style={{ maxWidth: "32rem" }}
                 >
-                  {/* Form */}
                   <form onSubmit={handleSubmit} className="row g-1 p-3 p-md-4">
                     <div className="col-12 text-center mb-1 mb-lg-5">
                       <h1>Admin Sign in</h1>
@@ -100,8 +110,8 @@ const Signin = () => {
                         to="/employeesignin"
                       >
                         <span className="d-flex justify-content-center align-items-center gap-2">
-                          <i class="bi bi-person-plus-fill"></i>
-                          Sign in as a Employee
+                          <i className="bi bi-person-plus-fill"></i>
+                          Sign in as an Employee
                         </span>
                       </Link>
                       <span className="dividers text-muted mt-4">OR</span>
@@ -109,14 +119,21 @@ const Signin = () => {
                     <div className="col-12">
                       <div className="mb-2">
                         <label className="form-label">Role</label>
-                        <select className="form-control form-control-lg"
+                        <select
+                          className="form-control form-control-lg"
                           name="role"
                           value={form.role}
                           onChange={handleChange}
                         >
                           <option value="">Select Role</option>
-                          <option value="superadmin">Super Admin</option>
-                          <option value="admin">Admin</option>
+                          <option value="superadmin">
+                            Super Admin
+                          </option>
+                          {roles.map((role) => (
+                            <option key={role} value={role}>
+                              {role.role}
+                            </option>
+                          ))}
                         </select>
                       </div>
                     </div>
@@ -160,18 +177,15 @@ const Signin = () => {
                       <button
                         type="submit"
                         className="btn btn-lg btn-block btn-light lift text-uppercase"
-                        atl="signin"
                       >
                         SIGN IN
                       </button>
                     </div>
-                    {error && <p>{error}</p>}
+                    {error && <p className="text-danger">{error}</p>}
                   </form>
-                  {/* End Form */}
                 </div>
               </div>
-            </div>{" "}
-            {/* End Row */}
+            </div>
           </div>
         </div>
       </div>

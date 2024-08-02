@@ -30,12 +30,6 @@ const Sidebar = () => {
                             </a>
                             {/* Menu: Sub menu ul */}
                             <ul className="sub-menu collapse show" id="dashboard-Components">
-                                {/* <li>
-                                    <Link className="ms-link " to="/project-dashboard">
-                                        {" "}
-                                        <span>Admin Dashboard</span>
-                                    </Link>
-                                </li> */}
                                 <li>
                                     <Link className="ms-link " to="/employee-dashboard">
                                         {" "}
@@ -67,16 +61,6 @@ const Sidebar = () => {
                                         <span>Tasks</span>
                                     </Link>
                                 </li>
-                                {/* <li>
-                                    <a className="ms-link" href="timesheet.html">
-                                        <span>Timesheet</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a className="ms-link" href="team-leader.html">
-                                        <span>Leaders</span>
-                                    </a>
-                                </li> */}
                             </ul>
                         </li>
                     </ul>

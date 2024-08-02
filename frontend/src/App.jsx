@@ -20,6 +20,7 @@ import CreateInvoice from './pages/CreateInvoice'
 import Client from './pages/Client'
 import UpdateInvoice from './pages/UpdateInvoice'
 import AllInvoice from './pages/AllInvoice'
+import CRMController from './pages/CrmController'
 
 // import Test from './pages/test'
 
@@ -47,6 +48,7 @@ function App() {
         <Route path='/all-invoice' element={<AllInvoice/>}></Route>   
         <Route path='/clients' element={<Client/>}></Route>   
         <Route path='/update-invoice' element={<UpdateInvoice/>}></Route> 
+        <Route path='/crm-controller' element={<CRMController/>}></Route> 
 
 
 

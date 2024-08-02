@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const employeeController = require('./controller/employeeAuth');
 const projectRoutes = require('./routes/projectRoutes');
 const adminUserRoutes = require('./userRoute/adminUserRoutes');
+const accessRoutes = require('./userRoute/accessRoutes');
 const taskRoutes = require('./routes/taskRoutes');
 const projectStatus = require('./controller/projectStatus');
 const taskMessage = require('./routes/taskMessageRoute');
@@ -48,6 +49,7 @@ app.use('/api', taskMessage);
 app.use('/api', taskRoutes);
 app.use('/api', chatRoutes);
 app.use('/api', adminUserRoutes);
+app.use('/api', accessRoutes);
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
