@@ -56,7 +56,7 @@ router.post("/employeelogin", async (req, res) => {
         const empDetails = await Employee.findOne({
             emailid: email,
             password: password
-        }).populate("access")
+        }).lean()
 
         if (!empDetails) {
             return res.send({
