@@ -56,7 +56,7 @@ router.post("/employeelogin", async (req, res) => {
         const empDetails = await Employee.findOne({
             emailid: email,
             password: password
-        }).lean()
+        }).populate("access")
 
         if (!empDetails) {
             return res.send({
@@ -85,7 +85,7 @@ router.post("/employeelogin", async (req, res) => {
 // Get all employees
 router.get('/employees', async (req, res) => {
     try {
-        const employees = await Employee.find();
+        const employees = await Employee.find().populate('access');
         // console.log("testing");
         res.json(employees);
     } catch (err) {

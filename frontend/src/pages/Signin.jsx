@@ -126,14 +126,13 @@ const Signin = () => {
                           onChange={handleChange}
                         >
                           <option value="">Select Role</option>
-                          <option value="superadmin">
-                            Super Admin
-                          </option>
-                          {roles.map((role) => (
+                          <option value="superadmin">Super Admin</option>
+                          <option value="admin">Admin</option>
+                          {/* {roles.map((role) => (
                             <option key={role} value={role}>
                               {role.role}
                             </option>
-                          ))}
+                          ))} */}
                         </select>
                       </div>
                     </div>

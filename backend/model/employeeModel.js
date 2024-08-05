@@ -52,6 +52,10 @@ const employeeSchema = new Schema({
     description: {
         type: String
     },
+    // access:{
+    //     type: Schema.Types.ObjectId,
+    //     ref: 'CRMController'
+    // }
 });
 
 const Employee = mongoose.model("Employee", employeeSchema);

@@ -814,10 +814,10 @@ const Tasks = () => {
                     <div className="modal-footer">
                       <button
                         type="button"
-                        className="btn btn-secondary"
+                        className="btn btn-secondary bg-danger"
                         data-bs-dismiss="modal"
                       >
-                        Done
+                        Cancel
                       </button>
                       <button
                         type="button"
@@ -1082,17 +1082,17 @@ const Tasks = () => {
                     <div className="modal-footer">
                       <button
                         type="button"
-                        className="btn btn-secondary"
+                        className="btn btn-secondary bg-danger"
                         data-bs-dismiss="modal"
                       >
-                        Done
+                        Cancel
                       </button>
                       <button
                         type="button"
                         className="btn btn-primary"
                         onClick={taskHandleSubmit}
                       >
-                        Create
+                        Update
                       </button>
                     </div>
                   </div>

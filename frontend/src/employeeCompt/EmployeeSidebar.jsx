@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-const Sidebar = () => {
+const EmployeeSidebar = () => {
     return (
         
         <>
@@ -47,7 +47,7 @@ const Sidebar = () => {
                             >
                                 <i className="icofont-briefcase" />
                                 <span>Projects</span>{" "}
-                                <span className="arrow icofont-dotted-down ms-auto text-end fs-5" />
+                                <span className="arrow icofont-dotted-down ms.-auto text-end fs-5" />
                             </a>
                             {/* Menu: Sub menu ul */}
                             <ul className="sub-menu collapse" id="project-Components">
@@ -80,4 +80,4 @@ const Sidebar = () => {
     )
 }
 
-export default Sidebar
+export default EmployeeSidebar

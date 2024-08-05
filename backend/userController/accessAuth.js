@@ -1,10 +1,12 @@
 const Access = require('../userModel/accessModel');
+const Employee = require('../model/employeeModel')
 
 // Create Access
 exports.createAccess = async (req, res) => {
   try {
     const newAccess = new Access(req.body);
     await newAccess.save();
+    
     res.status(201).json(newAccess);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -43,6 +45,10 @@ exports.updateAccess = async (req, res) => {
     if (!access) {
       return res.status(404).json({ message: 'Access not found' });
     }
+    //update employee
+    const employee = await Employee.findByIdAndUpdate(access.employees, req.body, {
+      new: true,
+    });
     res.status(200).json(access);
   } catch (error) {
     res.status(500).json({ message: error.message });

@@ -129,6 +129,8 @@ const Member = () => {
           ...prevFormData,
           employeeId: newId,
         }));
+        console.log(response.data, "lll");
+        
         setEmployees(response.data);
       } catch (error) {
         console.error("Error:", error);

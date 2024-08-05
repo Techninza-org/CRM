@@ -427,6 +427,7 @@ const Project = () => {
     }
   }, []);
 
+
   return (
     <>
       <div id="mytask-layout">
@@ -851,10 +852,10 @@ const Project = () => {
                   <div className="modal-footer">
                     <button
                       type="button"
-                      className="btn btn-secondary"
+                      className="btn btn-secondary bg-danger"
                       data-bs-dismiss="modal"
                     >
-                      Done
+                      Cancel
                     </button>
                     <button
                       type="button"
@@ -1069,17 +1070,17 @@ const Project = () => {
                   <div className="modal-footer">
                     <button
                       type="button"
-                      className="btn btn-secondary"
+                      className="btn btn-secondary bg-danger"
                       data-bs-dismiss="modal"
                     >
-                      Done
+                      Cancel
                     </button>
                     <button
                       type="button"
                       className="btn btn-primary"
                       onClick={projectHandleSubmit}
                     >
-                      Create
+                      Update
                     </button>
                   </div>
                 </div>
