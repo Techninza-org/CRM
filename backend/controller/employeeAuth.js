@@ -85,7 +85,7 @@ router.post("/employeelogin", async (req, res) => {
 // Get all employees
 router.get('/employees', async (req, res) => {
     try {
-        const employees = await Employee.find().populate('access');
+        const employees = await Employee.find()
         // console.log("testing");
         res.json(employees);
     } catch (err) {
