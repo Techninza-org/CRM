@@ -30,7 +30,7 @@ app.use(express.static(path.join(__dirname, 'dist')));
 
 // MongoDB setup
 const url = process.env.MONGODB_URI;
-mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(url);
 
 const connection = mongoose.connection;
 connection.on('error', console.error.bind(console, 'MongoDB connection error:'));
