@@ -219,7 +219,7 @@ const Project = () => {
                           <i className="icofont-plus-circle me-2 fs-6" />
                           Create Project
                         </button> */}
-                        <div className="order-0 ">
+                        {/* <div className="order-0 ">
                           <div className="input-group">
                             <input
                               type="search"
@@ -251,7 +251,7 @@ const Project = () => {
                               <i className="fa fa-search" />
                             </button>
                           </div>
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   </div>
