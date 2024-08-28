@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import Sidebar from "../employeeCompt/EmployeeSidebar";
 import Header from "../employeeCompt/EmployeeHeader";
@@ -5,47 +6,24 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 
 const Tasks = () => {
-
-  // GET SINGLE TASK BY TOKEN
-  const [searchQuery, setSearchQuery] = useState("");
-  const handleSearch = async (searchQuery) => {
-    const Token = localStorage.getItem("emp_token");
-    if (searchQuery !== "") {
-      try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}api/pros/search?id=${searchQuery}`,
-          {
-            headers: {
-              Authorization: Token,
-            },
-          }
-        );
-        setTasks(response.data);
-      } catch (error) {
-        console.error("Error:", error);
-        setTasks(null);
-      }
-    } else {
-      try {
-        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/tasks`, {
-          headers: {
-            Authorization: Token,
-          },
-        });
-        setTasks(response.data);
-      } catch (error) {
-        console.error("Error:", error);
-      }
-    }
-  };
-
   const [employees, setEmployees] = useState([]);
+  const [tasks, setTasks] = useState([]);
+  const [selectedEmployees, setSelectedEmployees] = useState([]);
+  const [taskStatuses, setTaskStatuses] = useState({});
+  const [showFullDescription, setShowFullDescription] = useState("");
+  const [taskMessages, setTaskMessages] = useState([]);
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [taskMessage, setTaskMessage] = useState("");
+  const [error, setError] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterStatus, setFilterStatus] = useState("All");
+
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/employees`);
         setEmployees(response.data);
-        // console.log(response.data);
       } catch (error) {
         console.error("Error:", error);
       }
@@ -54,17 +32,6 @@ const Tasks = () => {
     fetchData();
   }, []);
 
-  const [selectedEmployees, setSelectedEmployees] = useState([]);
-  // console.log(selectedEmployees);
-  const assignEmployee = employees.map((emp) => {
-    return {
-      label: emp.employeeName,
-      value: emp._id,
-    };
-  });
-
-  //GET A TASK BY TOKEN
-  const [tasks, setTasks] = useState([]);
   useEffect(() => {
     const Token = localStorage.getItem("emp_token");
     async function fetchTasks() {
@@ -74,7 +41,6 @@ const Tasks = () => {
             Authorization: Token,
           },
         });
-        // console.log(response.data);
         setTasks(response.data);
       } catch (error) {
         console.error("Error fetching tasks:", error);
@@ -84,12 +50,7 @@ const Tasks = () => {
     fetchTasks();
   }, []);
 
-  //Progress task
-  // const [taskId, setTaskId] = useState("");
-  const [taskStatuses, setTaskStatuses] = useState({});
-
   useEffect(() => {
-    // Initialize taskStatuses with existing task statuses
     const statuses = {};
     tasks.forEach(task => {
       statuses[task._id] = task.taskStatus;
@@ -99,17 +60,10 @@ const Tasks = () => {
 
   const handleTaskUpdate = async (event, id) => {
     const { value } = event.target;
-    let isCompleted = false;
-
-    // Determine the completion status based on the selected value
-    if (value === "Completed") {
-      isCompleted = true;
-    } else if (value === "Not Started" || value === "In Progress") {
-      isCompleted = false;
-    }
+    let isCompleted = value === "Completed";
 
     try {
-      const response = await axios.put(
+      await axios.put(
         `${import.meta.env.VITE_BASE_URL}api/update/${id}`,
         { taskStatus: value, isCompleted }
       );
@@ -120,7 +74,6 @@ const Tasks = () => {
         )
       );
 
-      // Update task status in local state for refreshing purpose
       setTaskStatuses({
         ...taskStatuses,
         [id]: value
@@ -130,21 +83,9 @@ const Tasks = () => {
     }
   };
 
-  const [showFullDescription, setShowFullDescription] = useState("");
-
-
-  const [taskMessages, setTaskMessages] = useState([]);
-  const [selectedTask, setSelectedTask] = useState(null);
-  const [taskMessage, setTaskMessage] = useState("");
-  const [error, setError] = useState("");
-
-  const user_id = JSON.parse(localStorage.getItem("emp_user"))._id;
-
-  // Fetch task messages when a task is selected
   const fetchTaskMessages = async (task_id) => {
     try {
       const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/task-messages/${task_id}`);
-      console.log(response.data);
       setTaskMessages(response.data);
     } catch (error) {
       console.error('Failed to fetch task messages:', error);
@@ -163,13 +104,13 @@ const Tasks = () => {
         `${import.meta.env.VITE_BASE_URL}api/task-message`,
         {
           currentMessage: taskMessage,
-          user_id: user_id,
+          user_id: JSON.parse(localStorage.getItem("emp_user"))._id,
           task_id: selectedTask,
         }
       );
       setTaskMessage("");
       setSelectedTask(null);
-      fetchTaskMessages(selectedTask); // Refresh messages after submission
+      fetchTaskMessages(selectedTask);
 
       const modal = document.getElementById('taskMessage');
       const modalInstance = bootstrap.Modal.getInstance(modal);
@@ -179,7 +120,6 @@ const Tasks = () => {
     }
   };
 
-
   const deleteTaskMessage = async (id) => {
     try {
       await axios.delete(`${import.meta.env.VITE_BASE_URL}api/task-message/${id}`);
@@ -188,6 +128,14 @@ const Tasks = () => {
       console.error('Failed to delete task message:', error);
     }
   };
+
+  // Modify filtering logic based on filterStatus and searchQuery
+  const filteredTasks = tasks.filter((task) => {
+    const matchesSearch = task.projectName.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesFilter = filterStatus === "All" || task.taskStatus === filterStatus;
+
+    return matchesSearch && matchesFilter;
+  });
 
 
 
@@ -207,56 +155,81 @@ const Tasks = () => {
                   <div className="border-0 mb-4">
                     <div className="card-header py-3 no-bg bg-transparent d-flex align-items-center px-0 justify-content-between border-bottom flex-wrap">
                       <h3 className="fw-bold mb-0">Task Management</h3>
-                      <div className="col-auto d-flex w-sm-100">
-                        {/* <button
-                          type="button"
-                          className="btn btn-dark btn-set-task w-sm-100 me-2"
-                          data-bs-toggle="modal"
-                          data-bs-target="#createtask"
-                        >
-                          <i className="icofont-plus-circle me-2 fs-6" />
-                          Create Task
-                        </button> */}
-                        {/* <div className="order-0">
-                          <div className="input-group">
-                            <input
-                              type="search"
-                              className="form-control"
-                              aria-label="search"
-                              aria-describedby="addon-wrapping"
-                              value={searchQuery}
-                              onChange={(e) => {
-                                setSearchQuery(e.target.value);
-                                handleSearch(e.target.value);
-                              }}
-                              placeholder="Enter Project Name"
-                            />
-                            <button
-                              type="button"
-                              className="input-group-text add-member-top"
-                              id="addon-wrappingone"
-                              data-bs-toggle="modal"
-                              data-bs-target="#addUser"
-                            >
-                              <i className="fa fa-plus" />
-                            </button>
-                            <button
-                              type="button"
-                              className="input-group-text"
-                              id="addon-wrapping"
-                              onClick={handleSearch}
-                            >
-                              <i className="fa fa-search" />
-                            </button>
-                          </div>
-                        </div> */}
+                    </div>
+                    <div className="col-auto d-flex justify-content-between w-sm-100">
+                      <div className="order-0">
+                        <div className="input-group">
+                          <input
+                            type="search"
+                            className="form-control"
+                            aria-label="search"
+                            aria-describedby="addon-wrapping"
+                            placeholder="Enter Project Name"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                          />
+                          <button
+                            type="button"
+                            className="input-group-text add-member-top"
+                            id="addon-wrappingone"
+                            data-bs-toggle="modal"
+                            data-bs-target="#addUser"
+                          >
+                            <i className="fa fa-plus" />
+                          </button>
+                          <button
+                            type="button"
+                            className="input-group-text"
+                            id="addon-wrapping"
+                          >
+                            <i className="fa fa-search" />
+                          </button>
+                        </div>
                       </div>
+                      <ul className="nav nav-tabs tab-body-header rounded ms-1 prtab-set w-sm-100" style={{ cursor: 'pointer' }} role="tablist">
+                        <li className="nav-item">
+                          <a
+                            className={`nav-link ${filterStatus === "All" ? "active" : ""}`}
+                            onClick={() => setFilterStatus("All")}
+                            role="tab"
+                          >
+                            All
+                          </a>
+                        </li>
+                        <li className="nav-item">
+                          <a
+                            className={`nav-link ${filterStatus === "Not Started" ? "active" : ""}`}
+                            onClick={() => setFilterStatus("Not Started")}
+                            role="tab"
+                          >
+                            Not Started
+                          </a>
+                        </li>
+                        <li className="nav-item">
+                          <a
+                            className={`nav-link ${filterStatus === "In Progress" ? "active" : ""}`}
+                            onClick={() => setFilterStatus("In Progress")}
+                            role="tab"
+                          >
+                            In Progress
+                          </a>
+                        </li>
+                        <li className="nav-item">
+                          <a
+                            className={`nav-link ${filterStatus === "Completed" ? "active" : ""}`}
+                            onClick={() => setFilterStatus("Completed")}
+                            role="tab"
+                          >
+                            Completed
+                          </a>
+                        </li>
+                      </ul>
                     </div>
                   </div>
                 </div>{" "}
                 {/* Row end  */}
                 <div className="row">
-                  {tasks.map((task) => {
+                  {filteredTasks.map((task) => {
                     const getFormattedDate = (date) => {
                       const newDate = new Date(date);
                       const day = newDate.getDate();

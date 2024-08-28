@@ -12,6 +12,8 @@ import "./Loading.css";
 const Tasks = () => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+
 
   //CREATE TASK
 
@@ -235,14 +237,19 @@ const Tasks = () => {
     const selectedDate = new Date(filterDate);
     const isSameDate = filterDate === '' || taskDate.toISOString().split('T')[0] === selectedDate.toISOString().split('T')[0];
 
+    const matchesSearch =
+      task.projectName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (task.taskAssignPerson && task.taskAssignPerson.employeeName.toLowerCase().includes(searchTerm.toLowerCase()));
+
     if (activeTab === 'All') {
-      return isSameDate; // Show all tasks for the selected date
+      return isSameDate && matchesSearch;
     } else if (activeTab === 'Not Started') {
-      return task.taskStatus === 'Not Started' && isSameDate; // Filter tasks by Not Started status for the selected date
+      return task.taskStatus === 'Not Started' && isSameDate && matchesSearch;
     } else {
-      return task.taskStatus === activeTab && isSameDate; // Filter tasks by other statuses for the selected date
+      return task.taskStatus === activeTab && isSameDate && matchesSearch;
     }
   });
+
 
   // Pagination logic
   const indexOfLastTask = currentPage * tasksPerPage;
@@ -293,32 +300,32 @@ const Tasks = () => {
       console.error("Error:", error);
     }
   };
-  // GET SINGLE TASK
-  const [searchQuery, setSearchQuery] = useState("");
-  const handleSearch = async (searchQuery) => {
-    if (searchQuery !== "") {
-      try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}api/pros/search?id=${searchQuery}`
-        );
-        setTasks(response.data);
-      } catch (error) {
-        console.error("Error:", error);
-        setTasks(null);
-      }
-    } else {
-      const fetchData = async () => {
-        try {
-          const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/tasks`);
-          setTasks(response.data);
-        } catch (error) {
-          console.error("Error:", error);
-        }
-      };
+  // // GET SINGLE TASK
+  // const [searchQuery, setSearchQuery] = useState("");
+  // const handleSearch = async (searchQuery) => {
+  //   if (searchQuery !== "") {
+  //     try {
+  //       const response = await axios.get(
+  //         `${import.meta.env.VITE_BASE_URL}api/pros/search?id=${searchQuery}`
+  //       );
+  //       setTasks(response.data);
+  //     } catch (error) {
+  //       console.error("Error:", error);
+  //       setTasks(null);
+  //     }
+  //   } else {
+  //     const fetchData = async () => {
+  //       try {
+  //         const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/tasks`);
+  //         setTasks(response.data);
+  //       } catch (error) {
+  //         console.error("Error:", error);
+  //       }
+  //     };
 
-      fetchData();
-    }
-  };
+  //     fetchData();
+  //   }
+  // };
 
   const [employees, setEmployees] = useState([]);
   useEffect(() => {
@@ -449,35 +456,21 @@ const Tasks = () => {
                   <div className="order-0">
                     <div className="input-group">
                       <input
-                        type="search"
+                        type="text"
                         className="form-control"
-                        aria-label="search"
-                        aria-describedby="addon-wrapping"
-                        value={searchQuery}
-                        onChange={(e) => {
-                          setSearchQuery(e.target.value);
-                          handleSearch(e.target.value);
-                        }}
-                        placeholder="Enter Project Name"
+                        placeholder="Search by Project Name or Assignee"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        style={{width:"19rem"}}
                       />
                       <button
                         type="button"
-                        className="input-group-text add-member-top"
-                        id="addon-wrappingone"
-                        data-bs-toggle="modal"
-                        data-bs-target="#addUser"
-                      >
-                        <i className="fa fa-plus" />
-                      </button>
-                      <button
-                        type="button"
                         className="input-group-text"
-                        id="addon-wrapping"
-                        onClick={handleSearch}
                       >
                         <i className="fa fa-search" />
                       </button>
                     </div>
+
                   </div>
                   <div className="d-flex text-end mb-3" >
                     <p className="mt-3 fw-bold">Filter by Date:</p>
